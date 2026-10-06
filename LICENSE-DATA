@@ -1,5 +1,14 @@
-The data files, records and the manuscript in this repository are licensed under
-the Creative Commons Attribution 4.0 International License (CC BY 4.0).
-https://creativecommons.org/licenses/by/4.0/
-
 Copyright (c) 2026 Bruno Mérola
+
+The data and the documentation of this package are licensed under the Creative Commons Attribution 4.0
+International License (CC BY 4.0): https://creativecommons.org/licenses/by/4.0/
+(legal code: https://creativecommons.org/licenses/by/4.0/legalcode).
+
+This license covers:
+  * every file in certificates/ and its subdirectories: the certificates (*.cert.json, *.cert.npz), the dual points
+    and the other certificate files (*.json), and their README.md files;
+  * the documentation files README.md, SHA256SUMS, verifier/EXPECTED.txt, verifier/CHANGES.txt, search/README.md
+    and search/CHANGES.txt.
+
+The programs in verifier/ (*.py, *.c, verify_all.sh) and in search/ (*.py) are not covered by this license; they
+are released under the MIT license, see LICENSE-CODE.

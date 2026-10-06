@@ -5,17 +5,22 @@ verify_all.sh prints one line per step, "PASS  STEP  (SECONDS s)" or "FAIL  STEP
 "ALL CHECKS PASSED" (exit status 0). A step passes when its program exits with status 0 and its log
 (work/logs/STEP.log) contains the strings below (fixed-string match; lines starting with "!" must NOT occur).
 The exact values are those of the paper. Times: measured on one core of an AMD Ryzen 7 5800H (--threads 1),
-except where marked; they will differ on other machines. Peak memory of every step is below 300 MB.
+except where marked (the times of parts (h), (i), (j) and the total come from the test of the second version, with
+--threads 2 on the same machine); they will differ on other machines. Peak memory of every step is below 500 MB (the
+largest are the rv2_dual.py steps of part (i), up to about 460 MB). Parts (h), (i) and (j) were added in the second
+version of the package; their expected values come from the independent reviews of the catalogue and of the dual
+points (and, for (j), from the definitions), never from the producer's outputs.
 
 0. Integrity and build                                                                     a few seconds
 ------------------------------------------------------------------------------------------------------------------
 integrity     sha256sum -c SHA256SUMS: every file OK ("!FAILED")
-npz_hashes    "ALL NPZ HASHES MATCH" (each .npz equals the cert_npz_sha256 field of its .json)
+npz_hashes    "15 certificate files", "ALL NPZ HASHES MATCH" (each .npz equals the cert_npz_sha256 field of its
+              .json; certificates/ is searched recursively: the five of (a) and the ten of (h))
 build         gcc -O3 -march=native -fopenmp -Wall -o work/rv_eval verifier/rv_eval.c, exit status 0
 
 (a) The five 4-graph certificates (Theorem main)
 ------------------------------------------------------------------------------------------------------------------
-Per certificate, fast part (--fast):
+Per certificate, fast part (--fast) (the same steps are used for the ten certificates of part (h)):
   reps_NAME          rv_reps.py P LAMBDA: own 6-vertex representatives, labelled counts, Burnside class counts
   counts_NAME        "COUNTS OK": [6-vertex reps, classes on 7 vertices, labelled admissible 7-vertex graphs,
                      admissible raw extensions] equal the values below
@@ -120,6 +125,146 @@ k43_n5     "labelled admissible graphs 768", "exact b > Chung-Lu: True".
 (g) Optional (--producer-n6): first implementation's checker on the sharp N = 6 certificates      15 s
 ------------------------------------------------------------------------------------------------------------------
 producer_sharp6_p5, _p6, _p5_l2   search/flagalg/verify_cert.py: "equal: True; verified >= claim: True" with
-                                  bounds 1/4, 1/10, 1/2. Not an independent check.
+                                  bounds 1/4, 1/10, 1/2. Not an independent check; the independent check
+                                  of the same certificates is part (j).
 
-Total of --fast: 26 min on one core (43 steps).
+(h) The ten catalogue certificates (Theorem catalogue, Table catalogue)
+------------------------------------------------------------------------------------------------------------------
+Names cat_pP_lamL for (p, lambda) = (P, L); directories certificates/catalogue/pP_lamL/. The steps are those of (a)
+(reps_NAME, counts_NAME, prep_NAME, lists_NAME, pycheck_cert_NAME with RV_LAM = lambda; raw_NAME, compare_raw_NAME,
+pycheck_raw_NAME with --raw NAME), plus one step for all ten:
+  cat_decimals       "CATALOGUE DECIMALS OK": each certificate's bound equals the fraction below, floor12(b) equals
+                     the decimal of the paper's Table catalogue and ceil12(1 - b) the pi decimal below
+
+name          p lam  reps  classes     labelled         raw ext.     rejected      exact bound b                     groups  M
+cat_p5_lam3   5  3    19       3,065       12,420,940      172,932   19,750,012  3298534811415/4398046511104         69  2^22
+cat_p6_lam3   6  3   152   6,836,416   33,540,083,069  155,614,014    3,769,538  11166973764957/38482906972160      347  2^21
+cat_p6_lam4   6  4   147   6,292,897   30,911,678,040  140,636,249   13,504,423  391547931101/1099511627776         312  2^21
+cat_p6_lam5   6  5   138   5,059,432   24,868,266,169  112,218,914   32,484,574  64873027783677/153931627888640     272  2^21
+cat_p6_lam6   6  6   123   3,263,333   16,021,163,016   74,015,441   54,959,407  612132591153137/1231453023109120   230  2^22
+cat_p6_lam9   6  9    54     122,149      574,200,468    4,517,328   52,105,776  217134104143267/307863255777280    112  2^21
+cat_p6_lam11  6 11    18       1,939        7,009,743      155,364   18,719,004  24267758577011/28862180229120       47  2^19
+cat_p7_lam2   7  2   156   7,013,318   34,359,738,332  163,577,834           22  111867473425/1099511627776         376  2^20
+cat_p7_lam3   7  3   156   7,013,315   34,359,737,737  163,577,622          234  4043518541347/30786325577728       374  2^20
+cat_p7_lam4   7  4   156   7,013,305   34,359,731,192  163,576,247        1,609  11199502214035/69269232549888      371  2^21
+
+name          certificate argmin   raw scan: NMIN / DEN = b                   SUMS sumZ / sume
+cat_p5_lam3   34359738367          66498461798126400 / 88664617663856640      -291501819268512407200 / 4750792
+cat_p6_lam3   19736588288          6432176888615232 / 22166154415964160       not recorded (*)
+cat_p6_lam4   34359738367          7893606290996160 / 22166154415964160       not recorded (*)
+cat_p6_lam5   31803041519          9341716000849488 / 22166154415964160       not recorded (*)
+cat_p6_lam6   34342977567          44073546563025864 / 88664617663856640      80465255696532640169764 / 1490258748
+cat_p6_lam9   4294711295           15633655498315224 / 22166154415964160      -4041155699855865843576 / 112293269
+cat_p6_lam11  2146992127           1164852411696528 / 1385384650997760        -16854299946483882996 / 4433920
+cat_p7_lam2   34359738367          563812066062000 / 5541538603991040         not recorded (*)
+cat_p7_lam3   30064771072          727833337442460 / 5541538603991040         not recorded (*)
+cat_p7_lam4   7918845952           3583840708491200 / 22166154415964160       not recorded (*)
+
+name          t > floor12(b) (= Table catalogue)   pi(F) < ceil12(1 - b)
+cat_p5_lam3   0.749999983648                       0.250000016352   (known exact value t_3(5,4) = 3/4; 3/4 - b = 1.635e-8)
+cat_p6_lam3   0.290180099259                       0.709819900741
+cat_p6_lam4   0.356110768826                       0.643889231174
+cat_p6_lam5   0.421440536123                       0.578559463877
+cat_p6_lam6   0.497081561103                       0.502918438897
+cat_p6_lam9   0.705293990330                       0.294706009670
+cat_p6_lam11  0.840815156178                       0.159184843822
+cat_p7_lam2   0.101742874380                       0.898257125620
+cat_p7_lam3   0.131341381781                       0.868658618219
+cat_p7_lam4   0.161680760732                       0.838319239268
+
+(DEN = 5040 M^2.) Source of every number: the independent review of the catalogue. The counts are its own rv_reps.py
+runs (the class counts also equal the producer's nauty counts and, for p = 7, closed forms); raw admissible and
+rejected are those of the raw scans it checked (admissible + rejected = reps x 2^20); bounds and argmins are from its
+overview and rv_pycheck.py logs; NMIN/DEN and SUMS are from its own full raw scans of cat_p5_lam3, cat_p6_lam6,
+cat_p6_lam9 and cat_p6_lam11, which agreed with the cloud scans on every deterministic field. (*) The other six raw
+scans were run on the cloud machines only (28 threads), with the same checker programs; the review compared their
+TOTAL, NMIN/DEN = b and all group maxima with the certificate but did not record the SUMS checksum, so for these six
+raw_NAME checks TOTAL and NMIN/DEN only (NMIN = b x DEN), and compare_raw_NAME checks the bound and every group
+maximum as for the other cases.
+Certificates: phase F (frozen cuts, files *_f.cert.*) except cat_p5_lam3, the phase-A certificate c5l3.cert.* (phase
+F found no better point). The minimiser printed by rv_eval is one of several tied labelled graphs (the raw argmin of
+cat_p6_lam11 on 2 threads was 16944959455 in one run and 7465238527 in another, the certificate's 2146992127);
+pycheck_raw checks its value, not the mask.
+
+Times of the fast part, per certificate (reps + prep + pycheck), in the test of this package: cat_p5_lam3 46 s,
+cat_p6_lam3 166 s, cat_p6_lam4 241 s, cat_p6_lam5 200 s, cat_p6_lam6 165 s, cat_p6_lam9 63 s, cat_p6_lam11 21 s,
+cat_p7_lam2 138 s, cat_p7_lam3 94 s, cat_p7_lam4 111 s (21 min in all); cat_decimals < 1 s.
+Raw scans on 2 threads: cat_p6_lam11 11 s plus 6 s for pycheck_raw (this package's test); in the review cat_p5_lam3
+18 s, cat_p6_lam11 16 s, cat_p6_lam9 13 min and cat_p6_lam6 4 h 32 min (shared machine). The other six were not run
+on 2 threads (by the review's measured rate, 4.4k to 10k graphs/s on a shared core, 4 to 10 hours each).
+
+(i) The seven-vertex limits (Table n7limits), rv2_dual.py and helpers                    about 17 min
+------------------------------------------------------------------------------------------------------------------
+dual2_selftest   rv2_selftest.py: "flag_universe_pl(p=5, lam=1) == rv1_lib.flag_universe for every labelled type
+                 of all six blocks", "canonical_forms == rv1_lib.canonical_graph on 80 graphs (incl. relabelled
+                 copies); admissible() == brute force", "self-tests OK" (the three PSD tests accept PD and reject
+                 indefinite random exact matrices of sizes 8 to 300)
+dual2_TAG        rv2_dual.py TAG certificates/n7_dual_points/dual_TAG.json, for every TAG:
+                   "JSON p/lam/blocks equal the target: True"
+                   "{'support': N, 'den_is_2^110': True, 'sum_is_den': True, 'all_num_ge_1': True, 'masks_in_range':
+                    True, 'distinct_masks': True, 'pairwise_non_isomorphic': True, 'admissible': True}"   (one line)
+                   "{'V': 'V', " and "'V_eq_json': True, 'V_eq_claim': True}"
+                   "ALL listed blocks PSD (every labelled type): True"
+                   "A-2lam xx^T exactly indefinite=True, residual PASS=False (expected False); A-lam/2 xx^T residual
+                    PASS=True (expected True)"   (one line; the control on the largest matrix)
+                   '"ceil12_V": "C", "floor12_1-V": "F", "ceil12_claim_ok": true, "pifloor_claim_ok": true'
+                   "OVERALL TAG: PASS"
+                 and, for p6_f3, p7_f1, h44_nt3, k6m_W (the certificates of Theorem main as weak-duality partners):
+                   "summary (5, 6): e(type) -> sorted set of (occurring, live, PSD): S56"
+                   '"b<=sum": true, "sum<=V": true', '"min_support_ge_b": true', '"all_key_QY_ge_0": true',
+                   '"b<=V": true', '"picert_claim_ok": true', '"b_eq_cert_bound": true'
+                 for p5no56_W: "CONTROL (5,6) for the no-(5,6) point: 31 of 31 occurring labelled types FAIL
+                 (expected >= 1)", '"b<=sum": true', '"min_support_ge_b": true' (against the t(5,4) certificate
+                 with (5,6); sum <= V fails there, as it must); for p5no56_Wodd: "... 16 of 16 occurring ...".
+
+TAG          problem          N      V                                                    C = ceil12(V)   F = floor12(1-V)
+p6_f3        t(6,4)            884   37867960095539974857512229/270799383593676935134183424          0.139837689411  0.860162310589
+p7_f1        t(7,4)          1,058   6413961863433425283788748011/99035203142830421991929937920      0.064764464150  0.935235535850
+h44_nt3      t_2(5,4)        1,583   384021679403583125317285924719/693246421999812953943509565440   0.553946861054  0.446053138946
+k6m_W        t_2(6,4)        2,126   153033054540662097928475789999/693246421999812953943509565440   0.220748423194  0.779251576806
+p5no56_W     t(5,4), no (5,6) 1,569  390498160148386371476706381487/1386492843999625907887019130880 0.281644555065  0.718355444935
+p5no56_Wodd  same, odd        55     24406135009720244409729340413/86655802749976619242938695680     0.281644555070  0.718355444930
+(V = 37867960095539974857512229/(7*2^85), 6413961863433425283788748011/(5*2^94),
+ 384021679403583125317285924719/(35*2^94), 153033054540662097928475789999/(35*2^94),
+ 390498160148386371476706381487/(35*2^95), 24406135009720244409729340413/(35*2^91).)
+
+S56, the (5,6) moment matrices: (occurring flags, live flags, PSD) by number of type edges e
+p6_f3     {0: [(371, 371, True)], 1: [(221, 221, True)], 2: [(74, 74, True)], 3: [(42, 42, True)], 4: [(40, 40, True)], 5: [(237, 237, True)]}
+p7_f1     {0: [(422, 422, True)], 1: [(269, 269, True)], 2: [(104, 104, True)], 3: [(63, 63, True)], 4: [(97, 97, True)], 5: [(217, 217, True)]}
+h44_nt3   {2: [(373, 373, True)], 3: [(457, 457, True)], 4: [(588, 588, True)], 5: [(768, 768, True)]}
+k6m_W     {0: [(371, 371, True)], 1: [(417, 417, True)], 2: [(233, 233, True)], 3: [(207, 207, True)], 4: [(187, 187, True)], 5: [(454, 454, True)]}
+The smaller blocks: (1,4), (2,4), (3,4) 2 flags each; (3,5) 24 (19 for h44_nt3, 23 for p5no56_W, 12 for
+p5no56_Wodd); (4,5) 16 / 16 (11 / 15 for h44_nt3, 15 / 16 for p5no56_W, 8 / 8 for p5no56_Wodd). Smallest normalised
+eigenvalue (floating point, information only): 4.1e-12 (p7_f1, (5,6) e = 0) and 1.26e-12 (p5no56_W, (3,5)).
+V - b = 1.5065e-4 (t(6,4)), 2.3875e-6 (t(7,4)), 1.3068e-3 (t_2(5,4)), 1.4620e-3 (t_2(6,4)).
+
+dual2_lift       rv2_lift.py 40 20 (the 40 heaviest support graphs of each of the six points and 20 random graphs):
+                 "identities checked 27254; all equal: True"
+dual2_decimals   rv2_decimals.py: 28 lines "OK ...", "ALL OK", no "BAD" (20-digit expansions of V, V' - V = 5.15e-12,
+                 0.308400990997 - 0.281644555065 = 0.026756435932, the V - b and the widths above)
+Times in the test of this package: dual2_selftest 53 s, p6_f3 106 s, p7_f1 291 s, h44_nt3 208 s, k6m_W 151 s,
+p5no56_W 103 s, p5no56_Wodd 4 s, dual2_lift 74 s, dual2_decimals < 1 s (16.5 min in all); peak memory 460 MB.
+
+(j) The sharp N = 6 certificates (Remark n6sharp), rv_sharp6.py                           30 s
+------------------------------------------------------------------------------------------------------------------
+sharp6_TAG   rv_sharp6.py certificates/n6_dual_points/cert_turan_r4_TAG_N6_all_sharp.json:
+               "all symmetric: True; all PSD (exact L D L^T, product checked): True"
+               "flags: all sigma-flags, pairwise non-isomorphic: True"
+               "labelled admissible 4-graphs on 6 vertices: L; isomorphism classes: K (orbit sizes sum to the
+                labelled count: True)"   (one line)
+               "exact min over all K classes: b = B = ", "random relabelling of every class equals its value): True",
+               "claimed B; EQUAL: True", "SHARP N = 6 CERTIFICATE OK"
+             TAG    problem               L        K     B      minimum attained by
+             p5     t(5,4)  (p = 5)       27,449   122   1/4    3 classes (3, 5 and 15 edges)
+             p6     t(6,4)  (p = 6)       32,767   155   1/10   4 classes (1, 3, 5 and 15 edges)
+             p5_l2  t_2(5,4) (p = 5)      12,068    62   1/2    4 classes (6, 6, 9 and 15 edges)
+             (K = the 6-vertex representatives of (a); 27,449 and 122 are the graphs on six vertices without
+             isolated vertices, labelled and up to isomorphism; the number of minimising classes equals the
+             support size of the corresponding dual point of part (c).)
+sharp6_negative  "NEGATIVE CONTROLS REJECTED": rv_sharp6.py exits with status 1 and "NOT OK" on three altered
+             copies of the t(5,4) certificate (bound 1/3, a (4,5) matrix made non-PSD, a (4,5) matrix doubled)
+Times (this package's test): 6 s, 6 s, 3 s; negative control 15 s.
+
+Total of --fast: 58 min wall clock in the test of the second version (107 steps; 110 with --raw cat_p6_lam11),
+run with --threads 2 on two cores of the same laptop while other jobs were running. In the first version parts (a)
+to (f) alone took 26 min on one core.

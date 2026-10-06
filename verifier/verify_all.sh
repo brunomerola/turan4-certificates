@@ -3,12 +3,15 @@
 #
 #   verifier/verify_all.sh [--fast] [--raw NAMES] [--producer-n6] [--threads N] [--work DIR]
 #
-#   --fast          every check except the raw scans (the default when no option is given); about 30 min on 1 core
-#   --raw NAMES     the full exhaustive raw scan (a) for the named 4-graph certificates, comma-separated, from
-#                   K5_4, K6_4, K7_4, K5_4minus, K6_4minus, or "all". K5_4minus takes minutes; each of the
-#                   others takes 1 to 3.5 hours on 2 threads (about 5 minutes on 28 threads)
+#   --fast          every check except the raw scans (the default when no option is given); about 1 hour
+#   --raw NAMES     the full exhaustive raw scan for the named 4-graph certificates, comma-separated: K5_4, K6_4,
+#                   K7_4, K5_4minus, K6_4minus (Theorem main), cat_p5_lam3, cat_p6_lam3, cat_p6_lam4, cat_p6_lam5,
+#                   cat_p6_lam6, cat_p6_lam9, cat_p6_lam11, cat_p7_lam2, cat_p7_lam3, cat_p7_lam4 (Theorem
+#                   catalogue), or "main" (the first five), "catalogue" (the ten cat_*), "all" (all fifteen).
+#                   cat_p5_lam3 and cat_p6_lam11 take seconds, cat_p6_lam9 about 15 min, K5_4minus minutes; each of
+#                   the others 1 to 5 hours on 2 threads (about 5 minutes on 28 threads)
 #   --producer-n6   also run the FIRST implementation's checker search/flagalg/verify_cert.py on the three sharp
-#                   N = 6 certificates (this is not an independent check; see README.md)
+#                   N = 6 certificates (not an independent check; the independent one is part (j) of --fast)
 #   --threads N     OpenMP threads of the C evaluator (default 2)
 #   --work DIR      directory for generated files (default: work/ under the package root)
 #
@@ -28,14 +31,25 @@ while [ $# -gt 0 ]; do
     --producer-n6) PRODN6=1 ;;
     --threads) THREADS="${2:?--threads needs a number}"; shift ;;
     --work) WORK="${2:?--work needs a directory}"; shift ;;
-    -h|--help) sed -n '2,18p' "$0"; exit 0 ;;
+    -h|--help) sed -n '2,19p' "$0"; exit 0 ;;
     *) echo "unknown option: $1 (see --help)"; exit 2 ;;
   esac
   shift
 done
 if [ "$FAST" = 0 ] && [ -z "$RAW" ] && [ "$PRODN6" = 0 ]; then FAST=1; fi
-[ "$RAW" = all ] && RAW="K5_4,K6_4,K7_4,K5_4minus,K6_4minus"
-RAW="${RAW//,/ }"
+MAIN5="K5_4 K6_4 K7_4 K5_4minus K6_4minus"
+CAT10="cat_p5_lam3 cat_p6_lam3 cat_p6_lam4 cat_p6_lam5 cat_p6_lam6 cat_p6_lam9 cat_p6_lam11 cat_p7_lam2 cat_p7_lam3"
+CAT10="$CAT10 cat_p7_lam4"
+RAWLIST=""
+for x in ${RAW//,/ }; do
+  case "$x" in
+    all) RAWLIST="$RAWLIST $MAIN5 $CAT10" ;;
+    main) RAWLIST="$RAWLIST $MAIN5" ;;
+    catalogue) RAWLIST="$RAWLIST $CAT10" ;;
+    *) RAWLIST="$RAWLIST $x" ;;
+  esac
+done
+RAW="${RAWLIST# }"
 case "$WORK" in /*) W="$WORK" ;; *) W="$ROOT/$WORK" ;; esac
 V="$ROOT/verifier"
 C="$ROOT/certificates"
@@ -76,11 +90,13 @@ check() {
   fi
 }
 
-# Parameters of the five 4-graph certificates (paper: Theorem main, Table counts):
-# directory, file prefix, p, lambda, 6-vertex representatives, classes on 7 vertices, labelled admissible graphs on
-# 7 vertices, admissible raw extensions, exact bound, certificate argmin (colex), raw-scan NMIN numerator and
-# denominator 5040 M^2, raw-scan checksum (sumZ, sume).
+# Parameters of the fifteen 4-graph certificates (paper: Theorem main and Table counts; Theorem catalogue and Table
+# catalogue): directory, file prefix, p, lambda, 6-vertex representatives, classes on 7 vertices, labelled
+# admissible graphs on 7 vertices, admissible raw extensions, exact bound, certificate argmin (colex), raw-scan NMIN
+# numerator and denominator 5040 M^2, raw-scan checksum (sumZ, sume; left empty, and then not checked, where the
+# independent review did not record it; see EXPECTED.txt).
 cinfo() {
+  SUMZ=""; SUME=""
   case "$1" in
     K5_4) D=K5_4; PRE=lpcg_p5_conv_full; P=5; LAM=1; NREP=122; NCLS=3908438; NLAB=19199206747; NRAW=86952880
           FRAC=35604499940047/115448720916480; ARG=27303369217; NMIN=1709015997122256; DEN=5541538603991040
@@ -97,10 +113,41 @@ cinfo() {
     K6_4minus) D=K6_4minus; PRE=lpcg_k6m_f; P=6; LAM=2; NREP=154; NCLS=6986573; NLAB=34244802014; NRAW=160859017
           FRAC=964431985683/4398046511104; ARG=31837153552; NMIN=4860737207842320; DEN=22166154415964160
           SUMZ=537778008513653740860644; SUME=2833905684 ;;
-    *) echo "unknown certificate name: $1"; exit 2 ;;
+    cat_p5_lam3) D=catalogue/p5_lam3; PRE=c5l3; P=5; LAM=3; NREP=19; NCLS=3065; NLAB=12420940; NRAW=172932
+          FRAC=3298534811415/4398046511104; ARG=34359738367; NMIN=66498461798126400; DEN=88664617663856640
+          SUMZ=-291501819268512407200; SUME=4750792 ;;
+    cat_p6_lam3) D=catalogue/p6_lam3; PRE=c6l3_f; P=6; LAM=3; NREP=152; NCLS=6836416; NLAB=33540083069
+          NRAW=155614014; FRAC=11166973764957/38482906972160; ARG=19736588288; NMIN=6432176888615232
+          DEN=22166154415964160 ;;
+    cat_p6_lam4) D=catalogue/p6_lam4; PRE=c6l4_f; P=6; LAM=4; NREP=147; NCLS=6292897; NLAB=30911678040
+          NRAW=140636249; FRAC=391547931101/1099511627776; ARG=34359738367; NMIN=7893606290996160
+          DEN=22166154415964160 ;;
+    cat_p6_lam5) D=catalogue/p6_lam5; PRE=c6l5_f; P=6; LAM=5; NREP=138; NCLS=5059432; NLAB=24868266169
+          NRAW=112218914; FRAC=64873027783677/153931627888640; ARG=31803041519; NMIN=9341716000849488
+          DEN=22166154415964160 ;;
+    cat_p6_lam6) D=catalogue/p6_lam6; PRE=c6l6_f; P=6; LAM=6; NREP=123; NCLS=3263333; NLAB=16021163016
+          NRAW=74015441; FRAC=612132591153137/1231453023109120; ARG=34342977567; NMIN=44073546563025864
+          DEN=88664617663856640; SUMZ=80465255696532640169764; SUME=1490258748 ;;
+    cat_p6_lam9) D=catalogue/p6_lam9; PRE=c6l9_f; P=6; LAM=9; NREP=54; NCLS=122149; NLAB=574200468; NRAW=4517328
+          FRAC=217134104143267/307863255777280; ARG=4294711295; NMIN=15633655498315224; DEN=22166154415964160
+          SUMZ=-4041155699855865843576; SUME=112293269 ;;
+    cat_p6_lam11) D=catalogue/p6_lam11; PRE=c6l11_f; P=6; LAM=11; NREP=18; NCLS=1939; NLAB=7009743; NRAW=155364
+          FRAC=24267758577011/28862180229120; ARG=2146992127; NMIN=1164852411696528; DEN=1385384650997760
+          SUMZ=-16854299946483882996; SUME=4433920 ;;
+    cat_p7_lam2) D=catalogue/p7_lam2; PRE=c7l2_f; P=7; LAM=2; NREP=156; NCLS=7013318; NLAB=34359738332
+          NRAW=163577834; FRAC=111867473425/1099511627776; ARG=34359738367; NMIN=563812066062000
+          DEN=5541538603991040 ;;
+    cat_p7_lam3) D=catalogue/p7_lam3; PRE=c7l3_f; P=7; LAM=3; NREP=156; NCLS=7013315; NLAB=34359737737
+          NRAW=163577622; FRAC=4043518541347/30786325577728; ARG=30064771072; NMIN=727833337442460
+          DEN=5541538603991040 ;;
+    cat_p7_lam4) D=catalogue/p7_lam4; PRE=c7l4_f; P=7; LAM=4; NREP=156; NCLS=7013305; NLAB=34359731192
+          NRAW=163576247; FRAC=11199502214035/69269232549888; ARG=7918845952; NMIN=3583840708491200
+          DEN=22166154415964160 ;;
+    *) echo "unknown certificate name: $1 (see --help)"; exit 2 ;;
   esac
   if [ "$LAM" = 1 ]; then SUF=""; else SUF="_l$LAM"; fi
 }
+for n in $RAW; do cinfo "$n"; done      # reject unknown names before any work
 
 say "# verify_all.sh  $(date -u +%FT%TZ)  root=$ROOT  work=$W  threads=$THREADS  python=$("$PY" -c 'import sys; print(sys.version.split()[0])' 2>&1)"
 say "# options: fast=$FAST raw='${RAW}' producer_n6=$PRODN6"
@@ -112,13 +159,15 @@ check integrity $rc "!FAILED"
 run npz_hashes "$PY" -c '
 import hashlib, json, sys, glob, os
 ok = True
-for j in sorted(glob.glob(os.path.join(sys.argv[1], "*", "*.cert.json"))):
+js = sorted(glob.glob(os.path.join(sys.argv[1], "**", "*.cert.json"), recursive=True))
+for j in js:
     d = json.load(open(j))
     h = hashlib.sha256(open(j[:-5] + ".npz", "rb").read()).hexdigest()
-    print(os.path.basename(j), "cert_npz_sha256", d["cert_npz_sha256"] == h)
+    print(os.path.relpath(j, sys.argv[1]), "cert_npz_sha256", d["cert_npz_sha256"] == h)
     ok &= d["cert_npz_sha256"] == h
+print(len(js), "certificate files")
 print("ALL NPZ HASHES MATCH" if ok else "NPZ HASH MISMATCH")' "$C"
-check npz_hashes $? "ALL NPZ HASHES MATCH"
+check npz_hashes $? "15 certificate files" "ALL NPZ HASHES MATCH"
 NEED_EVAL=0
 { [ "$FAST" = 1 ] || [ -n "$RAW" ]; } && NEED_EVAL=1
 if [ "$NEED_EVAL" = 1 ]; then
@@ -127,7 +176,7 @@ if [ "$NEED_EVAL" = 1 ]; then
   check build $?
 fi
 
-# --- (a) the five 4-graph certificates ------------------------------------------------------------------------------
+# --- (a) and (h): the 4-graph certificates (five of Theorem main, ten of Theorem catalogue) -------------------------
 PREPARED=" "
 prepare() {   # own 6-vertex representatives and Burnside counts, then the evaluation tables of the certificate
   local n="$1"
@@ -157,18 +206,52 @@ print("flag lists: root part = sigma (asserted by rv_prep), pairwise non-isomorp
   check "lists_$n" $? "LISTS OK"
 }
 
-ALL4="K5_4 K6_4 K7_4 K5_4minus K6_4minus"
 if [ "$FAST" = 1 ]; then
-  for n in $ALL4; do
+  for n in $MAIN5 $CAT10; do
     prepare "$n"; cinfo "$n"
     run "pycheck_cert_$n" env RV_LAM="$LAM" "$PY" "$V/rv_pycheck.py" "$C/$D/$PRE" "$ARG"
     check "pycheck_cert_$n" $? "$ARG $FRAC " "== cert bound: True"
   done
+  # (h) the exact bounds of the catalogue and their decimals in Table catalogue of the paper (t floored, pi ceiled)
+  run cat_decimals "$PY" -c '
+import json, os, sys
+from decimal import Decimal, getcontext, ROUND_CEILING, ROUND_FLOOR
+from fractions import Fraction
+getcontext().prec = 80
+def dec(x, mode):
+    return str((Decimal(x.numerator) / Decimal(x.denominator)).quantize(Decimal("1e-12"), rounding=mode))
+ok = True
+for row in sys.argv[2:]:
+    d, pre, frac, t12, pi12 = row.split(":")
+    c = json.load(open(os.path.join(sys.argv[1], d, pre + ".cert.json")))
+    b, p = Fraction(c["bound"]), c["p"]
+    tl, pu = dec(b, ROUND_FLOOR), dec(1 - b, ROUND_CEILING)
+    good = b == Fraction(frac) and tl == t12 and pu == pi12
+    ok &= good
+    print(d, "p", p, "bound", b, "as expected:", b == Fraction(frac), "; t >", tl, "(table:", t12 + ") ; pi <", pu,
+          "(expected:", pi12 + ") ;", good)
+print("CATALOGUE DECIMALS OK" if ok else "CATALOGUE DECIMALS DIFFER")' "$C/catalogue" \
+    p5_lam3:c5l3:3298534811415/4398046511104:0.749999983648:0.250000016352 \
+    p6_lam3:c6l3_f:11166973764957/38482906972160:0.290180099259:0.709819900741 \
+    p6_lam4:c6l4_f:391547931101/1099511627776:0.356110768826:0.643889231174 \
+    p6_lam5:c6l5_f:64873027783677/153931627888640:0.421440536123:0.578559463877 \
+    p6_lam6:c6l6_f:612132591153137/1231453023109120:0.497081561103:0.502918438897 \
+    p6_lam9:c6l9_f:217134104143267/307863255777280:0.705293990330:0.294706009670 \
+    p6_lam11:c6l11_f:24267758577011/28862180229120:0.840815156178:0.159184843822 \
+    p7_lam2:c7l2_f:111867473425/1099511627776:0.101742874380:0.898257125620 \
+    p7_lam3:c7l3_f:4043518541347/30786325577728:0.131341381781:0.868658618219 \
+    p7_lam4:c7l4_f:11199502214035/69269232549888:0.161680760732:0.838319239268
+  check cat_decimals $? "CATALOGUE DECIMALS OK"
 fi
 for n in $RAW; do
   prepare "$n"; cinfo "$n"
   run "raw_$n" env RV_LAM="$LAM" OMP_NUM_THREADS="$THREADS" ./rv_eval "blob_$n.bin" raw "reps_p${P}${SUF}.bin"
-  check "raw_$n" $? "TOTAL admissible=$NRAW " "NMIN $NMIN DEN $DEN " "SUMS sumZ $SUMZ sume $SUME"
+  rc=$?
+  if [ -n "$SUMZ" ]; then
+    check "raw_$n" $rc "TOTAL admissible=$NRAW " "NMIN $NMIN DEN $DEN " "SUMS sumZ $SUMZ sume $SUME"
+  else
+    check "raw_$n" $rc "TOTAL admissible=$NRAW " "NMIN $NMIN DEN $DEN "
+  fi
   run "compare_raw_$n" env RV_LAM="$LAM" "$PY" "$V/rv_compare.py" "$C/$D/$PRE.cert.json" "logs/raw_$n.log" --raw
   check "compare_raw_$n" $? "rv bound $FRAC = " "EQUAL: True" "same set: True; maxZ equal on all: True"
   RARG=$(awk '$1 == "NMIN" {print $8}' "$W/logs/raw_$n.log")
@@ -234,6 +317,82 @@ if [ "$FAST" = 1 ]; then
     say "INFO  k43_n5: exact b differs from the paper's 60084175574225/2^47 (it depends on the floating-point SDP" \
         "solution, i.e. on the clarabel version); the check above only requires b > Chung-Lu. Got: $(grep 'exact b =' "$W/logs/k43_n5.log")"
   fi
+
+  # --- (i) the seven-vertex limits of the other certificates (Theorem n7opt, Table n7limits) ----------------------
+  mkdir -p "$W/results"
+  run dual2_selftest "$PY" "$V/rv2_selftest.py"
+  check dual2_selftest $? \
+    "flag_universe_pl(p=5, lam=1) == rv1_lib.flag_universe for every labelled type of all six blocks" \
+    "canonical_forms == rv1_lib.canonical_graph on 80 graphs (incl. relabelled copies); admissible() == brute force" \
+    "self-tests OK"
+  # tag | support size | V | (5,6) summary: (occurring, live, PSD) by e(type) | ceil12(V) | floor12(1 - V)
+  for x in "p6_f3|884|37867960095539974857512229/270799383593676935134183424|{0: [(371, 371, True)], 1: [(221, 221, True)], 2: [(74, 74, True)], 3: [(42, 42, True)], 4: [(40, 40, True)], 5: [(237, 237, True)]}|0.139837689411|0.860162310589" \
+           "p7_f1|1058|6413961863433425283788748011/99035203142830421991929937920|{0: [(422, 422, True)], 1: [(269, 269, True)], 2: [(104, 104, True)], 3: [(63, 63, True)], 4: [(97, 97, True)], 5: [(217, 217, True)]}|0.064764464150|0.935235535850" \
+           "h44_nt3|1583|384021679403583125317285924719/693246421999812953943509565440|{2: [(373, 373, True)], 3: [(457, 457, True)], 4: [(588, 588, True)], 5: [(768, 768, True)]}|0.553946861054|0.446053138946" \
+           "k6m_W|2126|153033054540662097928475789999/693246421999812953943509565440|{0: [(371, 371, True)], 1: [(417, 417, True)], 2: [(233, 233, True)], 3: [(207, 207, True)], 4: [(187, 187, True)], 5: [(454, 454, True)]}|0.220748423194|0.779251576806" \
+           "p5no56_W|1569|390498160148386371476706381487/1386492843999625907887019130880||0.281644555065|0.718355444935" \
+           "p5no56_Wodd|55|24406135009720244409729340413/86655802749976619242938695680||0.281644555070|0.718355444930"; do
+    IFS='|' read -r tag nsup val s56 c12 f12 <<< "$x"
+    run "dual2_$tag" "$PY" "$V/rv2_dual.py" "$tag" "$C/n7_dual_points/dual_$tag.json"
+    rc=$?
+    common=("JSON p/lam/blocks equal the target: True"
+            "{'support': $nsup, 'den_is_2^110': True, 'sum_is_den': True, 'all_num_ge_1': True, 'masks_in_range': True, 'distinct_masks': True, 'pairwise_non_isomorphic': True, 'admissible': True}"
+            "{'V': '$val', " "'V_eq_json': True, 'V_eq_claim': True}"
+            "ALL listed blocks PSD (every labelled type): True"
+            "A-2lam xx^T exactly indefinite=True, residual PASS=False (expected False); A-lam/2 xx^T residual PASS=True (expected True)"
+            "\"ceil12_V\": \"$c12\", \"floor12_1-V\": \"$f12\", \"ceil12_claim_ok\": true, \"pifloor_claim_ok\": true"
+            "OVERALL $tag: PASS")
+    case "$tag" in
+      p5no56_W) check "dual2_$tag" $rc "${common[@]}" \
+          "CONTROL (5,6) for the no-(5,6) point: 31 of 31 occurring labelled types FAIL (expected >= 1)" \
+          "\"b<=sum\": true" "\"min_support_ge_b\": true" ;;
+      p5no56_Wodd) check "dual2_$tag" $rc "${common[@]}" \
+          "CONTROL (5,6) for the no-(5,6) point: 16 of 16 occurring labelled types FAIL (expected >= 1)" ;;
+      *) check "dual2_$tag" $rc "${common[@]}" \
+          "summary (5, 6): e(type) -> sorted set of (occurring, live, PSD): $s56" \
+          "\"b<=sum\": true, \"sum<=V\": true" "\"min_support_ge_b\": true" "\"all_key_QY_ge_0\": true" \
+          "\"b<=V\": true" "\"picert_claim_ok\": true" "\"b_eq_cert_bound\": true" ;;
+    esac
+  done
+  run dual2_lift "$PY" "$V/rv2_lift.py" 40 20
+  check dual2_lift $? "identities checked 27254; all equal: True"
+  run dual2_decimals "$PY" "$V/rv2_decimals.py"
+  check dual2_decimals $? "ALL OK" "!BAD"
+
+  # --- (j) the sharp N = 6 certificates (Remark n6sharp), independent checker -------------------------------------
+  for x in "p5 1/4 122 27449" "p6 1/10 155 32767" "p5_l2 1/2 62 12068"; do
+    set -- $x
+    run "sharp6_$1" "$PY" "$V/rv_sharp6.py" "$C/n6_dual_points/cert_turan_r4_$1_N6_all_sharp.json"
+    check "sharp6_$1" $? "all symmetric: True; all PSD (exact L D L^T, product checked): True" \
+      "flags: all sigma-flags, pairwise non-isomorphic: True" \
+      "labelled admissible 4-graphs on 6 vertices: $4; isomorphism classes: $3 (orbit sizes sum to the labelled count: True)" \
+      "exact min over all $3 classes: b = $2 = " "random relabelling of every class equals its value): True" \
+      "claimed $2; EQUAL: True" "SHARP N = 6 CERTIFICATE OK"
+  done
+  run sharp6_negative "$PY" -c '
+import json, subprocess, sys
+chk, src = sys.argv[1], json.load(open(sys.argv[2]))
+def variant(name, f):
+    d = json.loads(json.dumps(src))
+    f(d)
+    fn = "sharp6_negative_" + name + ".json"
+    json.dump(d, open(fn, "w"))
+    r = subprocess.run([sys.executable, chk, fn], capture_output=True, text=True)
+    rej = r.returncode == 1 and "SHARP N = 6 CERTIFICATE NOT OK" in r.stdout
+    print(name, "rejected:", rej)
+    return rej
+def b45(d):
+    return [b for b in d["blocks"] if b["s"] == 4][0]
+def claim(d):
+    d["bound"] = "1/3"
+def notpsd(d):
+    b45(d)["Qnum"][0][0] = "-1"
+def double(d):
+    b45(d)["den"] = str(int(b45(d)["den"]) // 2)
+ok = all([variant("claimed_bound_1_3", claim), variant("Q_not_psd", notpsd), variant("Q_doubled", double)])
+print("NEGATIVE CONTROLS REJECTED" if ok else "A NEGATIVE CONTROL WAS ACCEPTED")' \
+    "$V/rv_sharp6.py" "$C/n6_dual_points/cert_turan_r4_p5_N6_all_sharp.json"
+  check sharp6_negative $? "NEGATIVE CONTROLS REJECTED"
 fi
 
 # --- (g) optional: first implementation's checker on the sharp N = 6 certificates -----------------------------------

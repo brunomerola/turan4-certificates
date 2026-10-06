@@ -25,8 +25,9 @@ programs), so most scripts will not run out of the box. Python dependencies, bey
   column-generation solver following Jeong et al. (`lpcg7.py`), exact rounding and exact scans (`certify7.py`), a
   sampling checker (`verify7.py`), tests (`test_n7.py`) and a throughput profile (`profile7.py`).
 * `flagalg/h44/` -- the same machinery for "every p-set spans at least lambda edges" (`gen.py`, `enum_gen.py`,
-  `lpcg_gen.py`, `certify_gen.py`, `verify_gen.py`, `test_gen.py`), used for K5_4minus (p = 5, lambda = 2) and
-  K6_4minus (p = 6, lambda = 2); `plugin_check.py` evaluates a certificate on Sidorenko's construction.
+  `lpcg_gen.py`, `certify_gen.py`, `verify_gen.py`, `test_gen.py`), used for K5_4minus (p = 5, lambda = 2),
+  K6_4minus (p = 6, lambda = 2) and the ten cases of `../certificates/catalogue/` (the files here are those that ran
+  on the cloud machines for the catalogue); `plugin_check.py` evaluates a certificate on Sidorenko's construction.
 * `flagalg/n6control/` -- the six-vertex control: SDP, sharp rounding and the rational dual points
   (`n6_control.py`) and the producer's own exact check of the dual points (`dual_check.py`).
 * `flagalg/n7dual/` -- the search for the seven-vertex dual point of Theorem n7opt: re-solve of the restricted LP
@@ -35,6 +36,8 @@ programs), so most scripts will not run out of the box. Python dependencies, bey
   exact check (`verify_dual.py`, `crosscheck_engine.py`, `make_negative_tests.py`), and explorations
   (`analyse_support.py`, `lp_subset.py`, `near_tight.py`, `odd_classes.py`, `odd_filter.py`, `giraud_exact.py`).
   Floating-point steps here certify nothing; only the exact check of the final rational point matters, and it is
-  repeated independently by `../verifier/rv1_dual.py`.
+  repeated independently by `../verifier/rv1_dual.py`. The dual points of `../certificates/n7_dual_points/` were
+  found by a second version of this search (generalised to "every p-set spans at least lambda edges" and to a
+  given block list), which is not included; their exact check is `../verifier/rv2_dual.py`.
 
 All of this code is under the MIT license (`../LICENSE-CODE`).

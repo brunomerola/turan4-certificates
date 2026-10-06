@@ -4,9 +4,13 @@ verifier/CHANGES.txt -- every change made to the independent checkers when they 
 The checkers were written in separate review sessions and used there to re-check the certificates. When they were
 copied here, they were changed only where this was needed to run them from the package root, or to remove internal
 references (internal review labels, internal task numbers, file paths of the private working repository).
-No change touches the logic of a check, with one exception: the path change in rv1_claim3.py (item 2 below).
-This was verified mechanically: for every Python file the abstract syntax tree with docstrings removed is
-identical before and after (rv1_claim3.py excepted), and rv_eval.c is identical after removing /* */ comments.
+No change touches the logic of a check; the only code changes are paths of input files (rv1_claim3.py, item 2;
+rv2_dual.py, rv2_lift.py, rv2_decimals.py, item 5) and one printed label (rv2_dual.py, item 5).
+This was verified mechanically: for every other Python file the abstract syntax tree with docstrings removed is
+identical before and after, and rv_eval.c is identical after removing /* */ comments.
+Items 1 to 4 describe the first version of the package; items 5 to 7 the programs added in the second version
+(catalogue certificates, seven-vertex dual points of Table n7limits, independent check of the sharp N = 6
+certificates).
 
 1. Comment and docstring edits only (code identical)
 ----------------------------------------------------------------------------------------------------------------
@@ -57,8 +61,9 @@ rv1_claim3.py     cd720647461b7fdafe476f23bf118954942602a675f2244f5bc7f3d18d764f
 3. Arguments
 ----------------------------------------------------------------------------------------------------------------
 No script needed new arguments. verify_all.sh passes:
-* lambda = 2 to rv_reps.py as its second argument, and RV_LAM=2 in the environment of every other tool of part (a)
-  (rv_prep.py, rv_eval, rv_compare.py, rv_pycheck.py) for K5_4minus and K6_4minus; RV_LAM=1 otherwise;
+* lambda to rv_reps.py as its second argument, and RV_LAM=lambda in the environment of every other tool of parts
+  (a) and (h) (rv_prep.py, rv_eval, rv_compare.py, rv_pycheck.py): 1 for K5_4, K6_4, K7_4, 2 for K5_4minus and
+  K6_4minus, L for cat_pP_lamL;
 * OMP_NUM_THREADS (option --threads) to rv_eval;
 * the certificate prefixes certificates/DIR/PREFIX (rv_prep.py, rv_pycheck.py, rv1_*.py append .cert.json and
   .cert.npz themselves);
@@ -76,3 +81,68 @@ All generated files (representatives, blobs, logs, giraud/, claim3/) go to the w
   check of the dual point, a batch runner and comparison script that re-evaluated the 2,404 graphs of Giraud's law
   with the C evaluator (rv1_giraud.py evaluates them exactly in Python), and the extra cross-evaluators of the
   K_6^(4)- review.
+
+5. Second version: checkers copied from the independent review of the dual points of Table n7limits
+----------------------------------------------------------------------------------------------------------------
+The review re-verified the dual points with its own program rv2_dual.py, which builds on rv1_lib.py (the library of
+rv1_dual.py, unchanged; the package copy differs only in its docstring, item 1). rv1_dual.py itself cannot check these
+points: it is specific to t(5,4) (predicate "every 5-set has an edge", the claimed value of Theorem n7opt and its
+negative-control graph are fixed in it) and its only PSD test, elimination over the rationals, is too slow for the
+moment matrices of dimension up to 768. The review's programs were copied as follows.
+
+file              sha256 as reviewed                                                 sha256 in this package
+rv2_lib.py        7a87a7c9e0016067554ac0fdf334a7457ca50d4598bbc3d412b5c9f9f4b7d775   cd272ebf83bf7d3abf08384e585e61c57b8ef4207dd4bc4549fdfcf5dda8d627
+rv2_selftest.py   cd49fdb131e3ebb200b63c73bf44ed8a9ad520b6a8fdbd122a3371748b4679a0   451a42d44adfae48f1d61f823c8be76e8a7d644c3341208931cf5cbaa31e86ab
+rv2_dual.py       7466c03bc744e185e64362eb20397aeb9e6a86120bee4afa5aeb7eccd7034730   84ffb04af311abbd580dc764b3911c5c0562946eab388fae4a5be0ef6da93ee9
+rv2_lift.py       09c15f1b467b9b9bd587008b940c1e230aac2f54bf8d790bbf26cf5461dc3667   2bbae89536819961467be9eae07051b5129670b01eaf2e72be95d8c760e9ea62
+rv2_decimals.py   35c5631a1b9296d1221950d1208fbd9495eedccf0427851579051d76d5d31101   614667937df247ea5cbe4b4c3772a0b8326603d44c9ca7b921a23bf2790b672d
+
+The review used rv1_lib.py and rv1_lift.py with sha256 70b04a4b... and 22be1189..., the versions "as reviewed" in
+item 1; the package copies have the same abstract syntax tree without docstrings.
+
+Edits:
+* rv2_lib.py, rv2_selftest.py (first docstring line; code identical): the internal review labels were replaced by
+  "Independent checker", and "R7_PHASEA_1's own library, copied unchanged" by "the own library of rv1_dual.py, used
+  unchanged".
+* rv2_dual.py:
+  - code: the absolute paths of the private working repository were replaced by paths relative to the script,
+        PKG = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "certificates")
+        RES = os.path.join(PKG, "n7_dual_points")
+    (import os added), and the five certificate prefixes now point to the same files in the package (identical
+    sha256): CERT56 = PKG + "/K5_4/lpcg_p5_conv_full", and the targets p6_f3, p7_f1, h44_nt3, k6m_W use
+    PKG + "/K6_4/lpcg_p6_full", "/K7_4/lpcg_p7_full", "/K5_4minus/lpcg_h44e", "/K6_4minus/lpcg_k6m_f";
+  - code: the first printed line starts with "# rv2_dual" instead of the internal review label;
+  - docstrings: the internal labels, "of tools/flagalg/n7dual2", "from the review task", "of the producer report"
+    and "of the MAIN worktree" were replaced by package wording.
+  The claimed values (V, ceil12, floor12, b, widths) in TARGETS, all checks and the output format are unchanged.
+* rv2_lift.py, rv2_decimals.py: the same path change for the directory of the dual points (RES, import os added),
+  and the first docstring line (internal labels and the producer's report path removed).
+verify_all.sh passes each dual point explicitly (rv2_dual.py TAG certificates/n7_dual_points/dual_TAG.json), runs
+rv2_dual.py in the work directory after creating work/results/ (it writes results/TAG.rv2.{json,log} there), and
+runs rv2_lift.py with the review's arguments 40 20.
+
+6. Second version: a new independent checker, rv_sharp6.py
+----------------------------------------------------------------------------------------------------------------
+rv_sharp6.py     a3fdcf87b47353d47a4d20978b62228c8252e4496fe1d0e344fec45193ee4544
+Written for this package from the paper's definitions (Definition cert) to check the sharp six-vertex certificates
+of Remark n6sharp, which the first version could only check with the first implementation (verify_all.sh
+--producer-n6). It imports nothing from search/ or from the other checkers, and its author did not read the first
+implementation's checker. It has its own colex decoding (by sorting), edge order, flag identification (least sorted
+edge list over the orderings of the non-roots), isomorphism classes (orbits over all 720 permutations), exact
+LDL^T test with the product multiplied back, and evaluation from the definition; see its docstring. Negative
+controls (a changed bound, a non-PSD Q, a doubled Q) are rejected (step sharp6_negative).
+
+7. Second version: verify_all.sh and the reused checkers
+----------------------------------------------------------------------------------------------------------------
+* The ten catalogue certificates are checked with rv_reps.py, rv_prep.py, rv_eval.c, rv_compare.py and
+  rv_pycheck.py unchanged: these programs already take p and lambda (argument of rv_reps.py, RV_LAM for the others),
+  and the independent review of the catalogue ran exactly the versions "as reviewed" in item 1.
+* verify_all.sh: the fifteen 4-graph certificates are named K5_4, ..., K6_4minus, cat_p5_lam3, ..., cat_p7_lam4;
+  --raw also accepts main, catalogue and all (now all fifteen); the npz check searches certificates/ recursively and
+  requires 15 certificates; new steps cat_decimals (part h), dual2_* (part i), sharp6_* (part j). Where the review
+  of a catalogue case did not record the raw-scan checksum (SUMS), the raw step checks TOTAL and NMIN/DEN only.
+* Not copied from the review of the dual points: rv2_bareiss.py (a float-free Bareiss cross-check of two (5,6)
+  matrices of t(7,4), about 36 min), rv2_summary.py (report helper), its run scripts, and the producer's
+  negative-control inputs (rounded LP points and points with an inadmissible graph, all rejected by rv2_dual.py in
+  the review). rv2_dual.py's built-in controls (the residual test on perturbed matrices; the (5,6) block of the
+  no-(5,6) points) run in every check.
