@@ -1,0 +1,125 @@
+verifier/EXPECTED.txt -- expected outputs of verify_all.sh
+==================================================================================================================
+
+verify_all.sh prints one line per step, "PASS  STEP  (SECONDS s)" or "FAIL  STEP ...", and ends with
+"ALL CHECKS PASSED" (exit status 0). A step passes when its program exits with status 0 and its log
+(work/logs/STEP.log) contains the strings below (fixed-string match; lines starting with "!" must NOT occur).
+The exact values are those of the paper. Times: measured on one core of an AMD Ryzen 7 5800H (--threads 1),
+except where marked; they will differ on other machines. Peak memory of every step is below 300 MB.
+
+0. Integrity and build                                                                     a few seconds
+------------------------------------------------------------------------------------------------------------------
+integrity     sha256sum -c SHA256SUMS: every file OK ("!FAILED")
+npz_hashes    "ALL NPZ HASHES MATCH" (each .npz equals the cert_npz_sha256 field of its .json)
+build         gcc -O3 -march=native -fopenmp -Wall -o work/rv_eval verifier/rv_eval.c, exit status 0
+
+(a) The five 4-graph certificates (Theorem main)
+------------------------------------------------------------------------------------------------------------------
+Per certificate, fast part (--fast):
+  reps_NAME          rv_reps.py P LAMBDA: own 6-vertex representatives, labelled counts, Burnside class counts
+  counts_NAME        "COUNTS OK": [6-vertex reps, classes on 7 vertices, labelled admissible 7-vertex graphs,
+                     admissible raw extensions] equal the values below
+  prep_NAME          rv_prep.py (RV_LAM=LAMBDA): evaluation tables; asserts root part of every flag = sigma
+  lists_NAME         "LISTS OK": every flag list complete, pairwise non-isomorphic, all admissible
+  pycheck_cert_NAME  "ARGMIN FRACTION ..." and "== cert bound: True": pure-Python value at the certificate's minimiser
+Raw part (--raw NAME):
+  raw_NAME           rv_eval raw: "TOTAL admissible=NRAW ", "NMIN NUM DEN DEN ", "SUMS sumZ SUMZ sume SUME"
+  compare_raw_NAME   rv_compare.py --raw: "rv bound FRACTION = ", "EQUAL: True",
+                     "same set: True; maxZ equal on all: True" (all group maxima equal the certificate's table)
+  pycheck_raw_NAME   pure-Python value at the raw scan's minimiser = FRACTION. The minimiser printed by rv_eval is one
+                     of several tied labelled graphs and may depend on the number of threads; its value may not.
+
+name        p lam  reps  classes     labelled         raw ext.     exact bound b                      groups
+K5_4        5  1   122   3,908,438   19,199,206,747    86,952,880  35604499940047/115448720916480     303
+K6_4        6  1   155   7,011,184   34,352,419,335   162,481,445  614350111275/4398046511104         372
+K7_4        7  1   156   7,013,319   34,359,738,367   163,577,855  7476698908057/115448720916480      377
+K5_4minus   5  2    62     360,127    1,741,143,596    10,058,620  2430536617277/4398046511104        170
+K6_4minus   6  2   154   6,986,573   34,244,802,014   160,859,017  964431985683/4398046511104         361
+
+name        certificate argmin   raw scan: NMIN / DEN = b                           SUMS sumZ / sume
+K5_4        27303369217          1709015997122256 / 5541538603991040                3261680919295407098048 / 1670012489
+K6_4        34359738367          3096324560826000 / 22166154415964160               145576489784956352362440 / 2851672393
+K7_4        33940849153          358881547586736 / 5541538603991040                 97827306173207768161920 / 2862612480
+K5_4minus   34359738367          12249904551076080 / 22166154415964160              5935335888043916906616 / 230039592
+K6_4minus   31837153552          4860737207842320 / 22166154415964160               537778008513653740860644 / 2833905684
+
+(DEN = 5040 M^2 with M = 2^20 for K5_4 and K7_4, 2^21 otherwise; rejected links: 40,973,392 / 47,835 / 1 /
+54,953,092 / 621,687.)
+Decimals: b(K5_4) = 0.308400990997593..., b(K6_4) = 0.139687042809555..., b(K7_4) = 0.064762076605993...,
+b(K5_4minus) = 0.552640043969631..., b(K6_4minus) = 0.219286445299758...
+
+Times of the fast part, per certificate (reps + prep + pycheck): K5_4 185 s, K6_4 192 s, K7_4 73 s,
+K5_4minus 189 s, K6_4minus 258 s (15 min in all).
+Times of the raw scans: K5_4minus 28 min on one core whose SMT sibling was busy (4.7 min on 2 threads in the
+independent review); pycheck_raw 80 s. The other four scans were run by the independent reviews, not in the test
+of this package: on 2 threads about 77 min (K5_4), 76 min (K6_4), 87 min (K7_4) and 75 min to 3.5 h
+(K6_4minus; 3 h 29 min on 2 contended threads), and about 5 min each on 28 threads (K6_4minus: 291 s).
+
+(b) The three 5-graph certificates (Theorem five), rv_r5.py                 5 min (136 s, 25 s, 147 s)
+------------------------------------------------------------------------------------------------------------------
+r5_k65   "exact min over all 888 classes: 5410603883828909241569858123831800227/23261489926236027775816623554906030080 = "
+r5_h45   "exact min over all 150 classes: 28392597905796184739036021237749789573/46522979852472055551633247109812060160 = "
+r5_k75   "exact min over all 1043 classes: 1006048490611906127582298374928111023/13956893955741616665489974132943618048 = "
+         and in each: "EQUAL: True; PSD: True".
+Labelled admissible 5-graphs on 7 vertices: 1,887,284 / 236,926 / 2,097,151.
+1 - b: 0.767400802743661..., 0.389708097034..., 0.927917451131... (the paper's ceilings 0.767400802744,
+0.389708097035, 0.927917451132).
+
+(c) The N = 6 dual points (Theorem n6), rv_dual6.py                                           1 s
+------------------------------------------------------------------------------------------------------------------
+dual6_p5      "V = sum y d = 1/4; claimed 1/4; equal True"      support 3 graphs
+dual6_p6      "V = sum y d = 1/10; claimed 1/10; equal True"    support 4 graphs
+dual6_p7      "V = sum y d = 0; claimed 0; equal True"          support 1 graph (the empty graph)
+dual6_p5_l2   "V = sum y d = 1/2; claimed 1/2; equal True"      support 4 graphs
+and in each: "10 moment matrices; ALL PSD: True" (pairs (0,1), (0,2), (0,3), (1,2), (1,3), (2,3), (2,4), (3,4),
+(4,5) with two types for (4,5)).
+
+(d) The N = 7 dual point (Theorem n7opt)                                   2 min (dual7 48 s, lift 52 s)
+------------------------------------------------------------------------------------------------------------------
+selftest   rv1_selftest.py: flag counts per labelled type (1,4) 2, (2,4) 2, (3,4) 2, (3,5) 23, (4,5) 15/16,
+           (5,6) 0/809/854/904/960/1024 by number of type edges, all "True"; "K_7 sanity OK"; no "False"
+dual7      rv1_dual.py:
+             "sum num == den: True all num > 0: True"                         (131 graphs, den = 2^110)
+             "pairwise non-isomorphic (canonical forms over all 5040 permutations): True"
+             "admissible (every 5-set has an edge): True  odd (every 5-set spans 1,3,5 edges): True"
+             "V == JSON value: True  V == 1336237682928914994292138923/(7*2^89): True"
+             "ALL moment matrices PSD (all labelled types, all six blocks): True"
+             "negative control all PSD: False (expected False)"               (36 failing (block, type) pairs)
+             "b_cert <= sum y (d - c) <= V : True"
+             "claimed 0.308401201195 >= V: True  claimed 0.691598798805 <= 1-V: True"
+           V = 0.308401201194636795853874017669...; live (5,6) dimensions 64 / 58 / 64 for types with 1 / 3 / 5
+           edges; smallest normalised eigenvalue about 1.4e-11 (floating point, information only).
+lift       rv1_lift.py, 30 random graphs: "identities checked 17045; all equal: True"
+
+(e) Giraud's construction against the t(5,4) certificate; parity (Section "Remarks on the seven-vertex optimum")
+    4.5 min (giraud 145 s, odd_scan 119 s)
+------------------------------------------------------------------------------------------------------------------
+giraud     rv1_giraud.py: "total probability == 1: True ; distinct labelled graphs: 2404",
+           "all odd: True ; all admissible: True", "E[d] = 5/16 == 5/16: True", "isomorphism classes: 10 ",
+           "claimed 1091855/15393162788864: True"      (min (d - c) - b)
+           "claimed 52186103/115448720916480: True"    (max (d - c) - b)
+           "claimed 173614396936021/2^49: True"        (E[d - c])
+           "claimed 2307463508139/2^49: True"          (E[c])
+           "all support graphs >= b: True", "Giraud law: all moment matrices PSD: True"
+claim3_AB  rv1_claim3.py AB: the certificate's argmin has "even 5-sets: 14 " and
+           "own evaluator: d - c = 35604499940047/115448720916480  == b: True"; all 2^20 odd graphs generated,
+           "isomorphism classes by Burnside: 423"
+odd_scan   rv_eval list over the 2^20 odd graphs: "TOTAL admissible=1048576 rejected=0 "
+claim3_C   "claimed 376193/28862180229120: True" (minimum over odd graphs = b + 376193/28862180229120) and
+           "own == C numerator: True"
+
+(f) r = 3 comparison on five vertices, indep_k43_n5.py                                        2 s
+------------------------------------------------------------------------------------------------------------------
+k43_n5     "labelled admissible graphs 768", "exact b > Chung-Lu: True".
+           With clarabel 0.11.1 / scipy 1.17.1 / numpy 2.4.4 the script prints
+             exact b = 60084175574225/140737488355328 = 0.4269237448840002 argmin edges 10
+           (the value quoted in the paper, 60084175574225/2^47 > 0.4269237). The exact b is computed from a
+           floating-point SDP solution, so another solver version can give a slightly different fraction; the driver
+           then prints an INFO line, and the step still passes if b beats Chung and Lu's 0.406407865.
+
+(g) Optional (--producer-n6): first implementation's checker on the sharp N = 6 certificates      15 s
+------------------------------------------------------------------------------------------------------------------
+producer_sharp6_p5, _p6, _p5_l2   search/flagalg/verify_cert.py: "equal: True; verified >= claim: True" with
+                                  bounds 1/4, 1/10, 1/2. Not an independent check.
+
+Total of --fast: 26 min on one core (43 steps).

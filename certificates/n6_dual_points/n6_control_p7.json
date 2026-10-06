@@ -1,0 +1,102 @@
+{
+ "p": 7,
+ "N": 6,
+ "r": 4,
+ "n_admissible": 156,
+ "target_deCaen": "1/20",
+ "blocks": [
+  [
+   0,
+   1,
+   1
+  ],
+  [
+   0,
+   2,
+   1
+  ],
+  [
+   0,
+   3,
+   1
+  ],
+  [
+   1,
+   2,
+   1
+  ],
+  [
+   1,
+   3,
+   1
+  ],
+  [
+   2,
+   3,
+   1
+  ],
+  [
+   2,
+   4,
+   2
+  ],
+  [
+   3,
+   4,
+   2
+  ],
+  [
+   4,
+   5,
+   16
+  ],
+  [
+   4,
+   5,
+   16
+  ]
+ ],
+ "min_H_density_noSOS": "0",
+ "sdp": {
+  "status": "Solved",
+  "b": 1.8017669963088343e-13,
+  "obj_dual": -2.68114451271605e-12,
+  "iterations": 10,
+  "r_prim": 7.484479111824274e-14,
+  "r_dual": 2.3282052702154718e-12
+ },
+ "eig_b_exact_float": -6.055589394206243e-16,
+ "sharp": {
+  "success": false,
+  "b_exact": "None",
+  "psd_ok": null,
+  "reason": "sharp equalities inconsistent"
+ },
+ "dual": {
+  "success": true,
+  "value": "0",
+  "value_float": 0.0,
+  "equals_target": false,
+  "maxden": 64,
+  "moment_ranks": [
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   0
+  ],
+  "support": [
+   {
+    "y": "1",
+    "edges": 0,
+    "graph_edges": []
+   }
+  ]
+ },
+ "time_s": 0.21524333953857422
+}

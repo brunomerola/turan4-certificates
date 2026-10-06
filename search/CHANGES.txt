@@ -1,0 +1,25 @@
+search/CHANGES.txt -- changes made to the producer code when it was copied into this package
+==================================================================================================================
+
+The files of flagalg/ are copies of the producer code as it was run. Four files were edited to remove internal
+references; all other files are byte-identical to the originals. Only paths.py changes code (a default path).
+For the other three, the abstract syntax tree with docstrings removed is identical before and after.
+
+file                        sha256 of the original                                             sha256 in this package
+flagalg/h44/gen.py          96c8f2c1835fc8cf6cf15fbcd276a563e4f159bf0bf15669e9965f73ebf2096d   3a2fe0bec24cbb9dea088b8828313270460d762a587b91093504a2f0fb00c362
+flagalg/n6control/n6_control.py
+                            683c1dc0059175fc6fe466d8fe09c6bcee4199f8dd527206d9b436ab970caf3d   20310301caf9374790dcec0c2292a8328f93c76e4b11e89d2b81dc872dc2ebe4
+flagalg/n7dual/lp_resolve.py
+                            717ed9e9f1418526e111ebea0aba5cbe2d10fbd28fbcd29fd5e16eb636332d05   05874946f9870068739ffb7538e0a828b5ba7e92b1901b4102681473924e14b2
+flagalg/n7dual/paths.py     d4af20406995edcb6f2be1dc2a406bacaf8180691736814bc7713c1b9a8ec430   54d21adafa5dd93ac122bb3f8c2775daf012d1b71927051705e16319e1766499
+
+* h44/gen.py, n6control/n6_control.py (docstring): an internal task number was removed.
+* n7dual/lp_resolve.py, n7dual/paths.py (docstring): an internal item number was replaced by a description
+  ("the N = 7 dual-point search").
+* n7dual/paths.py (code): the default location of the large input files (class list, saved LP state) was an
+  absolute path in the private working repository; it is now the sibling directory flagalg/n7 (environment
+  variable N7DUAL_MAIN_N7 still overrides it), and the comment above it was reworded. These input files are not
+  included in the package.
+
+Not copied: the producer's results, logs, data files and reports (only the final certificates are in
+../certificates/), compiled caches (__pycache__, numba caches) and shell launchers.

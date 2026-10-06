@@ -1,0 +1,78 @@
+verifier/CHANGES.txt -- every change made to the independent checkers when they were copied into this package
+==================================================================================================================
+
+The checkers were written in separate review sessions and used there to re-check the certificates. When they were
+copied here, they were changed only where this was needed to run them from the package root, or to remove internal
+references (internal review labels, internal task numbers, file paths of the private working repository).
+No change touches the logic of a check, with one exception: the path change in rv1_claim3.py (item 2 below).
+This was verified mechanically: for every Python file the abstract syntax tree with docstrings removed is
+identical before and after (rv1_claim3.py excepted), and rv_eval.c is identical after removing /* */ comments.
+
+1. Comment and docstring edits only (code identical)
+----------------------------------------------------------------------------------------------------------------
+file              sha256 as reviewed                                                 sha256 in this package
+rv_reps.py        4b81e5436830f353bc6c4868b3a5c9bc6f9973d2a9fa87dc3dd0d27bb1e6db97   614a95990a2b957711c135f43f5c63e2563e5709bf698f0ac8344ebd54c34739
+rv_prep.py        994477250fd3c2049c6d62507406c9f761ba3697b18be99df421d9a0d92d19d1   e743998ef580bbbd0192e4ab78332f7d0372b62c78e5119b11161fbefc8f8167
+rv_eval.c         40750a7002c7d7e4dc8a8ae914a694fdb1b0efb3404f6d09f1072e301310c5af   246b92d9d9e56c2f15a15c75a5d981f8ec32016c460cf5a663a77b2301f1cc32
+rv_compare.py     1aa6b5b1267cdc98622e4f806da73895e3f35848f7cc7f8327c44a4feff6020e   bcc411c649dd7b520eb77f0e7111a817b5106003853fa5ef0af6c7dbb12414b1
+rv_pycheck.py     3ad29b8a6d9481d5130fc6e6b59693f6c308e9bad54dd3ca21a72eb7f1fd62f7   b1d2e1997d2b320f4c077478e825767a9318c408e47c6e9ec7db35a152d5bf90
+rv_dual6.py       bd16565e94e1a1a3f5532d0952c8868af53f47220d6894a100c77e73c646677e   270fdfe37d825cdf8acc8343a75fa4f3b1218a01d52d8b07f31003ce40e2af98
+rv_r5.py          1bf601d50b42e58a9b99b399f93b509ca218863e55fccc554941933b85a03c54   5a08ab5508b8ddc46b63cf412862b64fd9d6079a243973a790003c1782dc2981
+rv1_lib.py        70b04a4b4d980676c6aa19b490e9eab17e0f1d160087a21c8df469570efb2729   e92987c8f8d9ab5467c6e28d3ad8d67263b23900316fd8cf6432d550a420d707
+rv1_selftest.py   2f51644492cc5b625df020ad5930722a31a08e4539b7c4fef201ac3cb16b5df2   2ee60190f5e6e88c2e30e0903f63b1c541f157b618aab19a07944b071151cf9b
+rv1_dual.py       81045e36caf82fb44fce85bd0a3e240812b803e4d9a6cb19ca6b9bd05ddaa055   4620c1400af8cab7e1837fa6cddab1a34834aee5e3e01ba6428e549a28e00db4
+rv1_lift.py       22be11898771b34bdbb5048396bcb449c1021bb0af02c7c4953ba768e9c35795   c82da6a53e1a65da37e23d94c375f2d51b1ffe3869a0e7be8c6695493161fd78
+rv1_giraud.py     e5e548402af1dc5011c9dc03e150164bc756039d76c284c9012f301258789547   9a0b41c698bfc55cff04784142d277d6191f99acd85e270fb0a74cdbc80b63b6
+indep_k43_n5.py   7a1522d66ed8ad14c33aa5f81e319055a2c54c81b019a81d4ab2282b590bf28d   771890612bbd57d43197be99c671b54c658a1ae75b656a991ad87c30abe19ef3
+
+Edits:
+* rv_reps.py, rv_compare.py, rv_pycheck.py (first docstring line), rv_prep.py (first docstring line), rv_eval.c
+  (first comment line), rv_dual6.py, rv_r5.py (first docstring line): the internal review label at the start was
+  replaced by "Independent checker:" (rv_eval.c: "Independent evaluator"). In rv_dual6.py and rv_r5.py an internal
+  item number was removed as well, and in rv_r5.py the producer's path of the 5-graph certificates was replaced by
+  the package path certificates/fivegraphs/cert_*_N7_all.json.
+* rv_prep.py, the comment on the line LAM = ...: an internal review label in parentheses was removed.
+* rv1_lib.py, rv1_selftest.py, rv1_dual.py, rv1_lift.py, rv1_giraud.py (first docstring line): the internal review
+  label was replaced by "Independent checker". rv1_lib.py: the reference to a section of the manuscript source file
+  became "the definitions in the paper". rv1_dual.py: "(the dual point of Theorem n7opt)" was added after "CLAIM 1".
+  rv1_giraud.py: an internal label in front of "C evaluator rv_eval" became "(rv_eval.c, list mode)".
+  The words "CLAIM 1", "CLAIM 2", "CLAIM 3" (the claims of the review: the N = 7 dual point, Giraud's construction
+  against the t(5,4) certificate, the certificate does not force parity) are kept, also in the printed output.
+* indep_k43_n5.py (docstring): the name of the writing session was removed, the producer's results path was
+  replaced by "validation table of the producer code, not included", and the internal name of the paper in the
+  reference to its Proposition prop:fa became "the paper".
+
+2. Path adaptation (one code change)
+----------------------------------------------------------------------------------------------------------------
+rv1_claim3.py     cd720647461b7fdafe476f23bf118954942602a675f2244f5bc7f3d18d764f38   19509b7a6fb0a168c56732b88f35b1283b984299d57193e0e1ab7bc6fe4070ce
+* In part AB, the dual point was read from a path relative to the review directory of the private repository. It is
+  now read from certificates/n7_dual_point/dual_Wodd_best.json, located relative to the script itself:
+      os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "certificates", "n7_dual_point",
+                   "dual_Wodd_best.json")
+  The file is the same (sha256 6500e2332b2923a3ba8b278eb0bcbf530f027dacc8c197d448bf2b90a3244d07, as reviewed).
+* Docstring: the internal review label was replaced by "Independent checker".
+* Unchanged: part AB still reads giraud/giraud_values.json relative to the current directory. That file is written
+  by rv1_giraud.py (OUTDIR giraud), and verify_all.sh runs both scripts in the same work directory, in this order.
+
+3. Arguments
+----------------------------------------------------------------------------------------------------------------
+No script needed new arguments. verify_all.sh passes:
+* lambda = 2 to rv_reps.py as its second argument, and RV_LAM=2 in the environment of every other tool of part (a)
+  (rv_prep.py, rv_eval, rv_compare.py, rv_pycheck.py) for K5_4minus and K6_4minus; RV_LAM=1 otherwise;
+* OMP_NUM_THREADS (option --threads) to rv_eval;
+* the certificate prefixes certificates/DIR/PREFIX (rv_prep.py, rv_pycheck.py, rv1_*.py append .cert.json and
+  .cert.npz themselves);
+* 30 random graphs to rv1_lift.py, as in the review.
+All generated files (representatives, blobs, logs, giraud/, claim3/) go to the work directory (default work/).
+
+4. Not copied
+----------------------------------------------------------------------------------------------------------------
+* The review's compiled binaries and generated tables (rv_eval binaries, reps_*.bin, blob_*.bin): verify_all.sh
+  rebuilds them from rv_eval.c, rv_reps.py and rv_prep.py.
+* A sampling plug-in on a Giraud-type construction (100,000 random 7-subsets; a sanity check of signs, mentioned in
+  the paper's Section "Independent verification"), and the review's list scans of the producer's class lists: the
+  class lists (137 MB) are not part of this package.
+* Helper scripts of the reviews that are not needed for any statement of the paper: a mass-concentration side
+  check of the dual point, a batch runner and comparison script that re-evaluated the 2,404 graphs of Giraud's law
+  with the C evaluator (rv1_giraud.py evaluates them exactly in Python), and the extra cross-evaluators of the
+  K_6^(4)- review.
