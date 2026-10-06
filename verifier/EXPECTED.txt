@@ -5,17 +5,19 @@ verify_all.sh prints one line per step, "PASS  STEP  (SECONDS s)" or "FAIL  STEP
 "ALL CHECKS PASSED" (exit status 0). A step passes when its program exits with status 0 and its log
 (work/logs/STEP.log) contains the strings below (fixed-string match; lines starting with "!" must NOT occur).
 The exact values are those of the paper. Times: measured on one core of an AMD Ryzen 7 5800H (--threads 1),
-except where marked (the times of parts (h), (i), (j) and the total come from the test of the second version, with
---threads 2 on the same machine); they will differ on other machines. Peak memory of every step is below 500 MB (the
-largest are the rv2_dual.py steps of part (i), up to about 460 MB). Parts (h), (i) and (j) were added in the second
-version of the package; their expected values come from the independent reviews of the catalogue and of the dual
-points (and, for (j), from the definitions), never from the producer's outputs.
+except where marked (the times of parts (h) to (l) and the total come from the tests of the second and third
+versions, with --threads 2 on the same machine); they will differ on other machines. Peak memory of every step is
+below 600 MB (the largest are stab_cf, about 585 MB, sigma_prep, about 475 MB, and the rv2_dual.py steps of part (i),
+up to about 460 MB). Parts (h), (i) and (j) were added in the second version of the package, parts (k) and (l) in
+the third; their expected values come from the independent reviews of the catalogue, of the dual points, of the
+sigma certificate and of the stability results (and, for (j), from the definitions), never from the producer's
+outputs.
 
 0. Integrity and build                                                                     a few seconds
 ------------------------------------------------------------------------------------------------------------------
 integrity     sha256sum -c SHA256SUMS: every file OK ("!FAILED")
-npz_hashes    "15 certificate files", "ALL NPZ HASHES MATCH" (each .npz equals the cert_npz_sha256 field of its
-              .json; certificates/ is searched recursively: the five of (a) and the ten of (h))
+npz_hashes    "16 certificate files", "ALL NPZ HASHES MATCH" (each .npz equals the cert_npz_sha256 field of its
+              .json; certificates/ is searched recursively: the five of (a), the ten of (h) and the sigma key list)
 build         gcc -O3 -march=native -fopenmp -Wall -o work/rv_eval verifier/rv_eval.c, exit status 0
 
 (a) The five 4-graph certificates (Theorem main)
@@ -265,6 +267,102 @@ sharp6_negative  "NEGATIVE CONTROLS REJECTED": rv_sharp6.py exits with status 1 
              copies of the t(5,4) certificate (bound 1/3, a (4,5) matrix made non-PSD, a (4,5) matrix doubled)
 Times (this package's test): 6 s, 6 s, 3 s; negative control 15 s.
 
-Total of --fast: 58 min wall clock in the test of the second version (107 steps; 110 with --raw cat_p6_lam11),
-run with --threads 2 on two cores of the same laptop while other jobs were running. In the first version parts (a)
+(k) sigma(K_5^(4)) = 31/64 (Theorem sigma), the sharp certificate in certificates/sigma_K5_4/   about 5 min
+------------------------------------------------------------------------------------------------------------------
+Expected values from the independent review of the certificate (its logs), and from the definitions.
+sigma_keys       "SIGMA KEY LIST OK": the shipped key list (11 keys, 2, 2, 2, 23, 15, 16, 809, 854, 904, 960, 1024
+                 flags) equals the key list of certificates/K5_4/lpcg_p5_conv_full.cert.json; kb = 36, q, D =
+                 57 * 2^152 as in the .npz; the .npz sha256; the widths of the W_k equal the flag counts
+sigma_reduction  rs_reduction.py: "(a) co2 / s_n / f identities on 52 random graphs: True", "(b) E_S f(H[S]) ==
+                 f_n(H) exactly on 9 graphs (n = 8, 9, 10): True", "(c) K5-free(G) <=> admissible(H): True",
+                 "(d) Giraud exact limit: s(G) = 31/64  d(G) = 11/16", "ALL OK"
+sigma_giraud7    rs_giraud7.py: Giraud's exact 7-vertex law: "labelled_graphs_in_support": 2404,
+                 "outside_the_ten_orbits": 0, "E_phi_f": "33/64", "PASS": true (class probabilities 105/2048, 35/4096,
+                 105/1024, 315/1024, 105/512, 105/1024, 315/4096, 7/64, 21/1024, 1/64; kappa values 2/5, 29/35, 11/21,
+                 33/70, 19/42, 43/70, 19/35, 4/7, 2/3, 1 for the ten classes in the order of the README)
+sigma_build      gcc $CFLAGS -DNLC=4 -DTWOPHASE -o work/sigma/rs_eval4 and -DNLC=4 -DSYM -o work/sigma/rs_eval4s
+sigma_reps       rs_reps.py: "admissible_6vertex_labelled": 27449, "reps6": 122, "raw_admissible_extensions":
+                 86952880, "labelled_admissible_7vertex": 19199206747 (= part (a), K5_4)
+sigma_prep       rs_prep.py (all assertions hold, exit status 0): keys 6, 8, 10 with W rows 272, 160, 106, B rows 20,
+                 5, 1, max |B| 16, 2, 1, X dimensions 20, 5, 1 and "X_psd_exact": true; for every key the flags are
+                 distinct classes, all admissible, complete ("missing": 0, "extra": 0); the line
+                 "D 325412473936958852881289201034484891095266230272 limbs 4 G_max_bits 163 unused [] sym" and the
+                 type automorphism group sizes {0: 1, 1: 2, 2: 6, 3: 6, 4: 24, 5: 24, 6: 24, 7: 12, 8: 12, 9: 24,
+                 10: 120}. Writes work/sigma/local/blob_sharp.bin and blob_sharp_sym.bin (134 MB each).
+sigma_pycheck    rs_pycheck.py, pure Python, at 26 graphs (colex masks; the review's set): for Giraud's ten classes
+                 "PY MASK slack 33/64 slack-b 0 S 0", and for the margin graph
+                 "PY 26887858440 slack 3238686555099275773335067/6280747422216628134215680 slack-b
+                  176165518826891630107/6280747422216628134215680 S 46001745554897451729515273061756040526495219712"
+                 (one line), i.e. slack - 33/64 = mu_0 there. The other 15 values (five low classes, ten random or
+                 relabelled graphs) are compared with the C evaluator below.
+sigma_each_masks "26 masks written"
+sigma_each       rs_eval4 each: "EACH colex 2290237506 F 168 S 0 0 0 0", "EACH colex 34359738367 F 420 S 0 0 0 0",
+                 no "inadmissible"
+sigma_each_cmp   rs_cmp_py.py: "26/26 identical" (C and Python give the same exact S at all 26 graphs)
+Raw part (--raw sigma):
+sigma_raw        rs_eval4s raw over the 124,928 tasks (122 representatives x 1024 high link patterns, all 2^20 links
+                 each), split into --threads processes: "RANGE 0 ", "RANGE LO 124928"
+sigma_raw_analyze  rs_analyze.py over the parts: "admissible": 86952880, "rejected": 40973392, "zero": 105,
+                 "negative": 0, "min_slack": "33/64", "min_slack_equals_b": true, "next_slack_minus_b":
+                 "176165518826891630107/6280747422216628134215680" (= mu_0), "groups": 113 (values of F = 24e - P),
+                 "producer_groups_same_F": true, "producer_groups_same_maxZ": true, "tight_graphs": 105,
+                 "tight_distinct_labelled": 105, "tight_all_giraud": true, "tight_classes_hit": 10.
+                 ("producer_groups_same_counts" is false for a raw scan: it counts labelled extensions, the
+                 producer's table counts classes.) The tight extensions by class: 2290237506: 2, 17418883036: 3,
+                 19736566032: 7, 26383237633: 46, 26894418433: 17, 29337331976: 14, 31813832752: 11,
+                 31837153552: 2, 34326183967: 2, 34359738367: 1.
+Times (test of the third version, --threads 2, shared machine): sigma_reduction 5 s, sigma_giraud7 16 s,
+sigma_build 3 s, sigma_reps 11 s, sigma_prep 54 s (peak 475 MB), sigma_pycheck 173 s, the rest 1 s; --raw sigma:
+sigma_raw 620 s wall on two processes (575 s + 620 s CPU; the review: 923 s CPU on one process),
+sigma_raw_analyze 3 s.
+
+(l) Stability for sigma(K_5^(4)): the computer facts of the stability section             about 6 min
+------------------------------------------------------------------------------------------------------------------
+Expected values from the independent review of the stability results (its logs), run in work/stab/.
+stab_cf          r_cf.py: (G7) "labelled_normalised": 2404 = "labelled_all_matrices": 2404 (normalised matrices and
+                 all 0/1 matrices give the same systems and partitions), "classes": 10, "orbit_sizes": [1, 7, 21, 30,
+                 35, 105, 210, 315, 420, 1260], all odd, the ten tight masks of the sigma certificate are Giraud systems
+                 and lie in the ten orbits bijectively, "multi_partition": {"7": 30}: one class (orbit size 30) has
+                 seven partitions, all (3,4), "five_counts_hist": [0, 21, 0, 0, 0, 0] and
+                 "complements_of_edges_form_Fano_plane": true (it contains the tight mask 2290237506);
+                 (G8) 32981 = 32981, "classes": 22, one class with seven (4,4) partitions, rep 42667670269382951568,
+                 "five_counts_hist": [0, 56, 0, 0, 0, 0], "steiner_quadruple_system_S(3,4,8)": true; nine vertices:
+                 604426 labelled systems, 33 classes, "multi_partition": {} (unique partitions); self-tests
+                 "'f5_equals_definition': True, 'giraud_tests_agree': True". Writes local/G7.txt, G8.txt, G9.txt.
+stab_lg8         r_lg.py 8 (C8), over all 2,404 labelled bases: "survivors_total": 32981, "G_n_size": 32981,
+                 "survivors_equal_giraud_extensions_for_every_R": true, "non_giraud_survivors": [], "C8_PASS": true
+stab_lg9         r_lg.py 9 (C9), over all 32,981 labelled bases: "survivors_total": 604426, ..., "C9_PASS": true
+stab_lg10        r_lg.py 10 (C10 on the 33 class representatives of the nine-vertex systems): "locally_giraud_total":
+                 1151, "C10_PASS": true (every survivor passes both Giraud tests and equals the constructed Giraud
+                 extensions)
+stab_margin      r_thm1.py (Proposition margin and the constants of Theorem stab), exact: lambda_k = max_i (Q_k)_ii
+                 for the keys 0 to 10: 1354230560069659129/4722366482869645213696, 0, 0,
+                 6614817002453309619559/4722366482869645213696, 1930498463925983500877/4722366482869645213696,
+                 1262520681467868487601/2361183241434822606848, 13141619641562093306051/1180591620717411303424,
+                 55057280191985960149631/4722366482869645213696, 48513285016664528863283/2361183241434822606848,
+                 6429978663646678105565/590295810358705651712, 16464561510059415945793/2361183241434822606848
+                 (block sums 61.2022134, 0.9434973, 1.4007420, 0.0002868 for (5,6), (4,5), (3,5), (1,4); the paper
+                 rounds them up); the p/(1-p) formulas, c(n) <= 68/(n-7) exactly for 10 <= n <= 20000 (constant
+                 67.7521198), "mu": "176165518826891630107/6280747422216628134215680", 1/mu <= 35653, K = 21894/mu
+                 <= 7.81e8, "rho_factor": "221/320", 120*126/rho <= 21894, mu/1200 and 1200/mu as used, "frames_min_
+                 over_a": 1200; all diagonals nonnegative
+stab_formF       r_formF.py (Lemmas formF and rep on m = 3..7 points): for m = 5, 6, 7: 197, 2404, 32981 links, all
+                 generated form-F 3-graphs equal the links, Lemma 1(i) and Lemma 2 hold, 15, 30, 30 3-graphs with
+                 several representations; no "False"
+stab_cor         r_cor.py (the corollary numerics): "{'instances': 174, 'formula_equals_bruteforce': True}",
+                 "'expansion_identities_ok': True", the n = 32 Hadamard example with "delta_Lambda_removal": "-28/5",
+                 frame counts "'all_equal': True, 'min_nonzero_over_a': 1200, '(10)_6': 151200", the Claim R1 sanity
+                 test "'violations': 0", "'2d-d^2_at_5/16': '135/256'"; no characterisation or flip bound false
+Long part (--raw stab_c10):
+stab_c10_full    r_lg10_full.py (C10 over all 604,426 labelled bases): "R_by_part_sizes": {"1,8": 9, "2,7": 2304,
+                 "3,6": 86016, "4,5": 516096, "0,9": 1}, "survivors_total": 15636107,
+                 "labelled_giraud_on_10_vertices_by_formula": 15636107, "total_equals_G10": true,
+                 "R_with_count_mismatch": [], "n_mismatch": 0, "sample_2000_explicit_and_struct_ok": true,
+                 "C10_FULL_PASS": true
+Times (same test): stab_cf 128 s (peak 585 MB), stab_lg8 < 1 s, stab_lg9 20 s, stab_lg10 113 s, stab_margin 3 s,
+stab_formF 51 s, stab_cor 19 s; --raw stab_c10: stab_c10_full 1367 s.
+
+Total of --fast: 81 min wall clock in the test of the third version (124 steps), run with --threads 2 on two cores
+of the same laptop while other heavy jobs were running (58 min for the 107 steps of the second version);
+--raw sigma,stab_c10 took 37 min (9 steps, including the integrity, build and preparation steps it needs). In the first version parts (a)
 to (f) alone took 26 min on one core.

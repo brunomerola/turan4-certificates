@@ -38,6 +38,8 @@ programs), so most scripts will not run out of the box. Python dependencies, bey
   Floating-point steps here certify nothing; only the exact check of the final rational point matters, and it is
   repeated independently by `../verifier/rv1_dual.py`. The dual points of `../certificates/n7_dual_points/` were
   found by a second version of this search (generalised to "every p-set spans at least lambda edges" and to a
-  given block list), which is not included; their exact check is `../verifier/rv2_dual.py`.
+  given block list), which is not included; their exact check is `../verifier/rv2_dual.py`. Likewise the
+  custom-objective pipeline and the sharp rounding that produced `../certificates/sigma_K5_4/` are not included;
+  its exact checks are `../verifier/rs_*.py` and `rs_eval.c`.
 
 All of this code is under the MIT license (`../LICENSE-CODE`).

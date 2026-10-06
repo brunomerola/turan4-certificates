@@ -3,13 +3,15 @@
 #
 #   verifier/verify_all.sh [--fast] [--raw NAMES] [--producer-n6] [--threads N] [--work DIR]
 #
-#   --fast          every check except the raw scans (the default when no option is given); about 1 hour
-#   --raw NAMES     the full exhaustive raw scan for the named 4-graph certificates, comma-separated: K5_4, K6_4,
+#   --fast          every check except the raw scans (the default when no option is given); about 80 min
+#   --raw NAMES     the long exhaustive scans, comma-separated: the raw scan of the 4-graph certificates K5_4, K6_4,
 #                   K7_4, K5_4minus, K6_4minus (Theorem main), cat_p5_lam3, cat_p6_lam3, cat_p6_lam4, cat_p6_lam5,
 #                   cat_p6_lam6, cat_p6_lam9, cat_p6_lam11, cat_p7_lam2, cat_p7_lam3, cat_p7_lam4 (Theorem
-#                   catalogue), or "main" (the first five), "catalogue" (the ten cat_*), "all" (all fifteen).
-#                   cat_p5_lam3 and cat_p6_lam11 take seconds, cat_p6_lam9 about 15 min, K5_4minus minutes; each of
-#                   the others 1 to 5 hours on 2 threads (about 5 minutes on 28 threads)
+#                   catalogue); sigma (Theorem sigma, about 15-20 CPU-min, split over --threads processes); stab_c10
+#                   (fact C10 of the stability section over all 604,426 labelled bases, about 20 min); or "main"
+#                   (the first five), "catalogue" (the ten cat_*), "all" (everything). cat_p5_lam3 and cat_p6_lam11
+#                   take seconds, cat_p6_lam9 about 15 min, K5_4minus minutes; each of the other certificate scans
+#                   1 to 5 hours on 2 threads (about 5 minutes on 28 threads)
 #   --producer-n6   also run the FIRST implementation's checker search/flagalg/verify_cert.py on the three sharp
 #                   N = 6 certificates (not an independent check; the independent one is part (j) of --fast)
 #   --threads N     OpenMP threads of the C evaluator (default 2)
@@ -31,7 +33,7 @@ while [ $# -gt 0 ]; do
     --producer-n6) PRODN6=1 ;;
     --threads) THREADS="${2:?--threads needs a number}"; shift ;;
     --work) WORK="${2:?--work needs a directory}"; shift ;;
-    -h|--help) sed -n '2,19p' "$0"; exit 0 ;;
+    -h|--help) sed -n '2,21p' "$0"; exit 0 ;;
     *) echo "unknown option: $1 (see --help)"; exit 2 ;;
   esac
   shift
@@ -43,13 +45,17 @@ CAT10="$CAT10 cat_p7_lam4"
 RAWLIST=""
 for x in ${RAW//,/ }; do
   case "$x" in
-    all) RAWLIST="$RAWLIST $MAIN5 $CAT10" ;;
+    all) RAWLIST="$RAWLIST $MAIN5 $CAT10 sigma stab_c10" ;;
     main) RAWLIST="$RAWLIST $MAIN5" ;;
     catalogue) RAWLIST="$RAWLIST $CAT10" ;;
     *) RAWLIST="$RAWLIST $x" ;;
   esac
 done
-RAW="${RAWLIST# }"
+RAWX=""; RAW4=""      # the special long checks (sigma, stab_c10) and the 4-graph certificate raw scans
+for x in $RAWLIST; do
+  case "$x" in sigma|stab_c10) RAWX="$RAWX $x" ;; *) RAW4="$RAW4 $x" ;; esac
+done
+RAW="${RAWLIST# }"; RAW4="${RAW4# }"; RAWX="${RAWX# }"
 case "$WORK" in /*) W="$WORK" ;; *) W="$ROOT/$WORK" ;; esac
 V="$ROOT/verifier"
 C="$ROOT/certificates"
@@ -65,6 +71,17 @@ run() {
   local name="$1"; shift
   local t0; t0=$(date +%s)
   ( cd "$W" && "$@" ) > "$W/logs/$name.log" 2>&1
+  local rc=$?
+  ELAPSED=$(( $(date +%s) - t0 ))
+  return $rc
+}
+
+# runin SUBDIR NAME CMD...: as run, but inside the work subdirectory SUBDIR (created together with SUBDIR/local)
+runin() {
+  local sub="$1" name="$2"; shift 2
+  mkdir -p "$W/$sub/local"
+  local t0; t0=$(date +%s)
+  ( cd "$W/$sub" && "$@" ) > "$W/logs/$name.log" 2>&1
   local rc=$?
   ELAPSED=$(( $(date +%s) - t0 ))
   return $rc
@@ -147,7 +164,7 @@ cinfo() {
   esac
   if [ "$LAM" = 1 ]; then SUF=""; else SUF="_l$LAM"; fi
 }
-for n in $RAW; do cinfo "$n"; done      # reject unknown names before any work
+for n in $RAW4; do cinfo "$n"; done      # reject unknown names before any work
 
 say "# verify_all.sh  $(date -u +%FT%TZ)  root=$ROOT  work=$W  threads=$THREADS  python=$("$PY" -c 'import sys; print(sys.version.split()[0])' 2>&1)"
 say "# options: fast=$FAST raw='${RAW}' producer_n6=$PRODN6"
@@ -167,9 +184,9 @@ for j in js:
     ok &= d["cert_npz_sha256"] == h
 print(len(js), "certificate files")
 print("ALL NPZ HASHES MATCH" if ok else "NPZ HASH MISMATCH")' "$C"
-check npz_hashes $? "15 certificate files" "ALL NPZ HASHES MATCH"
+check npz_hashes $? "16 certificate files" "ALL NPZ HASHES MATCH"
 NEED_EVAL=0
-{ [ "$FAST" = 1 ] || [ -n "$RAW" ]; } && NEED_EVAL=1
+{ [ "$FAST" = 1 ] || [ -n "$RAW4" ]; } && NEED_EVAL=1
 if [ "$NEED_EVAL" = 1 ]; then
   # shellcheck disable=SC2086
   run build "$CC" $CFLAGS -o rv_eval "$V/rv_eval.c"
@@ -243,7 +260,7 @@ print("CATALOGUE DECIMALS OK" if ok else "CATALOGUE DECIMALS DIFFER")' "$C/catal
     p7_lam4:c7l4_f:11199502214035/69269232549888:0.161680760732:0.838319239268
   check cat_decimals $? "CATALOGUE DECIMALS OK"
 fi
-for n in $RAW; do
+for n in $RAW4; do
   prepare "$n"; cinfo "$n"
   run "raw_$n" env RV_LAM="$LAM" OMP_NUM_THREADS="$THREADS" ./rv_eval "blob_$n.bin" raw "reps_p${P}${SUF}.bin"
   rc=$?
@@ -258,6 +275,52 @@ for n in $RAW; do
   run "pycheck_raw_$n" env RV_LAM="$LAM" "$PY" "$V/rv_pycheck.py" "$C/$D/$PRE" "${RARG:-0}"
   check "pycheck_raw_$n" $? "${RARG:-0} $FRAC " "== cert bound: True"
 done
+
+# --- (k) and (l): sigma(K_5^(4)) and the stability facts; helpers used by --fast and by --raw sigma / stab_c10 -------
+SIGMA_MASKS="2290237506 17418883036 19736566032 26383237633 26894418433 29337331976 31813832752 31837153552"
+SIGMA_MASKS="$SIGMA_MASKS 34326183967 34359738367 26887858440 31836891137 31830626344 22674440848 239042524 31826919937"
+SIGMA_MASKS="$SIGMA_MASKS 31446477202 23327952978 4413698879 18972461960 33940307901 19616300926 25201702534 17179831775"
+SIGMA_MASKS="$SIGMA_MASKS 32305321325 23724464310"
+MU0=176165518826891630107/6280747422216628134215680
+SIGPREP=0
+sigma_prepare() {   # build the two evaluators, own 6-vertex representatives, exact Gram matrices and tables (once)
+  [ "$SIGPREP" = 1 ] && return
+  SIGPREP=1
+  mkdir -p "$W/sigma/local"
+  # shellcheck disable=SC2086
+  run sigma_build "$CC" $CFLAGS -DNLC=4 -DTWOPHASE -o sigma/rs_eval4 "$V/rs_eval.c"
+  rc=$?
+  # shellcheck disable=SC2086
+  [ "$rc" = 0 ] && { ( cd "$W" && "$CC" $CFLAGS -DNLC=4 -DSYM -o sigma/rs_eval4s "$V/rs_eval.c" ) >> "$W/logs/sigma_build.log" 2>&1; rc=$?; }
+  check sigma_build $rc
+  runin sigma sigma_reps "$PY" "$V/rs_reps.py"
+  check sigma_reps $? '"admissible_6vertex_labelled": 27449' '"reps6": 122' '"raw_admissible_extensions": 86952880' \
+    '"labelled_admissible_7vertex": 19199206747'
+  runin sigma sigma_prep "$PY" "$V/rs_prep.py" --sharp "$C/sigma_K5_4/sharp_klp5.cert.npz" \
+    --keys "$C/sigma_K5_4/sharp_klp5.cert.json" --keys-check "$C/K5_4/lpcg_p5_conv_full.cert.json" --target 33/64 \
+    --out local/blob_sharp.bin --sym-out local/blob_sharp_sym.bin
+  check sigma_prep $? '"k": 6, "W_rows": 272, "B_rows": 20, "B_max": 16, "X_dim": 20, "X_psd_exact": true' \
+    '"k": 8, "W_rows": 160, "B_rows": 5, "B_max": 2, "X_dim": 5, "X_psd_exact": true' \
+    '"k": 10, "W_rows": 106, "B_rows": 1, "B_max": 1, "X_dim": 1, "X_psd_exact": true' \
+    '"n_flags": 1024, "distinct_classes": 1024, "all_admissible": true, "admissible_classes": 1024, "missing": 0, "extra": 0' \
+    '"n_flags": 809, "distinct_classes": 809, "all_admissible": true, "admissible_classes": 809, "missing": 0, "extra": 0' \
+    "D 325412473936958852881289201034484891095266230272 limbs 4 G_max_bits 163 unused [] sym" \
+    "'aut_sizes': {0: 1, 1: 2, 2: 6, 3: 6, 4: 24, 5: 24, 6: 24, 7: 12, 8: 12, 9: 24, 10: 120}" \
+    '!"missing": 1' '!"all_admissible": false'
+}
+STABPREP=0
+stab_prepare() {    # labelled Giraud systems on 7, 8, 9 vertices and their classes (once)
+  [ "$STABPREP" = 1 ] && return
+  STABPREP=1
+  runin stab stab_cf "$PY" "$V/r_cf.py"
+  check stab_cf $? "'f5_equals_definition': True, 'giraud_tests_agree': True" \
+    '"labelled_normalised": 2404, "labelled_all_matrices": 2404, "same_set": true, "partition_sets_equal": true, "classes": 10, "orbit_sizes": [1, 7, 21, 30, 35, 105, 210, 315, 420, 1260], "all_odd": true, "tight_masks_are_giraud": true, "each_tight_mask_in_exactly_one_orbit_and_bijective": true, "multi_partition": {"7": 30}' \
+    '"part_sizes": [[3, 4], [3, 4], [3, 4], [3, 4], [3, 4], [3, 4], [3, 4]], "five_counts_hist": [0, 21, 0, 0, 0, 0], "complements_of_edges_form_Fano_plane": true, "orbit_size": 30, "orbit_contains_tight_mask": [2290237506]' \
+    '"labelled_normalised": 32981, "labelled_all_matrices": 32981, "same_set": true, "partition_sets_equal": true, "classes": 22,' \
+    '"multi_partition": {"7": 30}, "multi_partition_orbits": [{"rep": 42667670269382951568, "orbit_size": 30, "edges": 14, "partitions": 7,' \
+    '"partition_parts_are_blocks": true, "five_counts_hist": [0, 56, 0, 0, 0, 0], "steiner_quadruple_system_S(3,4,8)": true, "blocks_closed_under_complement": true, "all_multi_partition_graphs_in_this_orbit": true' \
+    '"labelled_normalised": 604426, "classes": 33,' '"orbit_sizes_sum": 604426, "multi_partition": {}, "odd_on_2000_sample": true'
+}
 
 if [ "$FAST" = 1 ]; then
   # --- (b) the three 5-graph certificates -------------------------------------------------------------------------
@@ -393,7 +456,110 @@ ok = all([variant("claimed_bound_1_3", claim), variant("Q_not_psd", notpsd), var
 print("NEGATIVE CONTROLS REJECTED" if ok else "A NEGATIVE CONTROL WAS ACCEPTED")' \
     "$V/rv_sharp6.py" "$C/n6_dual_points/cert_turan_r4_p5_N6_all_sharp.json"
   check sharp6_negative $? "NEGATIVE CONTROLS REJECTED"
+  # --- (k) sigma(K_5^(4)) = 31/64 (Theorem sigma): the sharp certificate --------------------------------------------
+  run sigma_keys "$PY" -c '
+import hashlib, json, sys
+import numpy as np
+a, b, npz = json.load(open(sys.argv[1])), json.load(open(sys.argv[2])), sys.argv[3]
+z = np.load(npz)
+same = a["keys"] == b["keys"]
+nums = int(z["kb"]) == a["kb"] and str(z["q"]) == a["q"] and str(z["D"]) == a["D"] and int(a["D"]) == 57 * 2 ** 152
+sha = hashlib.sha256(open(npz, "rb").read()).hexdigest() == a["cert_npz_sha256"]
+shape = all(z["W%d" % k].shape[1] == key["n_flags"] == len(key["flags"]) for k, key in enumerate(a["keys"]))
+print("keys", len(a["keys"]), "identical to the K5_4 key list:", same, "; kb, q, D = 57*2^152 as in the npz:", nums,
+      "; npz sha256:", sha, "; W widths = flag counts:", shape)
+print("SIGMA KEY LIST OK" if same and nums and sha and shape else "SIGMA KEY LIST BAD")' \
+    "$C/sigma_K5_4/sharp_klp5.cert.json" "$C/K5_4/lpcg_p5_conv_full.cert.json" "$C/sigma_K5_4/sharp_klp5.cert.npz"
+  check sigma_keys $? "SIGMA KEY LIST OK"
+  runin sigma sigma_reduction "$PY" "$V/rs_reduction.py"
+  check sigma_reduction $? "(a) co2 / s_n / f identities on 52 random graphs: True" \
+    "(b) E_S f(H[S]) == f_n(H) exactly on 9 graphs (n = 8, 9, 10): True" "(c) K5-free(G) <=> admissible(H): True" \
+    "(d) Giraud exact limit: s(G) = 31/64  d(G) = 11/16" "ALL OK"
+  runin sigma sigma_giraud7 "$PY" "$V/rs_giraud7.py"
+  check sigma_giraud7 $? '"labelled_graphs_in_support": 2404' '"outside_the_ten_orbits": 0' '"E_phi_f": "33/64"' '"PASS": true'
+  sigma_prepare
+  # shellcheck disable=SC2086
+  runin sigma sigma_pycheck "$PY" "$V/rs_pycheck.py" "$C/sigma_K5_4/sharp_klp5.cert.npz" \
+    "$C/sigma_K5_4/sharp_klp5.cert.json" 33/64 $SIGMA_MASKS
+  set --
+  for x in 2290237506 17418883036 19736566032 26383237633 26894418433 29337331976 31813832752 31837153552 34326183967 \
+           34359738367; do set -- "$@" "PY $x slack 33/64 slack-b 0 S 0"; done
+  check sigma_pycheck $? "$@" "PY 26887858440 slack 3238686555099275773335067/6280747422216628134215680 slack-b $MU0 S 46001745554897451729515273061756040526495219712"
+  # shellcheck disable=SC2086
+  runin sigma sigma_each_masks "$PY" -c 'import sys, numpy as np; np.array([int(x) for x in sys.argv[1:]], dtype=np.uint64).tofile("local/check_masks.u64"); print(len(sys.argv) - 1, "masks written")' $SIGMA_MASKS
+  check sigma_each_masks $? "26 masks written"
+  runin sigma sigma_each ./rs_eval4 local/blob_sharp.bin each local/check_masks.u64
+  check sigma_each $? "EACH colex 2290237506 F 168 S 0 0 0 0" "EACH colex 34359738367 F 420 S 0 0 0 0" "!inadmissible"
+  runin sigma sigma_each_cmp "$PY" "$V/rs_cmp_py.py" "$W/logs/sigma_each.log" "$W/logs/sigma_pycheck.log"
+  check sigma_each_cmp $? "26/26 identical"
+
+  # --- (l) stability for sigma(K_5^(4)): the computer facts of the stability section ---------------------------------
+  stab_prepare
+  runin stab stab_lg8 "$PY" "$V/r_lg.py" 8
+  check stab_lg8 $? '"labelled_R": 2404, "survivors_total": 32981, "G_n_size": 32981, "survivors_equal_giraud_extensions_for_every_R": true, "non_giraud_survivors": [], "C8_PASS": true'
+  runin stab stab_lg9 "$PY" "$V/r_lg.py" 9
+  check stab_lg9 $? '"labelled_R": 32981, "survivors_total": 604426, "G_n_size": 604426, "survivors_equal_giraud_extensions_for_every_R": true, "non_giraud_survivors": [], "C9_PASS": true'
+  runin stab stab_lg10 "$PY" "$V/r_lg.py" 10
+  check stab_lg10 $? '"locally_giraud_total": 1151, "C10_PASS": true' "!False"
+  runin stab stab_margin "$PY" "$V/r_thm1.py"
+  check stab_margin $? '"lambda": "1354230560069659129/4722366482869645213696"' '"lambda": "0"' \
+    '"lambda": "6614817002453309619559/4722366482869645213696"' '"lambda": "1930498463925983500877/4722366482869645213696"' \
+    '"lambda": "1262520681467868487601/2361183241434822606848"' '"lambda": "13141619641562093306051/1180591620717411303424"' \
+    '"lambda": "55057280191985960149631/4722366482869645213696"' '"lambda": "48513285016664528863283/2361183241434822606848"' \
+    '"lambda": "6429978663646678105565/590295810358705651712"' '"lambda": "16464561510059415945793/2361183241434822606848"' \
+    '"p_over_1mp_formulas_ok_10..2000": true' '"analytic_block_bounds_ok_10..20000": true' \
+    '"constant_sum_form_le_68": true' '"c(n)<=68/(n-7)_exact_10..20000": true' "\"mu\": \"$MU0\"" \
+    '"inv_mu_le_35653": true' '"K_le_7.81e8": true' '"rho_factor": "221/320"' '"120*126/rho_factor_le_21894": true' \
+    '"mu/1200_implies_f_le_33/64+1/100": true' '"1200/mu_le_K": true' '"frames_min_over_a": 1200' \
+    '!"min_diag_nonneg": false' '!"max_abs_entry_equals_lambda": false'
+  runin stab stab_formF "$PY" "$V/r_formF.py"
+  check stab_formF $? \
+    "7 {'G_{m+1}': 32981, 'distinct_links': 32981, 'generated_formF': 32981, 'generated_equals_links': True, 'lemma1_i_ok': True, 'with_several_reps': 30, 'lemma2_ok': True, 'generated_reps_equal_predicate_reps': True}" \
+    "6 {'G_{m+1}': 2404, 'distinct_links': 2404, 'generated_formF': 2404, 'generated_equals_links': True, 'lemma1_i_ok': True, 'with_several_reps': 30, 'lemma2_ok': True, 'generated_reps_equal_predicate_reps': True}" \
+    "5 {'G_{m+1}': 197, 'distinct_links': 197, 'generated_formF': 197, 'generated_equals_links': True, 'lemma1_i_ok': True, 'with_several_reps': 15, 'lemma2_ok': True, 'generated_reps_equal_predicate_reps': True, 'all_3graphs_formF_equals_generated': True}" \
+    "!False"
+  runin stab stab_cor "$PY" "$V/r_cor.py"
+  check stab_cor $? "{'instances': 174, 'formula_equals_bruteforce': True}" "'expansion_identities_ok': True" \
+    '"delta_Lambda_removal": "-28/5", "equals_-(n-4)/5": true, "admissible_after": true' \
+    "'all_equal': True, 'min_nonzero_over_a': 1200, '(10)_6': 151200" "'violations': 0" "'2d-d^2_at_5/16': '135/256'" \
+    '!"cross_removal_characterisation_ok": false' '!"all_other_admissible_flips_ge_(n-4)/10": false' \
+    '!"equals_-(n-4)/5": false' '!"admissible_after": false'
 fi
+
+# --- (k) and (l), long: the sigma raw scan and C10 over all labelled bases ------------------------------------------
+for x in $RAWX; do
+  case "$x" in
+    sigma)
+      sigma_prepare
+      NT=$THREADS; [ "$NT" -ge 1 ] 2>/dev/null || NT=1
+      TOT=124928          # 122 representatives x 1024 high link patterns
+      t0=$(date +%s); rcs=0; logs=""; tights=""; pids=""
+      for i in $(seq 0 $((NT - 1))); do      # NT single-threaded processes on consecutive task ranges
+        lo=$((TOT * i / NT)); hi=$((TOT * (i + 1) / NT))
+        ( cd "$W/sigma" && ./rs_eval4s local/blob_sharp_sym.bin raw local/reps6_p5.bin "$lo" "$hi" "local/tight_raw_$i.u64" ) \
+          > "$W/logs/sigma_raw_part$i.log" 2>&1 &
+        pids="$pids $!"
+        logs="$logs $W/logs/sigma_raw_part$i.log"; tights="$tights,local/tight_raw_$i.u64"
+      done
+      for pid in $pids; do wait "$pid" || rcs=1; done
+      ELAPSED=$(( $(date +%s) - t0 ))
+      # shellcheck disable=SC2086
+      cat $logs > "$W/logs/sigma_raw.log"
+      check sigma_raw $rcs "RANGE 0 " "RANGE $((TOT * (NT - 1) / NT)) $TOT"
+      # shellcheck disable=SC2086
+      runin sigma sigma_raw_analyze "$PY" "$V/rs_analyze.py" local/blob_sharp.bin.json 33/64 \
+        "$C/sigma_K5_4/sharp_klp5.json" "${tights#,}" $logs
+      check sigma_raw_analyze $? '"admissible": 86952880' '"rejected": 40973392' '"zero": 105' '"negative": 0' \
+        '"min_slack": "33/64"' '"min_slack_equals_b": true' "\"next_slack_minus_b\": \"$MU0\"" '"groups": 113' \
+        '"producer_groups_same_F": true' '"producer_groups_same_maxZ": true' '"tight_graphs": 105' \
+        '"tight_distinct_labelled": 105' '"tight_all_giraud": true' '"tight_classes_hit": 10' ;;
+    stab_c10)
+      stab_prepare
+      runin stab stab_c10_full "$PY" "$V/r_lg10_full.py"
+      check stab_c10_full $? '"R_by_part_sizes": {"1,8": 9, "2,7": 2304, "3,6": 86016, "4,5": 516096, "0,9": 1}' \
+        '"survivors_total": 15636107, "labelled_giraud_on_10_vertices_by_formula": 15636107, "total_equals_G10": true, "R_with_count_mismatch": [], "n_mismatch": 0, "sample_2000_explicit_and_struct_ok": true, "C10_FULL_PASS": true' ;;
+  esac
+done
 
 # --- (g) optional: first implementation's checker on the sharp N = 6 certificates -----------------------------------
 if [ "$PRODN6" = 1 ]; then

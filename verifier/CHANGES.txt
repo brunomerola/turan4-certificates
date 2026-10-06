@@ -10,7 +10,9 @@ This was verified mechanically: for every other Python file the abstract syntax 
 identical before and after, and rv_eval.c is identical after removing /* */ comments.
 Items 1 to 4 describe the first version of the package; items 5 to 7 the programs added in the second version
 (catalogue certificates, seven-vertex dual points of Table n7limits, independent check of the sharp N = 6
-certificates).
+certificates); items 8 and 9 the third version (sigma(K_5^(4)) and the stability facts). In the third version two
+small code changes go beyond paths, because the package does not contain two input files of the reviews: the
+optional class list of rs_reps.py and the producer comparison of r_thm1.py (items 8 and 9).
 
 1. Comment and docstring edits only (code identical)
 ----------------------------------------------------------------------------------------------------------------
@@ -146,3 +148,81 @@ controls (a changed bound, a non-PSD Q, a doubled Q) are rejected (step sharp6_n
   negative-control inputs (rounded LP points and points with an inadmissible graph, all rejected by rv2_dual.py in
   the review). rv2_dual.py's built-in controls (the residual test on perturbed matrices; the (5,6) block of the
   no-(5,6) points) run in every check.
+
+8. Third version: the checkers of the independent review of the sigma(K_5^(4)) certificate
+----------------------------------------------------------------------------------------------------------------
+They were written by the reviewer of the sharp certificate from the definitions, import no producer module, and read
+only the certificate files. All were copied; rs_sample.py (it needs the class list) and the run script were not.
+
+file              sha256 as reviewed                                                 sha256 in this package
+rs_lib.py         9673318a7daa8d030c17eff7c63809289d264b23bcb49d7f6c6666089a699678   bdcfa71825854f9310c4165b3abf958bda64106922b0d526e04e422dc8ffd4a2
+rs_prep.py        7fb279470bd71ec0b3431da7ade2da4fddfadb5be5515b13120fb0d7612c963e   894b5a8342b260d20be57489813cf8a6ad3c34f1ba1d71a520b0e5da56bfd2a0
+rs_eval.c         a802382333a964fe1b58a9aac59aa95e046fa9ac6009f22e1af497b4f92b349e   fb44651ab2c4f20d8d03b7c3988efb6087db37cde25e07e3e451f2d3f9b1bbdd
+rs_reps.py        08939acaac5556548b2e4a325b03de27028d63e45e56449c8c06f990a7de859c   75ac7421f6d90286bffa409e8a6c775e8a1b7b4403a1d9eb802a19ad0991666e
+rs_pycheck.py     94e60100d66272ad6b92c20e5de2977af4e09ac7b78f4c5006828d82a40797e5   333ace0027318ee5b486269de51063b24d2d76a7b9c3f715ce29c158ba993656
+rs_cmp_py.py      00e8ffbcd43bac2a16aced775a28dd000cb95a4555217d40aa45e198e5851ddf   548f552c7c19f8ae141b100587f36d44db2f7dbee62b011fc110e52bd3a180cd
+rs_analyze.py     173884428b7278d56fd3b50cb33a2a5127f08660909c52b667e61f918d8ef2c4   b62c8e2de367ad197e8f7133d33cb2ea6c9c2b7131b45cb28dbfe150d6b52298
+rs_giraud7.py     83f442c3fa3d27028ac348a2dd66b2171f326ccf65faba22f5528e88cdfeafd4   04b9bbc19ed8f73b7a8972f3faeca54ec0060548896350dd9955a50d242cb1be
+rs_reduction.py   01e584b2e0abe902ccc67b4a9ed453f1b797e1b7d94ae0e0b3623ed4dca7fbac   a6ba41d0cf7aba9e5525ccb3aecd46e5ea64cf0d2fc2570c62ed341fdd9f9186
+
+Edits:
+* All files (first docstring line; rs_eval.c first comment line): the internal review label was replaced by
+  "Independent checker" ("Independent exact evaluator", "adapted from the design of rv_eval.c"). rs_lib.py: "No
+  producer module is imported anywhere in R7_SIGMA" became "... by any of the rs_* checkers". rs_prep.py
+  (docstring): the private path of the key list became certificates/sigma_K5_4/sharp_klp5.cert.json, and the
+  description of --keys-check now names the K5_4 key list (the review used the cloud run's key list, not included).
+  For every Python file except rs_reps.py the abstract syntax tree without docstrings is unchanged, and rs_eval.c
+  is unchanged without comments.
+* rs_reps.py (code): its argument, the producer's class list of all 3,908,438 classes, became optional
+  (cls_path = sys.argv[1] if given, else None); without it the class-list payload local/classes_p5.u64 and its
+  count are not written. Everything the package uses (representatives, labelled and raw counts) is unchanged.
+* Build: verify_all.sh compiles rs_eval.c twice with $CFLAGS -DNLC=4 and -DTWOPHASE (brute force, binary rs_eval4)
+  or -DSYM (symmetrised, rs_eval4s). With -O3 -march=native these flags reproduce the review's binaries byte for byte.
+* Arguments as in the review: rs_prep.py --sharp certificates/sigma_K5_4/sharp_klp5.cert.npz --keys
+  certificates/sigma_K5_4/sharp_klp5.cert.json --keys-check certificates/K5_4/lpcg_p5_conv_full.cert.json --target
+  33/64 (the review: --keys n7/results/lpcg_p5_conv_full.cert.json, the same file, and the cloud key list as
+  --keys-check); rs_pycheck.py on the review's 26 graphs; the raw scan over all 124,928 tasks, split into --threads
+  consecutive ranges (the review ran one range); rs_analyze.py with the producer's record sharp_klp5.json (an
+  informational comparison of the per-F group maxima). The class-list scan of the review (it needs the class list)
+  is not repeated; the raw scan is the decisive one.
+
+9. Third version: the checkers of the independent review of the stability results
+----------------------------------------------------------------------------------------------------------------
+Own code of that reviewer, independent of the producer's stability programs.
+
+file              sha256 as reviewed                                                 sha256 in this package
+st_lib.py         311d2f1a6e0649694a67833be079fdaad822366e9ba34b7bda5d0a60fd5c7791   ef68d40ac6f6bbfe5a9e0c59c57ba62c52490183e36f1aaeb5c90d3fb863f90c
+r_cf.py           aa3aa27059b507ae1803ef334860f14628e13c2c3f6bca285e9d026eb5481c00   49611ea308aed368693304d63cfda0377c9c270d262434df1164bb6f4a8d63bd
+r_lg.py           3be53ed3efa196341466d5e07cc9700f4f27570b28d8e592327c86cc379f3e6f   2fb9ec3e2138b88715e60b520891dd86590b972f0ae64ac285cf42b048a45bf6
+r_lg10_full.py    1b52a0fe8640503357b90a8dd9f02de312e2fed27983ec397780b90b11b31bc6   56698dd57f9ffc9c1b642df2667858a2c4884026c7623dc25ed2089a7d64a05c
+r_thm1.py         f75ab27ad952ef7f972d96b36c82408e60297c681348d3914e787b98f0fae21a   2d2d24b64e0ecfed6a4dab95e8f28e436ec496d095714056c2f734959da90ddb
+r_formF.py        740c8e7c321110ee07e6d454d3d47f97c051613d06388450cb367e96f50191a8   36553bce8246a72e7fdd1288ed48cb887681b3785f8c0eb66da2bea169c70399
+r_cor.py          2f9ff1b08ea2cf2396afe39918d9dae320d14e54df8ca83b2ec1ad1db784fa27   b209aa131e6bf78472f7e0b0f59e214644a68581f856d9ad018d85773700687c
+
+Edits:
+* All files (first docstring line): the internal review label was replaced by "Independent checker"; st_lib.py is
+  otherwise unchanged (same abstract syntax tree without docstrings).
+* r_cf.py, r_lg.py, r_lg10_full.py, r_formF.py, r_cor.py (code, paths only): the scripts wrote their results
+  (results_*.json) and intermediate files (local/G7.txt, G8.txt, G9.txt, reps*.json) next to themselves. They now
+  write them to the working directory: a line OUT = os.getcwd() was added after the import block, and every
+  os.path.join(HERE, ...) used for these files became os.path.join(OUT, ...) (7, 3, 1, 3 and 1 places). HERE is
+  still used to import st_lib. verify_all.sh runs them in work/stab/.
+* r_thm1.py (code): the certificate and the key list are read from certificates/sigma_K5_4/ (sharp_klp5.cert.npz,
+  sharp_klp5.cert.json; the review read the same .npz and the identical key list of lpcg_p5_conv_full.cert.json);
+  the output goes to the working directory; the comparison (a) with the producer's per-key values
+  (margin_exact.json, not in the package) is skipped: PROD = None and the three lines that read it are under
+  "if PROD is not None:". The value of mu_0 (MU) is a constant in the script, as in the review; that it is the
+  minimum over the non-Giraud graphs is checked by --raw sigma, and its value at the minimising graph by
+  sigma_pycheck. Docstring and comments: the internal labels and paths were replaced by package wording.
+* Not copied: r_cmp_producer.py (a per-class comparison with the producer's results files, not included).
+* Arguments as in the review: r_lg.py 8, 9, 10 (in this order, after r_cf.py), r_lg10_full.py, r_thm1.py,
+  r_formF.py, r_cor.py.
+
+10. Third version: verify_all.sh
+----------------------------------------------------------------------------------------------------------------
+* New parts (k) (sigma: sigma_keys, sigma_reduction, sigma_giraud7, sigma_build, sigma_reps, sigma_prep,
+  sigma_pycheck, sigma_each_masks, sigma_each, sigma_each_cmp; with --raw sigma: sigma_raw, sigma_raw_analyze) and
+  (l) (stability: stab_cf, stab_lg8, stab_lg9, stab_lg10, stab_margin, stab_formF, stab_cor; with --raw stab_c10:
+  stab_c10_full). A helper runin runs a step in a work subdirectory (work/sigma/, work/stab/, each with local/).
+* --raw accepts sigma and stab_c10; "all" includes them. The npz check now requires 16 certificate files (the key
+  list of the sigma certificate carries the sha256 of its .npz).

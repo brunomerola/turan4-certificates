@@ -16,11 +16,12 @@ certificate `.json` records the SHA-256 of its `.npz` in the field `cert_npz_sha
 | `n6_dual_points/` | Theorem n6 (six-vertex barrier) and Remark n6sharp | 1/4, 1/10, 0, 1/2 |
 | `n7_dual_point/` | Theorem n7opt (seven-vertex optimum for t(5,4)) | 1336237682928914994292138923/(7*2^89) |
 | `n7_dual_points/` | Table n7limits: seven-vertex limits for t(6,4), t(7,4), t_2(5,4), t_2(6,4) and for t(5,4) without the (5,6) block | see `n7_dual_points/README.md` |
+| `sigma_K5_4/` | Theorem sigma: sigma(K_5^(4)) = 31/64 (sharp certificate, value 33/64 for kappa = 2d - gamma); also the margin mu_0 of Proposition margin (stability section) | 33/64 |
 
 Theorem, table and remark names are the LaTeX labels of the paper (`thm:main`, `thm:five`, `thm:catalogue`,
-`tab:catalogue`, `thm:n6`, `thm:n7opt`, `tab:n7limits`, `rem:n6sharp`); `115448720916480 = 105 * 2^40`.
-
-The certificate for sigma(K_5^(4)) will be added after its independent review.
+`tab:catalogue`, `thm:n6`, `thm:n7opt`, `tab:n7limits`, `rem:n6sharp`, `thm:sigma`, `prop:margin`);
+`115448720916480 = 105 * 2^40`. The computer facts of the stability section ((G7), (G8), (C8), (C9), (C10)) need no
+data file: they are recomputed from the definitions by part (l) of `verifier/verify_all.sh`.
 
 ## Conventions
 
@@ -47,3 +48,8 @@ The certificate for sigma(K_5^(4)) will be added after its independent review.
 * The files do not record lambda: it is 1 for `K5_4`, `K6_4`, `K7_4`, 2 for `K5_4minus`, `K6_4minus`, and L for
   `catalogue/pP_lamL`. The checkers receive it through `RV_LAM` and as an argument of `rv_reps.py`
   (verifier/verify_all.sh does this).
+
+## The sigma certificate (`sigma_K5_4/`)
+
+It has a different format: rational matrices Q_k = W_k^T W_k / 2^72 + B_k^T X_k B_k in `sharp_klp5.cert.npz`, with the
+key list (types and flags, same conventions as above) in `sharp_klp5.cert.json`; see `sigma_K5_4/README.md`.
