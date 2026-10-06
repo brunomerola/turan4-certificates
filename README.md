@@ -129,7 +129,7 @@ written for the package.
 
 ## AI assistance
 
-Code in this package was written with AI coding agents (Claude Code); the verifiers were written by separate agent
+Code in this package was written with AI coding agents built on several models (including Claude and GPT); the verifiers were written by separate agent
 sessions that did not share code with the search code.
 
 ## License
