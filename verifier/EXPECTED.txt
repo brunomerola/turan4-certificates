@@ -263,7 +263,7 @@ dual point), and "b_eq_cert_bound" and "picert_claim_ok" now compare with the ne
 
 dual2_lift       rv2_lift.py 40 20 (the 40 heaviest support graphs of each of the six points and 20 random graphs):
                  "identities checked 27254; all equal: True"
-dual2_decimals   rv2_decimals.py: 28 lines "OK ...", "ALL OK", no "BAD" (20-digit expansions of V, V' - V = 5.15e-12,
+dual2_decimals   rv2_decimals.py: 27 lines "OK ..." (11 + 4 x 4), "ALL OK", no "BAD" (20-digit expansions of V, V' - V = 5.15e-12,
                  0.308400990997 - 0.281644555065 = 0.026756435932, the V - b and the widths above)
 Times in the test of this package: dual2_selftest 53 s, p6_f3 106 s, p7_f1 291 s, h44_nt3 208 s, k6m_W 151 s,
 p5no56_W 103 s, p5no56_Wodd 4 s, dual2_lift 74 s, dual2_decimals < 1 s (16.5 min in all); peak memory 460 MB. In the
