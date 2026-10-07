@@ -7,10 +7,10 @@ certificate `.json` records the SHA-256 of its `.npz` in the field `cert_npz_sha
 | directory | result in the paper | exact value |
 |---|---|---|
 | `K5_4/` | Theorem main (a): t(5,4), so pi(K_5^(4)) | 35604499940047/115448720916480 |
-| `K6_4/` | Theorem main (b): t(6,4), so pi(K_6^(4)) | 614350111275/2^42 |
+| `K6_4/` | Theorem main (b): t(6,4), so pi(K_6^(4)) | 9224492822869/65970697666560 |
 | `K7_4/` | Theorem main (c): t(7,4), so pi(K_7^(4)) | 7476698908057/115448720916480 |
-| `K5_4minus/` | Theorem main (d): t_2(5,4), so pi(K_5^(4)-) | 2430536617277/2^42 |
-| `K6_4minus/` | Theorem main (e): t_2(6,4), so pi(K_6^(4)-) | 964431985683/2^42 |
+| `K5_4minus/` | Theorem main (d): t_2(5,4), so pi(K_5^(4)-) | 48641756816487/87960930222080 |
+| `K6_4minus/` | Theorem main (e): t_2(6,4), so pi(K_6^(4)-) | 202684381843379/923589767331840 |
 | `fivegraphs/` | Theorem five: t(6,5), t_3(6,5), t(7,5) | see `fivegraphs/README.md` |
 | `catalogue/` | Theorem catalogue (Table catalogue): t_lambda(p,4) for ten (p, lambda), one subdirectory each | see `catalogue/README.md` |
 | `n6_dual_points/` | Theorem n6 (six-vertex barrier) and Remark n6sharp | 1/4, 1/10, 0, 1/2 |
@@ -20,7 +20,8 @@ certificate `.json` records the SHA-256 of its `.npz` in the field `cert_npz_sha
 
 Theorem, table and remark names are the LaTeX labels of the paper (`thm:main`, `thm:five`, `thm:catalogue`,
 `tab:catalogue`, `thm:n6`, `thm:n7opt`, `tab:n7limits`, `rem:n6sharp`, `thm:sigma`, `prop:margin`);
-`115448720916480 = 105 * 2^40`. The computer facts of the stability section ((G7), (G8), (C8), (C9), (C10)) need no
+`115448720916480 = 105 * 2^40`, `65970697666560 = 15 * 2^42`, `87960930222080 = 5 * 2^44`,
+`923589767331840 = 105 * 2^43`. The computer facts of the stability section ((G7), (G8), (C8), (C9), (C10)) need no
 data file: they are recomputed from the definitions by part (l) of `verifier/verify_all.sh`.
 
 ## Conventions

@@ -14,10 +14,10 @@ code that found the certificates.
 | statement in the paper | bound | files | checks (`verifier/verify_all.sh`) |
 |---|---|---|---|
 | Theorem main (a) | t(5,4) >= 35604499940047/115448720916480 > 0.308400990997, so pi(K_5^(4)) < 0.691599009003 | `certificates/K5_4/` | (a) |
-| Theorem main (b) | t(6,4) >= 614350111275/2^42 > 0.139687042809, so pi(K_6^(4)) < 0.860312957191 | `certificates/K6_4/` | (a) |
+| Theorem main (b) | t(6,4) >= 9224492822869/65970697666560 > 0.139827122482, so pi(K_6^(4)) < 0.860172877518 | `certificates/K6_4/` | (a) |
 | Theorem main (c) | t(7,4) >= 7476698908057/115448720916480 > 0.064762076605, so pi(K_7^(4)) < 0.935237923395 | `certificates/K7_4/` | (a) |
-| Theorem main (d) | t_2(5,4) >= 2430536617277/2^42 > 0.552640043969, so pi(K_5^(4)-) < 0.447359956031 | `certificates/K5_4minus/` | (a) |
-| Theorem main (e) | t_2(6,4) >= 964431985683/2^42 > 0.219286445299, so pi(K_6^(4)-) < 0.780713554701 | `certificates/K6_4minus/` | (a) |
+| Theorem main (d) | t_2(5,4) >= 48641756816487/87960930222080 > 0.552992751369, so pi(K_5^(4)-) < 0.447007248631 | `certificates/K5_4minus/` | (a) |
+| Theorem main (e) | t_2(6,4) >= 202684381843379/923589767331840 > 0.219452823117, so pi(K_6^(4)-) < 0.780547176883 | `certificates/K6_4minus/` | (a) |
 | Theorem catalogue (Table catalogue) | t_lambda(p,4) for (p, lambda) = (5,3), (6,3), (6,4), (6,5), (6,6), (6,9), (6,11), (7,2), (7,3), (7,4); exact fractions in `certificates/catalogue/README.md` | `certificates/catalogue/` | (h) |
 | Theorem five | pi(K_6^(5)) < 0.767400802744, pi(H^5_4) < 0.389708097035, pi(K_7^(5)) < 0.927917451132 (exact fractions in Appendix A) | `certificates/fivegraphs/` | (b) |
 | Theorem n6 | on six vertices the plain method gives at most 1/4, 1/10, 0 and 1/2 for t(5,4), t(6,4), t(7,4), t_2(5,4) | `certificates/n6_dual_points/` | (c) |
@@ -61,7 +61,7 @@ everything to `work/` (option `--work`), prints one PASS/FAIL line per step, kee
 |---|---|---|
 | integrity | `SHA256SUMS`; each `.npz` against the `cert_npz_sha256` field of its `.json` (16 files: 15 certificates and the sigma key list) | seconds |
 | (a), fast | for each 4-graph certificate of Theorem main: own 6-vertex representatives and Burnside class counts (`rv_reps.py`), flag lists decoded, complete, non-isomorphic and admissible (`rv_prep.py`), exact value at the certificate's minimiser by a pure-Python evaluator (`rv_pycheck.py`) | about 15 min |
-| (a), raw | the decisive step: exact minimum over **all** admissible one-vertex extensions with the C evaluator (`rv_eval.c`), comparison with the certificate (`rv_compare.py`), pure-Python value at the scan's minimiser | K5_4minus 5 min on 2 threads (28 min on one shared core); each of the others 1 to 3.5 h on 2 threads, about 5 min on 28 threads |
+| (a), raw | the decisive step: exact minimum over **all** admissible one-vertex extensions with the C evaluator (`rv_eval.c`), comparison with the certificate (`rv_compare.py`), pure-Python value at the scan's minimiser | K5_4minus 7 to 11 min on 2 threads; each of the others 1 to 3.5 h on 2 threads, about 5 min on 28 to 32 threads |
 | (b) | the three 5-graph certificates: exact PSD test and exact minimum over all 2^21 labelled 5-graphs (`rv_r5.py`) | about 5 min |
 | (c) | the four six-vertex dual points (`rv_dual6.py`) | seconds |
 | (d) | the seven-vertex dual point of Theorem n7opt (`rv1_dual.py`, `rv1_lift.py`, `rv1_selftest.py`) | about 2 min |
@@ -79,7 +79,8 @@ everything to `work/` (option `--work`), prints one PASS/FAIL line per step, kee
 
 Times were measured on one core of an AMD Ryzen 7 5800H laptop unless stated otherwise; memory stays below
 600 MB. The whole `--fast` run (124 steps) took 81 minutes with `--threads 2` on that laptop while other heavy jobs
-were running, and `--raw sigma,stab_c10` 37 minutes.
+were running (62 minutes in the test of the fourth version, which replaced the certificates of Theorem main (b), (d),
+(e)), and `--raw sigma,stab_c10` 37 minutes.
 
 ## Trust model
 
@@ -111,7 +112,9 @@ were running, and `--raw sigma,stab_c10` 37 minutes.
   clarabel version; the check itself only requires the bound to beat Chung and Lu's. Of the ten catalogue raw
   scans, the independent review repeated four on its own machine; the other six were run on the cloud machines
   with the same checker programs, and the review checked their outputs against the certificates (see
-  `certificates/catalogue/`). Statements that the paper labels as floating-point observations are not checked here.
+  `certificates/catalogue/`). The raw scan of the t(6,4) certificate (Theorem main (b)) was run by its independent
+  review with the review's own build and inputs on a temporary cloud machine, not on the review's own machine (see
+  `certificates/K6_4/`). Statements that the paper labels as floating-point observations are not checked here.
 
 ## Contents
 

@@ -6,14 +6,14 @@ point in `../n7_dual_point/`): no plain flag-algebra certificate on seven vertic
 
 | file | problem (p, lambda) | blocks | support | V (exact) | V rounded up | certified b (Theorem main) |
 |---|---|---|---|---|---|---|
-| `dual_p6_f3.json` | t(6,4) (6, 1) | all six | 884 | 37867960095539974857512229/(7*2^85) | 0.139837689411 | 614350111275/2^42 |
+| `dual_p6_f3.json` | t(6,4) (6, 1) | all six | 884 | 37867960095539974857512229/(7*2^85) | 0.139837689411 | 9224492822869/(15*2^42) |
 | `dual_p7_f1.json` | t(7,4) (7, 1) | all six | 1,058 | 6413961863433425283788748011/(5*2^94) | 0.064764464150 | 7476698908057/115448720916480 |
-| `dual_h44_nt3.json` | t_2(5,4) (5, 2) | all six | 1,583 | 384021679403583125317285924719/(35*2^94) | 0.553946861054 | 2430536617277/2^42 |
-| `dual_k6m_W.json` | t_2(6,4) (6, 2) | all six | 2,126 | 153033054540662097928475789999/(35*2^94) | 0.220748423194 | 964431985683/2^42 |
+| `dual_h44_nt3.json` | t_2(5,4) (5, 2) | all six | 1,583 | 384021679403583125317285924719/(35*2^94) | 0.553946861054 | 48641756816487/(5*2^44) |
+| `dual_k6m_W.json` | t_2(6,4) (6, 2) | all six | 2,126 | 153033054540662097928475789999/(35*2^94) | 0.220748423194 | 202684381843379/(105*2^43) |
 | `dual_p5no56_W.json` | t(5,4) (5, 1) | no (5,6) | 1,569 | 390498160148386371476706381487/(35*2^95) | 0.281644555065 | --- |
 
-So the best plain seven-vertex bound lies in [b, V]: V - b = 1.5065e-4 for t(6,4), 2.3875e-6 for t(7,4), 1.3068e-3 for
-t_2(5,4) and 1.4620e-3 for t_2(6,4). In Turan form: no plain seven-vertex certificate proves pi(K_6^(4)) <
+So the best plain seven-vertex bound lies in [b, V]: V - b = 1.0567e-5 for t(6,4), 2.3875e-6 for t(7,4), 9.5411e-4 for
+t_2(5,4) and 1.2956e-3 for t_2(6,4). In Turan form: no plain seven-vertex certificate proves pi(K_6^(4)) <
 0.860162310589, pi(K_7^(4)) < 0.935235535850, pi(K_5^(4)-) < 0.446053138946 or pi(K_6^(4)-) < 0.779251576806.
 
 The last row is the statement "without the (5,6) block": no plain seven-vertex certificate for t(5,4) whose types of
@@ -62,3 +62,7 @@ followed by rounding to a dyadic point; a second version of `../../search/flagal
 in commit d9a6a0c8 (branch research/turan4-n7) of the private working repository. The files are byte-identical to
 those of the independent review R7_DUAL2 (2026-10-06, all six PASS; its notes concern the wording of the no-(5,6)
 statement, used above), whose program `rv2_dual.py` and expected outputs `verify_all.sh` reproduces.
+The dual points do not depend on the certificates. When the certificates of Theorem main (b), (d), (e) were
+replaced by larger ones (review R7_B2), the claimed bounds b in `rv2_dual.py` and `rv2_decimals.py` and the paths
+of the weak-duality partners were updated to the new certificates (`verifier/CHANGES.txt`, item 11); R7_DUAL2 had
+run the weak-duality checks with the earlier certificates, and R7_B2 checked b <= V for the new ones.

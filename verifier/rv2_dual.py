@@ -46,17 +46,17 @@ TARGETS = {
     "p5no56_Wodd": dict(p=5, lam=1, blocks=NO56, V=Fraction(24406135009720244409729340413, 35 * 2 ** 91),
                         ceil12="0.281644555070", pifloor=None, b=None, cert=None),
     "p6_f3": dict(p=6, lam=1, blocks=ALL, V=Fraction(37867960095539974857512229, 7 * 2 ** 85),
-                  ceil12="0.139837689411", pifloor="0.860162310589", b=Fraction(614350111275, 2 ** 42),
-                  picert="0.860312957191", width="1.506466e-4", cert=PKG + "/K6_4/lpcg_p6_full"),
+                  ceil12="0.139837689411", pifloor="0.860162310589", b=Fraction(9224492822869, 15 * 2 ** 42),
+                  picert="0.860172877518", width="1.056693e-5", cert=PKG + "/K6_4/c6l1"),
     "p7_f1": dict(p=7, lam=1, blocks=ALL, V=Fraction(6413961863433425283788748011, 5 * 2 ** 94),
                   ceil12="0.064764464150", pifloor="0.935235535850", b=Fraction(7476698908057, 115448720916480),
                   picert="0.935237923395", width="2.387545e-6", cert=PKG + "/K7_4/lpcg_p7_full"),
     "h44_nt3": dict(p=5, lam=2, blocks=ALL, V=Fraction(384021679403583125317285924719, 35 * 2 ** 94),
-                    ceil12="0.553946861054", pifloor="0.446053138946", b=Fraction(2430536617277, 2 ** 42),
-                    picert="0.447359956031", width="1.306817e-3", cert=PKG + "/K5_4minus/lpcg_h44e"),
+                    ceil12="0.553946861054", pifloor="0.446053138946", b=Fraction(48641756816487, 5 * 2 ** 44),
+                    picert="0.447007248631", width="9.541097e-4", cert=PKG + "/K5_4minus/c5l2_f"),
     "k6m_W": dict(p=6, lam=2, blocks=ALL, V=Fraction(153033054540662097928475789999, 35 * 2 ** 94),
-                  ceil12="0.220748423194", pifloor="0.779251576806", b=Fraction(964431985683, 2 ** 42),
-                  picert="0.780713554701", width="1.461978e-3", cert=PKG + "/K6_4minus/lpcg_k6m_f"),
+                  ceil12="0.220748423194", pifloor="0.779251576806", b=Fraction(202684381843379, 105 * 2 ** 43),
+                  picert="0.780547176883", width="1.295600e-3", cert=PKG + "/K6_4minus/c6l2_f"),
 }
 
 

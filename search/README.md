@@ -25,9 +25,10 @@ programs), so most scripts will not run out of the box. Python dependencies, bey
   column-generation solver following Jeong et al. (`lpcg7.py`), exact rounding and exact scans (`certify7.py`), a
   sampling checker (`verify7.py`), tests (`test_n7.py`) and a throughput profile (`profile7.py`).
 * `flagalg/h44/` -- the same machinery for "every p-set spans at least lambda edges" (`gen.py`, `enum_gen.py`,
-  `lpcg_gen.py`, `certify_gen.py`, `verify_gen.py`, `test_gen.py`), used for K5_4minus (p = 5, lambda = 2),
-  K6_4minus (p = 6, lambda = 2) and the ten cases of `../certificates/catalogue/` (the files here are those that ran
-  on the cloud machines for the catalogue); `plugin_check.py` evaluates a certificate on Sidorenko's construction.
+  `lpcg_gen.py`, `certify_gen.py`, `verify_gen.py`, `test_gen.py`), used for K6_4 (p = 6, lambda = 1), K5_4minus
+  (p = 5, lambda = 2), K6_4minus (p = 6, lambda = 2) and the ten cases of `../certificates/catalogue/` (the files
+  here are those that ran on the cloud machines for the catalogue and for these three certificates);
+  `plugin_check.py` evaluates a certificate on Sidorenko's construction.
 * `flagalg/n6control/` -- the six-vertex control: SDP, sharp rounding and the rational dual points
   (`n6_control.py`) and the producer's own exact check of the dual points (`dual_check.py`).
 * `flagalg/n7dual/` -- the search for the seven-vertex dual point of Theorem n7opt: re-solve of the restricted LP

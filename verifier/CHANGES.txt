@@ -10,9 +10,12 @@ This was verified mechanically: for every other Python file the abstract syntax 
 identical before and after, and rv_eval.c is identical after removing /* */ comments.
 Items 1 to 4 describe the first version of the package; items 5 to 7 the programs added in the second version
 (catalogue certificates, seven-vertex dual points of Table n7limits, independent check of the sharp N = 6
-certificates); items 8 and 9 the third version (sigma(K_5^(4)) and the stability facts). In the third version two
+certificates); items 8 to 10 the third version (sigma(K_5^(4)) and the stability facts). In the third version two
 small code changes go beyond paths, because the package does not contain two input files of the reviews: the
-optional class list of rs_reps.py and the producer comparison of r_thm1.py (items 8 and 9).
+optional class list of rs_reps.py and the producer comparison of r_thm1.py (items 8 and 9). Item 11 describes the
+fourth version, in which the certificates of Theorem main (b), (d), (e) were replaced by larger ones; there the
+claimed values of rv2_dual.py and rv2_decimals.py that refer to these certificates (bounds, decimals, paths) were
+updated, and nothing else.
 
 1. Comment and docstring edits only (code identical)
 ----------------------------------------------------------------------------------------------------------------
@@ -100,7 +103,8 @@ rv2_lift.py       09c15f1b467b9b9bd587008b940c1e230aac2f54bf8d790bbf26cf5461dc36
 rv2_decimals.py   35c5631a1b9296d1221950d1208fbd9495eedccf0427851579051d76d5d31101   614667937df247ea5cbe4b4c3772a0b8326603d44c9ca7b921a23bf2790b672d
 
 The review used rv1_lib.py and rv1_lift.py with sha256 70b04a4b... and 22be1189..., the versions "as reviewed" in
-item 1; the package copies have the same abstract syntax tree without docstrings.
+item 1; the package copies have the same abstract syntax tree without docstrings. (The digests "in this package" of
+rv2_dual.py and rv2_decimals.py are those of the second and third versions; item 11 gives the current ones.)
 
 Edits:
 * rv2_lib.py, rv2_selftest.py (first docstring line; code identical): the internal review labels were replaced by
@@ -112,7 +116,8 @@ Edits:
         RES = os.path.join(PKG, "n7_dual_points")
     (import os added), and the five certificate prefixes now point to the same files in the package (identical
     sha256): CERT56 = PKG + "/K5_4/lpcg_p5_conv_full", and the targets p6_f3, p7_f1, h44_nt3, k6m_W use
-    PKG + "/K6_4/lpcg_p6_full", "/K7_4/lpcg_p7_full", "/K5_4minus/lpcg_h44e", "/K6_4minus/lpcg_k6m_f";
+    PKG + "/K6_4/lpcg_p6_full", "/K7_4/lpcg_p7_full", "/K5_4minus/lpcg_h44e", "/K6_4minus/lpcg_k6m_f" (in the fourth
+    version the first, third and fourth became the new certificates, item 11);
   - code: the first printed line starts with "# rv2_dual" instead of the internal review label;
   - docstrings: the internal labels, "of tools/flagalg/n7dual2", "from the review task", "of the producer report"
     and "of the MAIN worktree" were replaced by package wording.
@@ -226,3 +231,59 @@ Edits:
   stab_c10_full). A helper runin runs a step in a work subdirectory (work/sigma/, work/stab/, each with local/).
 * --raw accepts sigma and stab_c10; "all" includes them. The npz check now requires 16 certificate files (the key
   list of the sigma certificate carries the sha256 of its .npz).
+
+11. Fourth version: new certificates for Theorem main (b), (d), (e)
+----------------------------------------------------------------------------------------------------------------
+The paper now cites larger certificates for t(6,4), t_2(5,4) and t_2(6,4), found by the cloud run paperb-b2 of
+2026-10-06 (recorded in commit ece523f8, branch research/turan4-n7, of the private working repository) and checked by
+the independent review R7_B2 (all PASS). They replace the earlier certificates in certificates/K6_4/, K5_4minus/ and
+K6_4minus/; the superseded files were removed from the package. The new files are byte-identical copies of the
+reviewed files (the review recorded the same sha256).
+
+dir         file                         sha256
+superseded, removed:
+K6_4        lpcg_p6_full.cert.json       bcba430c90c2f3a1e323211d54ca32812a3180fddecc8a832bf36920b586a1ae
+K6_4        lpcg_p6_full.cert.npz        436448443f284eed701f7a88c651f435d87f8e25af2e314158ec86686f47a257
+K5_4minus   lpcg_h44e.cert.json          c1ba60db850d7da254dfdd93c5641da8ce3458aec9bec30d6453134b0474988e
+K5_4minus   lpcg_h44e.cert.npz           7499697d71900d8b91f89b024b4163b248ad3ca0657e80db8e42cb0c1ca1001a
+K6_4minus   lpcg_k6m_f.cert.json         dacd5875d3c15111e68b421d1758eee87a561140dc676d72cd5f30c3a6962975
+K6_4minus   lpcg_k6m_f.cert.npz          13fc69bb2db7d0af4eb297bc8d3f7903fa3a09d1777ce9acb5b45f6255336577
+new:
+K6_4        c6l1.cert.json               092b43477322ae38ab3a4a0d2889587f0ea2b9dc1b1be0040480b2767043fe4a
+K6_4        c6l1.cert.npz                b72dbc093506f93b6e056bff3649237e7153b42ea94015289b851c4a1fe9f3d0
+K5_4minus   c5l2_f.cert.json             6cd51dd01d2a2b9fa55f3aaf0cfcc1f25d1a0eca0bde495ef61e477e550ffa26
+K5_4minus   c5l2_f.cert.npz              8eeafbd55836fc8ec5152cd854c57559337827a70a92d8afd668bf0eec4ad901
+K6_4minus   c6l2_f.cert.json             31d6238e8fa00f4d2d301e68ce1efc27e37e88c7204edd0281498db14a114d35
+K6_4minus   c6l2_f.cert.npz              0523233aa13a3f5a427b83cf623a87821e93bd2bd8630ed7cbf448dc553215ac
+
+Bounds: t(6,4) 614350111275/2^42 -> 9224492822869/(15*2^42); t_2(5,4) 2430536617277/2^42 -> 48641756816487/(5*2^44);
+t_2(6,4) 964431985683/2^42 -> 202684381843379/(105*2^43). For t(6,4) the cited certificate is that of the time-limited
+phase A (c6l1, no suffix), which is larger, by 2.5e-8, than the certificate of the following frozen-cut phase
+(c6l1_f); for t_2(5,4) and t_2(6,4) the phase-F certificates are the larger ones. The certificates not cited are not
+included.
+* The review checked the new certificates with the checker versions "as reviewed" in item 1 (rv_reps.py, rv_prep.py,
+  rv_eval.c, rv_compare.py, rv_pycheck.py; same sha256); their package copies are unchanged.
+* verify_all.sh: for K6_4, K5_4minus and K6_4minus, the file prefix (PRE), the bound (FRAC), the certificate's argmin
+  (ARG), and the raw-scan NMIN and SUMS sumZ, all from the review's logs. The counts (NREP, NCLS, NLAB, NRAW), DEN
+  and sume do not depend on the certificate and are unchanged (the review's scans reproduced them).
+* rv2_dual.py and rv2_decimals.py (code: claimed values and paths only):
+
+  file              sha256 in the third version                                        sha256 in this package
+  rv2_dual.py       84ffb04af311abbd580dc764b3911c5c0562946eab388fae4a5be0ef6da93ee9   195177f9e7a69c3bf63fecb93d3038b6650f598bf0cd3308ce70ec80200f757f
+  rv2_decimals.py   614667937df247ea5cbe4b4c3772a0b8326603d44c9ca7b921a23bf2790b672d   f8c57500f405fc987005dda690b2489121a801a2ac5dfcacaf6fd1d52ebb516f
+
+  - rv2_dual.py, TARGETS p6_f3, h44_nt3, k6m_W: b, picert (= ceil12(1 - b)), width (= ceil12(V) - floor12(b); printed
+    only) and cert (the prefix of the certificate used as weak-duality partner) now refer to the new certificates:
+    PKG + "/K6_4/c6l1", "/K5_4minus/c5l2_f", "/K6_4minus/c6l2_f". The dual points, V, ceil12, pifloor and every check
+    are unchanged.
+  - rv2_decimals.py, table B: the same three bounds, their 15-digit expansions, V - b (5 significant digits) and the
+    widths (7 significant digits).
+  - Source of the values: the review R7_B2 (bounds, floor12(b), ceil12(1 - b), the expansions of b, V - b, and the
+    widths for t_2(5,4) and t_2(6,4)); the width for t(6,4), 1.056693e-5 = 0.139837689411 - 0.139827122482, is the
+    difference of two decimals printed by the review.
+  - Checked mechanically: apart from the assignment of TARGETS (rv2_dual.py) and of B (rv2_decimals.py), the abstract
+    syntax trees of both files are identical before and after.
+* Test of the fourth version: verify_all.sh --fast --raw K5_4minus --threads 2, 127 steps, all PASS (69 min), among
+  them the fast checks of the three new certificates, the raw scan of K5_4minus (same TOTAL, NMIN, SUMS and group
+  maxima as the review's) and the weak-duality checks dual2_p6_f3, dual2_h44_nt3, dual2_k6m_W with the new partners.
+  The raw scans of K6_4 and K6_4minus were run by the review (EXPECTED.txt, part (a)).
