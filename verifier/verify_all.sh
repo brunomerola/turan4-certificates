@@ -1,11 +1,12 @@
 #!/usr/bin/env bash
 # Run the independent checks of this package from its root directory (see README.md and verifier/EXPECTED.txt).
 #
-#   verifier/verify_all.sh [--fast] [--sigcat] [--raw NAMES] [--producer-n6] [--producer-j4] [--threads N]
-#                          [--work DIR]
+#   verifier/verify_all.sh [--fast] [--sigcat] [--lotup] [--raw NAMES] [--producer-n6] [--producer-j4]
+#                          [--threads N] [--work DIR]
 #
 #   --fast          every check except the raw scans (the default when no option is given); about 90 min
 #   --sigcat        only the fast checks of parts (m) and (n) (Theorem sigmacat, Remark j4limit); about 6 min
+#   --lotup         only part (p) (Proposition lotup: upper bounds for lottery numbers); 1 to 2 min
 #   --raw NAMES     the long exhaustive scans, comma-separated: the raw scan of the 4-graph certificates K5_4, K6_4,
 #                   K7_4, K5_4minus, K6_4minus (Theorem main), cat_p5_lam3, cat_p6_lam3, cat_p6_lam4, cat_p6_lam5,
 #                   cat_p6_lam6, cat_p6_lam9, cat_p6_lam11, cat_p7_lam2, cat_p7_lam3, cat_p7_lam4 (Theorem
@@ -34,23 +35,26 @@ cd "$ROOT" || exit 2
 PY="${PYTHON:-python3}"
 CC="${CC:-gcc}"
 CFLAGS="${CFLAGS:--O3 -march=native -fopenmp -Wall}"
-FAST=0; SIGCAT=0; RAW=""; PRODN6=0; PRODJ4=0; THREADS=2; WORK="work"
+FAST=0; SIGCAT=0; LOTUP=0; RAW=""; PRODN6=0; PRODJ4=0; THREADS=2; WORK="work"
 while [ $# -gt 0 ]; do
   case "$1" in
     --fast) FAST=1 ;;
     --sigcat) SIGCAT=1 ;;
+    --lotup) LOTUP=1 ;;
     --raw) RAW="${2:?--raw needs a list}"; shift ;;
     --producer-n6) PRODN6=1 ;;
     --producer-j4) PRODJ4=1 ;;
     --threads) THREADS="${2:?--threads needs a number}"; shift ;;
     --work) WORK="${2:?--work needs a directory}"; shift ;;
-    -h|--help) sed -n '2,30p' "$0"; exit 0 ;;
+    -h|--help) sed -n '2,31p' "$0"; exit 0 ;;
     *) echo "unknown option: $1 (see --help)"; exit 2 ;;
   esac
   shift
 done
-if [ "$FAST" = 0 ] && [ "$SIGCAT" = 0 ] && [ -z "$RAW" ] && [ "$PRODN6" = 0 ] && [ "$PRODJ4" = 0 ]; then FAST=1; fi
+if [ "$FAST" = 0 ] && [ "$SIGCAT" = 0 ] && [ "$LOTUP" = 0 ] && [ -z "$RAW" ] && [ "$PRODN6" = 0 ] && [ "$PRODJ4" = 0 ]
+then FAST=1; fi
 [ "$FAST" = 1 ] && SIGCAT=1      # --fast includes the fast checks of parts (m) and (n)
+[ "$FAST" = 1 ] && LOTUP=1       # and part (p)
 MAIN5="K5_4 K6_4 K7_4 K5_4minus K6_4minus"
 CAT10="cat_p5_lam3 cat_p6_lam3 cat_p6_lam4 cat_p6_lam5 cat_p6_lam6 cat_p6_lam9 cat_p6_lam11 cat_p7_lam2 cat_p7_lam3"
 CAT10="$CAT10 cat_p7_lam4"
@@ -187,7 +191,7 @@ cinfo() {
 for n in $RAW4; do cinfo "$n"; done      # reject unknown names before any work
 
 say "# verify_all.sh  $(date -u +%FT%TZ)  root=$ROOT  work=$W  threads=$THREADS  python=$("$PY" -c 'import sys; print(sys.version.split()[0])' 2>&1)"
-say "# options: fast=$FAST sigcat=$SIGCAT raw='${RAW}' producer_n6=$PRODN6 producer_j4=$PRODJ4"
+say "# options: fast=$FAST sigcat=$SIGCAT lotup=$LOTUP raw='${RAW}' producer_n6=$PRODN6 producer_j4=$PRODJ4"
 
 # --- 0. integrity and build -----------------------------------------------------------------------------------------
 if command -v sha256sum > /dev/null; then SHA="sha256sum"; else SHA="shasum -a 256"; fi
@@ -795,6 +799,48 @@ print("J4 WINDOW OK" if ok else "J4 WINDOW WRONG")' "$C/sigma_catalogue/J4_limit
     "$C/sigma_catalogue/J4/cosig3_s3_J4_r30.cosig3.cert.json"
   check j4_window $? "b <= V (weak duality): True ; V - b = 4.1499e-07 ; 41/57 - V = 1.5209e-06" \
     "plain seven-vertex optimum for sigma(J_4) in (0.280703275315, 0.280703690307]" "J4 WINDOW OK"
+fi
+
+# --- (p) Proposition lotup: upper bounds for lottery numbers (type-pattern certificates, Giraud host) -----------------
+# The programs of the independent reviews R7_T3b (rv3b_*) and R7_P6 (r7p6_check.py), run in work/lotup/.
+if [ "$LOTUP" = 1 ]; then
+  mkdir -p "$W/lotup"
+  runin lotup lotup_certs "$PY" "$V/rv3b_certs.py"
+  check lotup_certs $? \
+    "k7_r4p5_m5_den1000000.txt  [PASS]  sha256 5f0f88f5007a42535dfc17823cf3e1165749dbd9f27dcca8f1a0271fc0060d61 (sidecar match)" \
+    "(k,r,p)=(7,4,5) m=5  types=38 {(4,): 5, (3, 1): 10, (2, 2): 10, (2, 1, 1): 12, (1, 1, 1, 1): 1}  blocks(y>0)=27  inner=None" \
+    "Turan: multiset failures 0 ; brute force on 5x5 points: True (53130 5-sets)" "rows: 27/38 tight, min slack 0.0" \
+    "c = 3467292853891919529774577/7750000000000000000000000 = 0.447392626309 ; stated c matches: True ; rounded-up 9 dp: 0.447392627 ; claimed decimal 0.447392627 ok: True" \
+    "f8_k7_r4p6_x_quarter.txt  [PASS]  sha256 44abf7407bfa5dfc8b6d49e7aa8fadef33c8e563d39ca5c6325d752a54123403 (sidecar match)" \
+    "(k,r,p)=(7,4,6) m=4  types=14 {(4,): 2, (2, 2): 6, (3, 1): 6}  blocks(y>0)=8  inner=[0, 1] q=5 c=3467292853891919529774577/7750000000000000000000000" \
+    "Turan: multiset failures 0 ; brute force on 4x6 points: True (134596 6-sets)" "rows: 14/14 tight, min slack 0.0" \
+    "c = 839651878561675758589323731/2976000000000000000000000000 = 0.282141088226 ; stated c matches: True ; rounded-up 9 dp: 0.282141089" \
+    "ALL CERTIFICATES PASS: True" "negative controls k7_r4p5_m5_den1000000.txt" "negative controls f8_k7_r4p6_x_quarter.txt" \
+    "!rejected: False" "![FAIL]"
+  runin lotup lotup_derived "$PY" "$V/rv3b_derived.py"
+  check lotup_derived $? "F8: 35*sum(y) = 107/384 (== 107/384: True) ; inner weight x0^4 + x1^4 = 1/128 (== 1/128: True)" \
+    "c(7,4,6) <= 35 sum y + c745/128 with c745 = m5 cert: ... = 0.282141088226 ; == (107+3c)/384: True ; up 9dp 0.282141089" \
+    "claimed 0.282141089 >= exact: True"
+  runin lotup lotup_giraud "$PY" "$V/rv3b_giraud.py"
+  check lotup_giraud $? "(T) d=2 n=8: Turan(5,4) by brute force: True" "(T) d=3 n=16: Turan(5,4) by brute force: True" \
+    "(T) d=4 n=32: Turan(5,4) by brute force: True" \
+    "(C) d=3: |E_cross| = 336 (formula 336) ; counts over ALL cross edges: [0] ; formula (N/2-2)(N/4-2) = 0" \
+    "(C) d=4: |E_cross| = 6720 (formula 6720) ; counts over ALL cross edges: [12] ; formula (N/2-2)(N/4-2) = 12" \
+    "(C) d=5: |E_cross| = 119040 (formula 119040) ; counts over ALL cross edges: [84] ; formula (N/2-2)(N/4-2) = 84" \
+    "(I) d=3: internal count 6, C(N-4,2) = 6" "(I) d=4: internal count 66, C(N-4,2) = 66" \
+    "(P) d=4: 8960 cross hyperedges (= |E_cross|*cnt/9 = 8960) ; max # through two cross edges = 2 ; alpha_cross = 1/6 ; internal (N-5)/C(N-4,2) = 1/6" \
+    "(P) d=5: max # cross hyperedges through a (3,2) 5-set = 6 (hand bound N-2 = 30) ; alpha_cross = max(that,1)/cnt = 1/14" \
+    "    leading ratio = 7/16" "    poly == direct formula at d=4,5: True" \
+    "(E) d=4: cross 4-sets covered by gauge-trivial 6-sets: 6720 (= |E_cross| 6720: True) ; 5-sets with no block meeting them in >= 4 points: 0"
+  runin lotup lotup_check "$PY" "$V/r7p6_check.py" "$ROOT"
+  check lotup_check $? "PASS (b) condition (i): 126 types of size 5, failures 0" \
+    "PASS (b) brute force on 5x5 blow-up: 53130 5-sets, failures 0" "PASS (b) C(7,4) sum y = c745 = file c" \
+    "PASS (c) f8_k7_r4p6_x_quarter.txt condition (ii): 14 rows, all satisfied, 14 tight" \
+    "PASS (c) f8_k7_r4p6_x_quarter.txt T and y = the paper's verbal description (arcs 1->2,2->3,3->4,4->1,1->3,2->4)" \
+    "PASS (c) (107+3c745)/384 < 0.282141089 (value 0.282141088226369)" \
+    "PASS (c) case analysis of the printed proof of (i) is exhaustive and correct" \
+    "PASS (a) d=4 tiling: each of the 6720 cross edges has weight exactly 1 (good (3,3)-sets: 8960); internal C(N-4,2)=66" \
+    "PASS table (7,4,6): C(k,4)/c = 124.051410 -> floor 124.05 (printed 124.05)" "SUMMARY: 69 checks, 0 FAIL" "!FAIL "
 fi
 
 # --- (k) to (n), long: the sigma raw scan, C10 over all labelled bases, the sigmacat raw scans, the J_4 controls ----

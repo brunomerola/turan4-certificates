@@ -20,7 +20,9 @@ checkers of the two J_4 reviews were renamed (prefixes jw_ and jd_) and the modu
 accordingly; apart from that the code changes are paths of generated and input files. Two producer programs (prefix
 sk_, not independent) check the new key lists. Items 14 and 15 describe the sixth version (the seven further
 certificates of Theorem sigmacat, with the checkers of their review R7_SIG8, prefix s8_, and that review's independent
-checks of all ten key lists); again the only code changes are paths.
+checks of all ten key lists); again the only code changes are paths. Items 16 and 17 describe the seventh version
+(Proposition lotup, the checkers of the reviews R7_T3b and R7_P6); there the code changes are paths and the names of
+the input files, and r7p6_check.py skips its checks of a producer file that the package does not contain.
 
 1. Comment and docstring edits only (code identical)
 ----------------------------------------------------------------------------------------------------------------
@@ -484,3 +486,53 @@ second spot-check set; from its result files, unchanged).
   The decoding, the list-mode evaluation and the C-Python comparison of the raw part were run by hand for K5_4minus,
   C5 and K7_4 with the commands of verify_all.sh: evaluation tables and representatives byte-identical to the
   reviews', all expected strings present. The raw scans themselves were not run (they are the reviews').
+
+16. Seventh version: the checkers of Proposition lotup (upper bounds for lottery numbers)
+----------------------------------------------------------------------------------------------------------------
+New data in certificates/lottery_upper/: the two type-pattern certificates of Proposition lotup (b) and (c) with their
+sha256 sidecars, byte-identical to the producer's files that the reviews read (k7_r4p5_m5_den1000000.txt 5f0f88f5...,
+f8_k7_r4p6_x_quarter.txt 44abf740...). The checkers are those of the independent reviews R7_T3b (prefix rv3b_, no
+collision) and R7_P6 (r7p6_check.py).
+
+file               original (review / file)   sha256 as reviewed                                                 sha256 in this package
+rv3b_core.py       R7_T3b/rv3b_core.py        9279370c9f0a34f59c36630547094fbc6d0743cf1e82e3319c062de1b9f080da   856a3b6bf914342a3cbb75b9b534e88dcceb2a9f67b715d3a73334597fc0ae58
+rv3b_certs.py      R7_T3b/rv3b_certs.py       41a3692b52688c24c8bdafc1d71eb89835e2b0f216d717e5427f53247eaf7ad5   5174071cfab552b75774ea51d1d2ba4036d129398d43be78178b840b476e7cf2
+rv3b_derived.py    R7_T3b/rv3b_derived.py     07be2eb6766300c6cd80ce7f7363e9f53e67563c07f172584022acb076db7ba3   b448c486a37d79389c08e0b17561e9edfd131561e9c79bad953e74047cb25b5d
+rv3b_giraud.py     R7_T3b/rv3b_giraud.py      b985d5dc433c699bf3f4be1066482462a27742dd7a557735762ba4eec5d2f44e   08adb24f35afeaff7ad3641905079ba9b1e2e1466680b70b66c6885f1c341de3
+r7p6_check.py      R7_P6/r7p6_check.py        e4199a6810964855e0f0a481c28fdd5f29dea33a2f69baf8b9622372613fcacf   21f6cf4d9283631f6cea266d7a6c0d0023507cd67a4ab8eea16941c485c18c06
+(The R7_T3b files as committed with that review, research commit 05b9afff; r7p6_check.py as recorded in the report of
+R7_P6, research commit 8b7e4307.)
+
+Edits:
+* All files (first docstring or comment lines): the internal review label was replaced by "Independent checker";
+  references to internal notes and task numbers were replaced by package wording (rv3b_core.py: "Theorem A,
+  REALISATION.txt" became "Lemma pattern of the paper"; rv3b_certs.py: the comment on the claimed decimals;
+  rv3b_giraud.py: "the F9 write-up" became "Proposition lotup(a)"; r7p6_check.py: the description of its input and
+  of the block it checks). rv3b_core.py and rv3b_giraud.py have the same abstract syntax tree without docstrings.
+* rv3b_certs.py (code, paths and file names): the certificate directory, the producer's tools/constructions/certs/
+  (29 files), is now certificates/lottery_upper/ (the two files of this package; the program checks every *.txt there);
+  the temporary file of its negative controls is written to the working directory instead of logs/ next to the
+  script; its negative controls run on the two package files instead of three of the producer's
+  (k5_m10_den1000000.txt, k7_r4p5_m5_den1000000.txt, f8_746_x_quarter.txt).
+* rv3b_derived.py (code, paths and one file name): the same directory change, and the composition of (c) reads its
+  y, x and inner parts from f8_k7_r4p6_x_quarter.txt instead of the producer's f8_746_x_quarter.txt, which has the
+  same T, y, x and inner parts (checked by R7_P6) and differs only in the inner constant, which this program does not
+  read (it uses the value of the certificate of (b)).
+* r7p6_check.py (code): the paths of the two certificates (the producer's tools/ directories became
+  certificates/lottery_upper/); the loop over the two producer files for (c) now runs on the shipped one only, and the
+  case check of the printed proof of (c)(i) reads its types from the shipped file instead of f8_746_x_quarter.txt
+  (same T). So the 12 checks of the review on f8_746_x_quarter.txt are not run: 69 of its 81 checks remain, each with
+  the output line of the review's log.
+* Not copied: rv3b_lpopt.py and rv3b_minimal.py (informative: float LP optima and minimality of the type sets),
+  R7_P6's abs_len.py (length of the abstract), the run scripts and logs. R7_F2's r7f2_certs.py, which checked the
+  file for (c) (claim 2), is tied to the eleven files of that review and to the producer's results file, so it would
+  need more than path edits; the shipped file for (c) is checked by rv3b_certs.py and r7p6_check.py instead.
+
+17. Seventh version: verify_all.sh
+----------------------------------------------------------------------------------------------------------------
+* New part (p) (steps lotup_certs, lotup_derived, lotup_giraud, lotup_check, run in work/lotup/), in --fast and in the
+  new option --lotup (part (p) only, with the integrity steps). Arguments as in the reviews: rv3b_certs.py,
+  rv3b_derived.py and rv3b_giraud.py without arguments (all five parts T C P V E of rv3b_giraud.py), r7p6_check.py
+  with the package root in place of the research directory.
+* Test of the seventh version (2026-10-08, 2 logical CPUs, under a 1.5 GB memory cap): verify_all.sh --lotup, 6 steps (integrity,
+  npz_hashes and the 4 of part (p)), ALL CHECKS PASSED (1.7 min while other jobs were running, peak 84 MB).

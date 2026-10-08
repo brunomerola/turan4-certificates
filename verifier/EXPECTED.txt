@@ -18,7 +18,8 @@ values of (i) that refer to them (b, ceil12(1 - b), V - b) from the same review.
 the fifth version, and the sixth added seven certificates to part (m); their expected values come from the independent
 reviews of these files (R7_SIG7 with its addendum A1, R7_SIG8 with its addenda A1 and A2, R7_J4S1, R7_J4S2) and from
 the definitions, except those of sigcat_keys and sigcat_keys_neg (a producer program checking the key lists; its log)
-and of the optional part (o) (the producer's own checkers; their logs).
+and of the optional part (o) (the producer's own checkers; their logs). Part (p) was added in the seventh version;
+its expected values come from the independent reviews R7_T3b, R7_F2 and R7_P6 (their logs).
 
 0. Integrity and build                                                                     a few seconds
 ------------------------------------------------------------------------------------------------------------------
@@ -581,6 +582,58 @@ Not independent checks (the independent ones are part (n)); expected values from
 for the dual point is different (exact LDL^T for n <= 40, otherwise a floating-point Cholesky hint with an exact
 integer residual that must be diagonally dominant). Times (test of the fifth version): producer_j4_s1 15 s,
 producer_j4_s2 31 s; peak memory of the test run with --raw j4_controls 0.21 GB.
+
+(p) Proposition lotup: upper bounds for lottery numbers, certificates/lottery_upper/                    1 to 2 min
+------------------------------------------------------------------------------------------------------------------
+Expected values from the independent reviews R7_T3b (rows 3a, 4, 6; its logs rv3b_certs, rv3b_derived,
+rv3b_giraud), R7_F2 (claim 2: the file for (c)) and R7_P6 (its log of r7p6_check.py). Run in work/lotup/.
+lotup_certs    rv3b_certs.py (with rv3b_core.py) on both files of certificates/lottery_upper/:
+                 "k7_r4p5_m5_den1000000.txt  [PASS]  sha256 5f0f88f5... (sidecar match)",
+                 "(k,r,p)=(7,4,5) m=5  types=38 {(4,): 5, (3, 1): 10, (2, 2): 10, (2, 1, 1): 12, (1, 1, 1, 1): 1}
+                  blocks(y>0)=27  inner=None"   (one line),
+                 "Turan: multiset failures 0 ; brute force on 5x5 points: True (53130 5-sets)", "rows: 27/38 tight, min
+                  slack 0.0", "c = 3467292853891919529774577/7750000000000000000000000 = 0.447392626309 ; stated c matches:
+                  True ; rounded-up 9 dp: 0.447392627 ; claimed decimal 0.447392627 ok: True"   (one line each);
+                 "f8_k7_r4p6_x_quarter.txt  [PASS]  sha256 44abf740... (sidecar match)",
+                 "(k,r,p)=(7,4,6) m=4  types=14 {(4,): 2, (2, 2): 6, (3, 1): 6}  blocks(y>0)=8  inner=[0, 1] q=5
+                  c=3467292853891919529774577/7750000000000000000000000",
+                 "Turan: multiset failures 0 ; brute force on 4x6 points: True (134596 6-sets)", "rows: 14/14 tight, min
+                  slack 0.0", "c = 839651878561675758589323731/2976000000000000000000000000 = 0.282141088226 ; stated c
+                  matches: True ; rounded-up 9 dp: 0.282141089";
+                 "ALL CERTIFICATES PASS: True", the negative controls of both files (y shrunk by 1e-6, a needed type
+                 dropped, x mass moved, c lowered by 1e-12), no "rejected: False", no "[FAIL]".
+               (R7_T3b ran this program on the producer's 29 certificates of its review, among them the file for (b) and
+               the producer's other file for (c), with the same T and y; the values for the shipped file for (c) are
+               those of R7_F2 claim 2 and R7_P6.)
+lotup_derived  rv3b_derived.py: "F8: 35*sum(y) = 107/384 (== 107/384: True) ; inner weight x0^4 + x1^4 = 1/128 (== 1/128:
+                True)", "c(7,4,6) <= 35 sum y + c745/128 with c745 = m5 cert: ... = 0.282141088226 ; == (107+3c)/384: True ;
+                up 9dp 0.282141089", "claimed 0.282141089 >= exact: True"  (the composition of (c); the program also
+                prints the split bounds of its review, not used by the paper)
+lotup_giraud   rv3b_giraud.py (the numerical companion of (a), Gamma_d on two copies of F_2^d, N = 2^d, n = 2N):
+                 "(T) d=2 n=8 / d=3 n=16 / d=4 n=32: Turan(5,4) by brute force: True",
+                 "(C) d=3: |E_cross| = 336 ... [0] ... = 0", "(C) d=4: |E_cross| = 6720 ... [12] ... = 12",
+                 "(C) d=5: |E_cross| = 119040 ... [84] ... = 84" (every cross edge in exactly (N/2-2)(N/4-2) good
+                 (3,3)-sets), "(I) d=3: internal count 6, C(N-4,2) = 6", "(I) d=4: internal count 66, C(N-4,2) = 66",
+                 "(P) d=4: 8960 cross hyperedges ... alpha_cross = 1/6 ...", "(P) d=5: ... alpha_cross = ... = 1/14",
+                 "leading ratio = 7/16", "poly == direct formula at d=4,5: True", "(E) d=4: cross 4-sets covered by
+                 gauge-trivial 6-sets: 6720 (= |E_cross| 6720: True) ; 5-sets with no block meeting them in >= 4 points: 0"
+lotup_check    r7p6_check.py ROOT: "SUMMARY: 69 checks, 0 FAIL", no "FAIL " line; among them
+                 "PASS (b) condition (i): 126 types of size 5, failures 0", "PASS (b) brute force on 5x5 blow-up: 53130
+                 5-sets, failures 0", "PASS (b) C(7,4) sum y = c745 = file c", "PASS (c) f8_k7_r4p6_x_quarter.txt
+                 condition (ii): 14 rows, all satisfied, 14 tight", "PASS (c) f8_k7_r4p6_x_quarter.txt T and y = the
+                 paper's verbal description (arcs 1->2,2->3,3->4,4->1,1->3,2->4)", "PASS (c) (107+3c745)/384 <
+                 0.282141089 (value 0.282141088226369)", "PASS (c) case analysis of the printed proof of (i) is
+                 exhaustive and correct", "PASS (a) d=4 tiling: each of the 6720 cross edges has weight exactly 1 (good
+                 (3,3)-sets: 8960); internal C(N-4,2)=66", "PASS table (7,4,6): C(k,4)/c = 124.051410 -> floor 124.05
+                 (printed 124.05)". The review ran 81 checks: the 12 on the producer's other file for (c) (not in this
+                 package; the review found its T and y equal to those of the shipped file) are omitted here
+                 (verifier/CHANGES.txt, item 16); every other check and its output line is the review's.
+Values: c745 = 3467292853891919529774577/7750000000000000000000000 = 0.447392626308634... < 0.447392627 (rounded up);
+(107 + 3 c745)/384 = 839651878561675758589323731/2976000000000000000000000000 = 0.282141088226369... < 0.282141089;
+Table lottery: C(k,4)/c = 34.28 (7/16), 78.23, 124.05 (rounded down).
+Times (test of the seventh version, 2 logical CPUs, while other jobs were running): lotup_certs
+3 s, lotup_derived < 1 s, lotup_giraud 79 s, lotup_check 22 s (1.7 min with the integrity steps, machine load
+about 8; peak memory 84 MB). In the reviews: 3 s, 0.1 s, 25 s and 6 s.
 
 Total of --fast: 81 min wall clock in the test of the third version (124 steps), run with --threads 2 on two cores
 of the same laptop while other heavy jobs were running (58 min for the 107 steps of the second version);

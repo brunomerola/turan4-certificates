@@ -19,11 +19,12 @@ SHA-256 of its `.npz` in the field `cert_npz_sha256`.
 | `n7_dual_point/` | Theorem n7opt (seven-vertex optimum for t(5,4)) | 1336237682928914994292138923/(7*2^89) |
 | `n7_dual_points/` | Table n7limits: seven-vertex limits for t(6,4), t(7,4), t_2(5,4), t_2(6,4) and for t(5,4) without the (5,6) block | see `n7_dual_points/README.md` |
 | `sigma_K5_4/` | Theorem sigma: sigma(K_5^(4)) = 31/64 (sharp certificate, value 33/64 for kappa = 2d - gamma); also the margin mu_0 of Proposition margin (stability section) | 33/64 |
+| `lottery_upper/` | Proposition lotup (b), (c): upper bounds for the lottery numbers l(7,4,5), l(7,4,6) (type-pattern certificates) | c745 = 3467292853891919529774577/7750000000000000000000000; (107 + 3 c745)/384 |
 | `sigma_catalogue/` | Theorem sigmacat (Table sigmacat): sigma(J_4), sigma(K_5^<), sigma(K_5^=), sigma(K_5^{3-}), sigma(C_5), sigma(K_6^(3)), sigma(K_5^(4)-), sigma(K_6^(4)-), sigma(K_6^(4)), sigma(K_7^(4)) (one subdirectory each); Remark j4limit: the dual point and the witness for J_4 (`J4_limit/`) | see `sigma_catalogue/README.md` |
 
 Theorem, table and remark names are the LaTeX labels of the paper (`thm:main`, `thm:five`, `thm:catalogue`,
 `tab:catalogue`, `thm:n6`, `thm:n7opt`, `tab:n7limits`, `rem:n6sharp`, `thm:sigma`, `prop:margin`, `thm:sigmacat`,
-`rem:j4limit`);
+`rem:j4limit`, `prop:lotup`);
 `115448720916480 = 105 * 2^40`, `65970697666560 = 15 * 2^42`, `87960930222080 = 5 * 2^44`,
 `923589767331840 = 105 * 2^43`. The computer facts of the stability section ((G7), (G8), (C8), (C9), (C10)) need no
 data file: they are recomputed from the definitions by part (l) of `verifier/verify_all.sh`.

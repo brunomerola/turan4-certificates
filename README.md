@@ -28,6 +28,7 @@ code that found the certificates.
 | Section "Stability for the codegree-squared density": (G7), (G8), (C8), (C9), (C10) and the margin mu_0 of Proposition margin | 2,404 / 10 and 32,981 / 22 labelled / classes; locally Giraud => Giraud for n = 8, 9, 10 (15,636,107 on ten vertices); mu_0 = 176165518826891630107/6280747422216628134215680 | `certificates/sigma_K5_4/` (for mu_0 and the constants) | (l); C10 over all bases and the minimality of mu_0: `--raw stab_c10`, `--raw sigma` |
 | Theorem sigmacat (Table sigmacat) | the ten upper bounds of the table: sigma(J_4) <= 9061620987350745659/32281802128991715328 < 0.280703690307, sigma(K_5^<) <= 1375676321453/4123168604160 < 0.333645420191, sigma(K_5^(4)-) <= 6281420455337/30786325577728 < 0.204032807991, and sigma(K_5^=) < 0.384425652179, sigma(K_5^{3-}) < 0.405930172388, sigma(C_5) < 0.252304935013, sigma(K_6^(3)) < 0.742318262433, sigma(K_6^(4)-) < 0.612037993062, sigma(K_6^(4)) < 0.743753064695, sigma(K_7^(4)) < 0.877155180904 (exact fractions in `certificates/sigma_catalogue/README.md`) | `certificates/sigma_catalogue/` (one subdirectory per certificate) | (m); the exhaustive scans: `--raw sigcat` |
 | Remark j4limit | every plain seven-vertex certificate for J_4 proves at best sigma(J_4) <= 1 - V, 1 - V > 0.280703275315 (exact dual point); certificates vanishing on the moments of the extremal construction prove at best 16/57 + 316891/14980607589 (exact witness) | `certificates/sigma_catalogue/J4_limit/` | (n); controls `--raw j4_controls` |
+| Proposition lotup (Section "Upper bounds for lottery numbers") | (b) C(7,4) l(7,4,5) <= c745 = 3467292853891919529774577/7750000000000000000000000 < 0.447392627; (c) C(7,4) l(7,4,6) <= (107 + 3 c745)/384 < 0.282141089 (type-pattern certificates); (a) C(6,4) l(6,4,5) <= 7/16 is an explicit construction (numerical companion checks only) | `certificates/lottery_upper/` | (p) |
 | Section "Remarks on the seven-vertex optimum": Giraud's construction against the t(5,4) certificate; the certificate does not force parity | exact values, see `verifier/EXPECTED.txt` | `certificates/K5_4/` | (e) |
 | Section "What six and seven vertices can give": the r = 3 comparison t(4,3) > 0.426923 on five vertices | 60084175574225/2^47 (see the note in EXPECTED.txt) | `verifier/indep_k43_n5.py` | (f) |
 
@@ -53,6 +54,7 @@ From the package root:
     verifier/verify_all.sh --raw sigma,stab_c10       # Theorem sigma (all raw extensions) and fact C10 (about 35 min)
     verifier/verify_all.sh --sigcat                   # only the fast checks of Theorem sigmacat and Remark j4limit (6-8 min)
     verifier/verify_all.sh --raw sigcat --threads 16  # the ten raw scans of Theorem sigmacat (about 9 h on 2 threads)
+    verifier/verify_all.sh --lotup                    # only the checks of Proposition lotup (1-2 min)
     verifier/verify_all.sh --producer-n6              # optional: first implementation's check of the sharp N = 6 certificates
     verifier/verify_all.sh --producer-j4              # optional: the producer's own checks of the files of Remark j4limit
 
@@ -88,6 +90,7 @@ everything to `work/` (option `--work`), prints one PASS/FAIL line per step, kee
 | (n) | Remark j4limit: the exact dual point (`jd_verify_dual.py`: 757 graphs, all moment matrices PSD exactly) and the obstruction witness (`jw_verify.py`, its controls `jw_neg.py`, the lifting identity `jw_lift.py`), and the window b <= V | about 3 min |
 | (n), long | `--raw j4_controls`: positive and negative controls of the dual-point checker (`jd_controls.py`) | 4 to 11 min |
 | (o) | optional, `--producer-j4`: the producer's own checkers `search/sigma_catalogue/verify_witness.py` and `verify_dual3.py` on the two files of (n) | under 1 min |
+| (p) | Proposition lotup (`--lotup`, also in `--fast`): the two type-pattern certificates (`rv3b_certs.py` with `rv3b_core.py`: conditions (i) and (ii) exactly, brute force on a blow-up, value, negative controls), the composition of (c) (`rv3b_derived.py`), the numerical companion of (a) on the Giraud host (`rv3b_giraud.py`), and 69 exact checks of the numbers of the section (`r7p6_check.py`) | 1 to 2 min |
 
 Times were measured on one core of an AMD Ryzen 7 5800H laptop unless stated otherwise; memory stays below
 600 MB, except for `--raw sigcat_J4` (1.5 GB) and `--raw sigcat_K5lt` (0.85 GB). The whole `--fast` run (124 steps)
@@ -96,7 +99,8 @@ fourth version, which replaced the certificates of Theorem main (b), (d), (e)), 
 The fifth version added parts (m) and (n) to `--fast` (16 steps, 3 minutes with `--sigcat` in its test, peak memory
 128 MB), the raw scans of part (m) (run by the independent review, not in the test of this package) and the optional
 part (o); the sixth version the seven further certificates of Theorem sigmacat (part (m) now 28 steps, 33 with part
-(n); `--sigcat` 8.3 minutes in its test while other jobs were running; 157 steps in `--fast`).
+(n); `--sigcat` 8.3 minutes in its test while other jobs were running; 157 steps in `--fast`); the seventh version
+part (p), Proposition lotup (4 steps, 1.7 minutes in its test; 161 steps in `--fast`).
 
 ## Trust model
 
@@ -134,6 +138,12 @@ part (o); the sixth version the seven further certificates of Theorem sigmacat (
   independent checkers of the certificates rebuild types and flags from the definitions and do not need them.
   The dual point of Remark j4limit is tested exactly (fraction-free elimination, or all leading principal minors by
   multimodular arithmetic), the witness by exact elimination and exact kernels.
+* **Proposition lotup** (upper bounds for lottery numbers) rests on Kahn's fractional form of the
+  Frankl-Rodl-Pippenger theorem (Kahn 1996, Theorem 1.2(b)) and on the existence of the limits l(k,r,p) (Sidorenko
+  2023), which are cited, not checked here. Its certificates (`certificates/lottery_upper/`) are finite lists of exact
+  rationals; part (p) checks the two conditions of Lemma pattern in exact arithmetic, by type-level domination and by
+  brute force, with the programs of two independent reviews. Part (a) is a construction proved by hand; the package
+  checks its counts numerically.
 * **Limits.** The exact fraction printed by check (f) depends on the floating-point SDP solution and hence on the
   clarabel version; the check itself only requires the bound to beat Chung and Lu's. Of the ten catalogue raw
   scans, the independent review repeated four on its own machine; the other six were run on the cloud machines

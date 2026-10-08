@@ -5,8 +5,9 @@ International License (CC BY 4.0): https://creativecommons.org/licenses/by/4.0/
 (legal code: https://creativecommons.org/licenses/by/4.0/legalcode).
 
 This license covers:
-  * every file in certificates/ and its subdirectories: the certificates (*.cert.json, *.cert.npz), the dual points
-    and the other certificate files (*.json), and their README.md files;
+  * every file in certificates/ and its subdirectories: the certificates (*.cert.json, *.cert.npz, and the
+    type-pattern certificates *.txt with their *.sha256 files), the dual points and the other certificate files
+    (*.json), and their README.md files;
   * the documentation files README.md, SHA256SUMS, verifier/EXPECTED.txt, verifier/CHANGES.txt, search/README.md
     and search/CHANGES.txt, the table of expected values verifier/sigcat_spot_values.txt and the lists of reviewed
     sha256 verifier/s7_review_hashes.txt and verifier/s8_review_hashes.txt.
