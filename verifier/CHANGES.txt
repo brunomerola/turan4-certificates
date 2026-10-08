@@ -577,3 +577,8 @@ history distinguishes initial spot checks from the later full cloud validation. 
 displays with safe directed rounding and simplifies the exposition. The three verifier-linked tables, exact
 fractions, certificates, checker programs, driver commands and expected strings are unchanged. The README results
 table retains its additional decimal precision. No computational result is added or changed.
+
+The subsequent structural pass groups the two main results before the supplementary bounds, presents the exact
+codegree-squared value and stability together, and keeps the lottery applications together before insertion codes.
+Search history and numerical observations are in a separate appendix. The preprint has 33 pages and 10 tables;
+theorem numbering has changed, while labels and mathematical statements are preserved.
