@@ -1,0 +1,27 @@
+cff-version: 1.2.0
+message: "If you use these certificates or checkers, please cite the paper and this data package."
+title: "Turán densities of complete 4-graphs: certificates and checkers"
+type: dataset
+version: 1.0.0
+date-released: 2026-10-08
+authors:
+  - family-names: "Mérola Corrêa"
+    given-names: "Bruno"
+repository-code: "https://github.com/brunomerola/turan4-certificates"
+license:
+  - CC-BY-4.0
+  - MIT
+keywords:
+  - Turán density
+  - hypergraphs
+  - flag algebras
+  - codegree-squared density
+  - lottery numbers
+preferred-citation:
+  type: article
+  title: "Turán densities of complete 4-graphs via flag algebras on seven vertices"
+  authors:
+    - family-names: "Mérola Corrêa"
+      given-names: "Bruno"
+  year: 2026
+  notes: "Preprint; arXiv identifier to be added"
