@@ -42,5 +42,14 @@ programs), so most scripts will not run out of the box. Python dependencies, bey
   given block list), which is not included; their exact check is `../verifier/rv2_dual.py`. Likewise the
   custom-objective pipeline and the sharp rounding that produced `../certificates/sigma_K5_4/` are not included;
   its exact checks are `../verifier/rs_*.py` and `rs_eval.c`.
+* `sigma_catalogue/` -- the producer's own exact checkers of the two files of Remark j4limit
+  (`../certificates/sigma_catalogue/J4_limit/`): `verify_witness.py` (the obstruction witness: recomputes the law of
+  the construction, the moment matrices, their kernels and the conditions) and `verify_dual3.py` (the dual point:
+  moment matrices, exact LDL^T or a floating-point Cholesky hint with an exact diagonally dominant residual). Both are
+  self-contained (Python and numpy) and are run by `verify_all.sh --producer-j4`; the independent checks of the same
+  files are `../verifier/jw_*.py` and `jd_*.py`. The pipeline that found the certificates of Theorem sigmacat (the
+  custom-objective LP cut and column generation for 3-graphs and for the objective kappa, the re-rounding of the
+  J_4 certificate at M = 2^30, the facial reduction and interior-point search for the dual point) is not included;
+  the exact checks of its results are `../verifier/s7_*.py`, `s7_eval.c` and `s7_eval128.c`.
 
 All of this code is under the MIT license (`../LICENSE-CODE`).

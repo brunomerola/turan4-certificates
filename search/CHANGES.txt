@@ -21,5 +21,19 @@ flagalg/n7dual/paths.py     d4af20406995edcb6f2be1dc2a406bacaf8180691736814bc771
   variable N7DUAL_MAIN_N7 still overrides it), and the comment above it was reworded. These input files are not
   included in the package.
 
+Fifth version: two self-contained checkers of the producer for Remark j4limit, in sigma_catalogue/ (docstring edits
+only; the abstract syntax tree with docstrings removed is identical before and after):
+
+file                                  sha256 of the original                                             sha256 in this package
+sigma_catalogue/verify_witness.py     e22f73e69f89eaae41ffdd226c464ab69353df3658852dd697948f1df2b3caf7   b9287253ecfcbb254edb23fc50e6bc04bf77caf765d2edd8ac3170c61a2caf43
+sigma_catalogue/verify_dual3.py       8752c670a39163e7abb202a4e69ece7b803385544d4adf8d4c9c6d779624c6c4   108217a7315c335c8d2319741e352f01a2e4a23c4ed1bc89ea06186825f8f43f
+
+* verify_witness.py (first docstring line): an internal step label was removed ("S1 -- self-contained" became
+  "Self-contained").
+* verify_dual3.py (first docstring line): the relative path of the producer's checker of the dual points of Table
+  n7limits, of which it is the r = 3 port, became "the check of Table n7limits" (that checker is not included).
+The originals are the files that the independent reviews of the witness and of the dual point read (same sha256; the
+first review also re-ran verify_witness.py, with the same verdict).
+
 Not copied: the producer's results, logs, data files and reports (only the final certificates are in
 ../certificates/), compiled caches (__pycache__, numba caches) and shell launchers.

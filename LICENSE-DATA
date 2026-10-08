@@ -8,7 +8,7 @@ This license covers:
   * every file in certificates/ and its subdirectories: the certificates (*.cert.json, *.cert.npz), the dual points
     and the other certificate files (*.json), and their README.md files;
   * the documentation files README.md, SHA256SUMS, verifier/EXPECTED.txt, verifier/CHANGES.txt, search/README.md
-    and search/CHANGES.txt.
+    and search/CHANGES.txt, and the table of expected values verifier/sigcat_spot_values.txt.
 
 The programs in verifier/ (*.py, *.c, verify_all.sh) and in search/ (*.py) are not covered by this license; they
 are released under the MIT license, see LICENSE-CODE.

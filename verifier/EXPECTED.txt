@@ -8,18 +8,23 @@ The exact values are those of the paper. Times: measured on one core of an AMD R
 except where marked (the times of parts (h) to (l) and the total come from the tests of the second and third
 versions, with --threads 2 on the same machine); they will differ on other machines. Peak memory of every step is
 below 600 MB (the largest are stab_cf, about 585 MB, sigma_prep, about 475 MB, and the rv2_dual.py steps of part (i),
-up to about 460 MB). Parts (h), (i) and (j) were added in the second version of the package, parts (k) and (l) in
-the third; their expected values come from the independent reviews of the catalogue, of the dual points, of the
-sigma certificate and of the stability results (and, for (j), from the definitions), never from the producer's
-outputs. In the fourth version the certificates of Theorem main (b), (d), (e) (K6_4, K5_4minus, K6_4minus) were
-replaced by larger ones; their expected values in (a) come from their independent review R7_B2 (its own runs of the
-same checkers), and the values of (i) that refer to them (b, ceil12(1 - b), V - b) from the same review.
+up to about 460 MB), except the prep steps of --raw sigcat_J4 (about 1.5 GB) and --raw sigcat_K5lt (about 0.85 GB).
+Parts (h), (i) and (j) were added in the second version of the package, parts (k) and (l) in the third; their
+expected values come from the independent reviews of the catalogue, of the dual points, of the sigma certificate and
+of the stability results (and, for (j), from the definitions), never from the producer's outputs. In the fourth
+version the certificates of Theorem main (b), (d), (e) (K6_4, K5_4minus, K6_4minus) were replaced by larger ones;
+their expected values in (a) come from their independent review R7_B2 (its own runs of the same checkers), and the
+values of (i) that refer to them (b, ceil12(1 - b), V - b) from the same review. Parts (m), (n) and (o) were added in
+the fifth version; their expected values come from the independent reviews of these files (R7_SIG7 with its addendum
+A1, R7_J4S1, R7_J4S2) and from the definitions, except those of sigcat_keys and sigcat_keys_neg (a producer program
+checking the key lists; its log) and of the optional part (o) (the producer's own checkers; their logs).
 
 0. Integrity and build                                                                     a few seconds
 ------------------------------------------------------------------------------------------------------------------
 integrity     sha256sum -c SHA256SUMS: every file OK ("!FAILED")
-npz_hashes    "16 certificate files", "ALL NPZ HASHES MATCH" (each .npz equals the cert_npz_sha256 field of its
-              .json; certificates/ is searched recursively: the five of (a), the ten of (h) and the sigma key list)
+npz_hashes    "19 certificate files", "ALL NPZ HASHES MATCH" (each .npz equals the cert_npz_sha256 field of its
+              .json; certificates/ is searched recursively: the five of (a), the ten of (h), the sigma key list and the
+              three of (m))
 build         gcc -O3 -march=native -fopenmp -Wall -o work/rv_eval verifier/rv_eval.c, exit status 0
 
 (a) The five 4-graph certificates (Theorem main)
@@ -384,9 +389,149 @@ stab_c10_full    r_lg10_full.py (C10 over all 604,426 labelled bases): "R_by_par
 Times (same test): stab_cf 128 s (peak 585 MB), stab_lg8 < 1 s, stab_lg9 20 s, stab_lg10 113 s, stab_margin 3 s,
 stab_formF 51 s, stab_cor 19 s; --raw stab_c10: stab_c10_full 1367 s.
 
+(m) Theorem sigmacat: sigma(J_4), sigma(K_5^<), sigma(K_5^(4)-), certificates/sigma_catalogue/          fast: 15 s
+------------------------------------------------------------------------------------------------------------------
+Expected values from the independent review of the three certificates (R7_SIG7 and, for J4, its addendum A1: its logs
+and result files) and from the definitions; for sigcat_keys and sigcat_keys_neg from the log of the producer's
+key-list check. Run in work/sigcat/. Names X = J4, K5lt, K5_4minus (directories certificates/sigma_catalogue/X/).
+sigcat_keys       sk_check_keys.py (the producer's self-contained checker of the key lists; not a review program):
+                  "ALL PASS: 3 key files checked" and, per key list, one line containing
+                  '"problem": "s3_J4", "objective": "cosig3", "keys": 43, "flags": 24402, "bound": "B", "sigma_upper": "S",
+                   "PASS": true'   (s3_K5lt: cosig3, 45 keys, 28108 flags; c4_K5m: sigma4, 10 keys, 2243 flags): every key
+                  list rebuilt from the definitions (canonical types and flags, |Aut|) equals keys.json and the keys of the
+                  certificate json, each A_k has the stated shape, the copies have the recorded sha256
+sigcat_keys_neg   sk_neg_keys.py: four corrupted copies of the K5lt key list are rejected: "swap: exit 1 (FAIL as
+                  required)", "aut: ...", "forb: ...", "rows: ..." (two flags swapped, an |Aut| changed, the forbidden
+                  graph changed, a row count changed), "NEGATIVE CONTROLS OK"
+sigcat_reduction  s7_reduction.py (all assertions hold): '"r3_identities_graphs": 60', '"r3_num7_graphs": 40',
+                  '"r4_identities_graphs": 24', '"r4_K5m_predicate_graphs": 900', '"planted_K4m_free_with_C5": 240',
+                  '"ALL_OK": true' (co2 = sum c(c-1) + 3e and the x != y form, 210 f = 210 - sum_Q C(k_Q,2), exact
+                  averaging over 7-subsets for n = 8, 9; Lemma co2 and 420 kappa = 24e - P for 4-graphs; the copy-list
+                  predicates of J_4, K_5^< and K_5^(4)- (complement form) against independent definitional tests)
+sigcat_masks      the spot-check graphs of verifier/sigcat_spot_values.txt: "J4 17 masks written", "K5lt 17 masks
+                  written", "K5_4minus 16 masks written"
+sigcat_pycheck_X  s7_pycheck.py, pure Python from the definition (own types and flags, every injective root tuple and
+                  every ordered pair of disjoint flag sets, Q entries from the npz rows in Python integers): exit status 0
+sigcat_pyvals_X   "X N graphs; slack - b equal to the review value at every graph: True ; all >= b: True ; at b: K",
+                  "SPOT VALUES OK" (J4: N = 17, K = 4; K5lt: 17, 4; K5_4minus: 16, 3); the exact values are listed in
+                  verifier/sigcat_spot_values.txt (the review's pure-Python results)
+sigcat_decimals   "SIGCAT DECIMALS OK": the bound of each certificate json and key list is b below, 1 - b = S and
+                  ceil12(1 - b) = C (Theorem sigmacat)
+
+name       problem  objective  M     keys  flags   reps  admissible ext.  rejected    labelled admissible  at min  groups
+J4         s3_J4    cosig3     2^30  43    24,402  1513  29,092,719       20,485,265  14,704,790,947       5       106
+K5lt       s3_K5lt  cosig3     2^19  45    28,108  1728  40,527,893       16,095,211  20,294,982,806       7       108
+K5_4minus  c4_K5m   sigma4     2^21  10     2,243    62  10,058,620       54,953,092   1,741,143,596       7        56
+
+name       exact bound b                              S = 1 - b                                  C = ceil12(S)
+J4         23220181141640969669/32281802128991715328  9061620987350745659/32281802128991715328   0.280703690307
+K5lt       2747492282707/4123168604160                1375676321453/4123168604160                0.333645420191
+K5_4minus  24504905122391/30786325577728              6281420455337/30786325577728               0.204032807991
+(32281802128991715328 = 7 * 2^62, 4123168604160 = 15 * 2^38, 30786325577728 = 7 * 2^42; "at min" = labelled
+extensions at the minimum, all in one isomorphism class; "groups" = values of the objective numerator F.)
+
+Raw part (--raw sigcat_X, or --raw sigcat for all three):
+sigcat_build       gcc $CFLAGS -o work/sigcat/s7_eval verifier/s7_eval.c and -o work/sigcat/s7_eval128
+                   verifier/s7_eval128.c, exit status 0 (with -O3 -march=native -fopenmp these gave the review's binaries
+                   byte for byte on the test machine)
+sigcat_prep_X      s7_prep128.py (J4; 128-bit Gram entries in three 64-bit limbs) or s7_prep.py: own types and flags
+                   equal to the json's key list (asserted), exact Gram matrices with spot checks in Python integers, own
+                   6-vertex representatives (computed anew; orbit-stabiliser check). J4: '"keys_match_cert": true,
+                   "flags_equal_json": true', '"max_diag_G_bits": 69', '"z_bound_bits": 81, "S_bound_bits": 89',
+                   '"reps6": 1513'; K5lt: '"n_copies7": 630, "reps6": 1728, "labelled6": 868080'; K5_4minus:
+                   '"n_copies7": 105, "reps6": 62, "labelled6": 12068'; K5lt and K5_4minus: '"keys_match_cert": true' and
+                   z_bound_apriori_mine = z_bound_apriori_cert = 393705905561403120 / 346363323387273360; all:
+                   '"blob_sha256": "H"', the review's (deterministic) table digest: J4
+                   718d7e8a3a3b937a519c3a04e14421032f34ec29ac99e9aa6d8bf9ab3b1e9ae2, K5lt
+                   e73f987666b2a3582176116a94fbd6479ac9f3bc9a6a8cc4ccab2d32fa9b7ed1, K5_4minus
+                   7562c6add933e70414550ef2b83cf2149f169a8f9db412811d8fd6f29158bb02
+sigcat_each_X      s7_eval (s7_eval128 for J4), list mode, at the spot-check graphs: "done list: admissible N rejected 0 bad 0"
+sigcat_cmp_X       s7_cmp.py: '{"n": N, "all_equal_and_ge_b": true, "n_at_min": K}' (C and Python give the same exact
+                   numerator S at every spot-check graph)
+sigcat_raw_X       raw mode over all one-vertex extensions R + L of the own representatives R (all 2^15 links L for
+                   3-graphs, 2^20 for 4-graphs; 49,577,984 / 56,623,104 / 65,011,712 candidates; completeness by
+                   heredity): "done raw: admissible A rejected R bad 0" with A, R from the table
+sigcat_analyze_X   s7_analyze.py: '"bad": 0', '"min_slack": "B"', '"min_equals_claimed": true', '"min_multiplicity": m',
+                   '"n_groups_mine": G', '"group_keys_identical": true', '"group_maxZ_identical": true' (the maximum of Z
+                   for every value of F equals the producer's table in the json), '"raw_extensions_equal": true',
+                   '"labelled_admissible_7vertex": L', '"reps6": r', '"sigma_upper_exact": "S"', '"sigma_upper_ceil12":
+                   "C"', '"PASS": true'
+Times of the fast part (test of the fifth version, --sigcat): sigcat_keys 1 s, sigcat_keys_neg 1 s, sigcat_reduction
+4 s, each sigcat_pycheck_X 1 to 2 s, the rest < 1 s (12 s in all; peak memory below 0.1 GB).
+The raw part was NOT run in the test of this package (it was run by the review, with the same programs; the package
+copies differ from the reviewed ones only in comments and in the directory of generated files, verifier/CHANGES.txt
+item 12). Times in the review, 2 threads (one of them shared during the J4 scan): raw scans J4 1,598 s, K5lt 1,175 s,
+K5_4minus 487 s; prep J4 5 s (with the representatives cached; computing them takes about a minute, as for K5lt), K5lt
+75 s, K5_4minus 2 s. Peak memory: prep J4 1.47 GB, K5lt 0.84 GB, K5_4minus 0.09 GB; scans 0.78, 0.19 and 0.01 GB.
+Not repeated here: the review's second scan over the producer's class lists (not included), and its exact 7-vertex
+laws of the extremal constructions (b <= E slack <= f(construction); consistency only).
+
+(n) Remark j4limit: the dual point and the obstruction witness for sigma(J_4), certificates/sigma_catalogue/J4_limit/
+    about 3 min
+------------------------------------------------------------------------------------------------------------------
+Expected values from the independent reviews of the witness (R7_J4S1) and of the dual point (R7_J4S2): their logs.
+Run in work/j4/ (local/ holds pickled caches of phi and of the moment counts; the driver deletes work/j4/ first).
+j4_s1           jw_verify.py witness_Fanoc.json --nullity --fullnull:
+                  "24727 labelled 7-vertex masks, 93 classes", "E_phi f = 41/57, file target 41/57",
+                  "|supp mu| = 87, outside phi: 0",
+                  "# keys 191, with kernel 187, sum kernel dims 1250, sum d(d+1)/2 6374, max |O| 156",
+                  "[ok] V3_psd (0 failures)", "[ok] V3_entries_in_OxO", "[ok] V3_kernel", "[ok] V4_conditions (0 keys fail)",
+                  "[ok] V5_delta_equals_file delta = 316891/14980607589",
+                  "6374 condition rows, rank mod p 86, nullity <= 7",
+                  "[ok] N2_full_null_space_exact (all 7 basis vectors satisfy every condition exactly)",
+                  "[ok] N3_vertex_optimal_exact_KKT", "[ok] N3_lp_optimum_equals_witness (LP delta = 316891/14980607589",
+                  "VERDICT: PASS exit 0; delta = 316891/14980607589; fails = []", no "[FAIL]"
+                (delta = 41/57 - E_mu f = 2.1153414380e-5; E_mu f = 10775207866/14980607589; the exact linear programme
+                 over the 7-dimensional null space of the conditions has the witness as its optimal vertex)
+j4_s1_controls  jw_neg.py: 13 controls, among them "CONTROL OK  rv_moved ", "CONTROL OK  rv_half ", "CONTROL OK  rv_phi ",
+                "CONTROL OK  producer_neg_phi ", "CONTROL OK  mutate_edgeflip ", and "ALL CONTROLS AS EXPECTED", no
+                "CONTROL BAD" (corrupted witnesses exit 1; (mu + phi)/2 with delta/2 exits 0; mu = phi exits 2, delta = 0;
+                the producer's neg_moved, neg_outside, neg_phi exit 1, 1, 2; moments of one class taken from a wrong
+                graph fail; merged types and overlapping flag sets pass, as they must)
+j4_s1_lift      jw_lift.py: "two codings of the 9 blocks agree: True", "lifting identities: 109374 entries checked on 33
+                graphs, 0 mismatches", "LIFT CHECK OK" (mixed flag sizes of one type reduce to the top block)
+j4_s2           jd_verify_dual.py dual_W2.json --crosscheck --relabel-check 12:
+                  "757 support graphs, den = 1298074214633706907132624082305024 (2^110: True)",
+                  "[ok] D1_nums_positive", "[ok] D1_sum_equals_den", "[ok] D1_classes_distinct (757 distinct classes)",
+                  "[ok] D1_all_J4_free (0 contain J_4)", "[ok] D2_V_equals_file",
+                  "# V = 598379856892795294218114109955/831895706399775544732211478528 = 0.71929672468491; 41/57 - V =
+                   1.5209291284e-06"   (one line),
+                  "# moments: 34 (block, canonical type) keys",
+                  "[ok] D3_crosscheck_multimodular_vs_bareiss (key (3, 5, 0), n = 130)",
+                  "[ok] D3_all_moment_matrices_PSD (0 of 34 keys fail)",
+                  "[ok] D4_relabel_lemma_spotcheck (1744 labelled (graph, block, type) keys, 0 mismatches)", "VERDICT: PASS; "
+                (19 keys with n <= 40 by exact fraction-free elimination, 15 with n = 45 to 211 positive definite by
+                 Sylvester's criterion with exact multimodular minors)
+j4_window       "b <= V (weak duality): True ; V - b = 4.1499e-07 ; 41/57 - V = 1.5209e-06",
+                "plain seven-vertex optimum for sigma(J_4) in (0.280703275315, 0.280703690307]", "J4 WINDOW OK"
+                (b of certificates/sigma_catalogue/J4/; 0.280703275315 = floor12(1 - V), 0.280703690307 = ceil12(1 - b))
+Long part (--raw j4_controls):
+j4_s2_controls  jd_controls.py: 13 controls, among them "CONTROL OK  producer ctrl_pos_Fanoc ", "CONTROL OK  producer
+                ctrl_neg_lp ", "CONTROL OK  rv phi law ", "CONTROL OK  rv half mass on heaviest graph ", and "dead-flag graph
+                search: ", "ALL CONTROLS AS EXPECTED", no "CONTROL BAD" (positive: the laws of S_n and phi, the second point
+                dual_W1.json; negative: a rounded LP point, mass on a dead flag, on K_7^(3), on a J_4-containing law, a
+                wrong sum, a wrong value, half the mass on one graph)
+Times (test of the fifth version, --sigcat, 2 logical CPUs): j4_s1 11 s, j4_s1_controls 77 s, j4_s1_lift 6 s, j4_s2
+74 s, j4_window < 1 s (2.8 min in all); peak memory 128 MB (j4_s2). --raw j4_controls: j4_s2_controls 243 s in the test
+of this package (one CPU), 11 min 8 s in the review (peak memory 101 MB).
+
+(o) Optional (--producer-j4): the producer's own checkers of the two files of (n)                        46 s
+------------------------------------------------------------------------------------------------------------------
+producer_j4_s1  search/sigma_catalogue/verify_witness.py witness_Fanoc.json: '"C4_delta_equals_file": true',
+                "VERDICT: PASS.  delta = 316891/14980607589"
+producer_j4_s2  search/sigma_catalogue/verify_dual3.py dual_W2.json: '{"PASS": true, "problem": "J4"',
+                '"support": 757, "value": "598379856892795294218114109955/831895706399775544732211478528"',
+                "PASS: no plain N = 7 flag-algebra certificate"
+Not independent checks (the independent ones are part (n)); expected values from the producer's logs. Their PSD test
+for the dual point is different (exact LDL^T for n <= 40, otherwise a floating-point Cholesky hint with an exact
+integer residual that must be diagonally dominant). Times (test of the fifth version): producer_j4_s1 15 s,
+producer_j4_s2 31 s; peak memory of the test run with --raw j4_controls 0.21 GB.
+
 Total of --fast: 81 min wall clock in the test of the third version (124 steps), run with --threads 2 on two cores
 of the same laptop while other heavy jobs were running (58 min for the 107 steps of the second version);
 --raw sigma,stab_c10 took 37 min (9 steps, including the integrity, build and preparation steps it needs). In the first version parts (a)
 to (f) alone took 26 min on one core. In the test of the fourth version, --fast --raw K5_4minus --threads 2 took
 69 min wall clock (127 steps: the 124 of --fast, 62 min, and the three raw steps of K5_4minus, 7.7 min) on two
-logical CPUs of the same laptop while other jobs were running, under a 3 GB memory cap (peak 585 MB).
+logical CPUs of the same laptop while other jobs were running, under a 3 GB memory cap (peak 585 MB). The fifth version
+adds the 16 steps of parts (m) and (n) to --fast (140 steps; in its test, --sigcat ran them in 3.0 min on two logical
+CPUs under a 1.5 GB memory cap, peak 128 MB); the other 124 steps of --fast were not re-run in that test.

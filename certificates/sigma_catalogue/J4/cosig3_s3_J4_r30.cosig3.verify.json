@@ -1,0 +1,14 @@
+{
+ "prefix": "j4_dual_scope/S3/results/cosig3_s3_J4_r30",
+ "objective": "cosig3",
+ "problem": "s3_J4",
+ "bound": "23220181141640969669/32281802128991715328",
+ "sampled": 306,
+ "group_argmins_checked": 106,
+ "random_checked": 200,
+ "all_slacks_ge_bound": true,
+ "equality_at_argmin": true,
+ "min_sampled_slack": "23220181141640969669/32281802128991715328",
+ "time_s": 14.051430225372314,
+ "PASS": true
+}

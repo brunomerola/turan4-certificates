@@ -15,7 +15,10 @@ small code changes go beyond paths, because the package does not contain two inp
 optional class list of rs_reps.py and the producer comparison of r_thm1.py (items 8 and 9). Item 11 describes the
 fourth version, in which the certificates of Theorem main (b), (d), (e) were replaced by larger ones; there the
 claimed values of rv2_dual.py and rv2_decimals.py that refer to these certificates (bounds, decimals, paths) were
-updated, and nothing else.
+updated, and nothing else. Items 12 and 13 describe the fifth version (Theorem sigmacat and Remark j4limit): the
+checkers of the two J_4 reviews were renamed (prefixes jw_ and jd_) and the module names in their imports changed
+accordingly; apart from that the code changes are paths of generated and input files. Two producer programs (prefix
+sk_, not independent) check the new key lists.
 
 1. Comment and docstring edits only (code identical)
 ----------------------------------------------------------------------------------------------------------------
@@ -287,3 +290,112 @@ included.
   them the fast checks of the three new certificates, the raw scan of K5_4minus (same TOTAL, NMIN, SUMS and group
   maxima as the review's) and the weak-duality checks dual2_p6_f3, dual2_h44_nt3, dual2_k6m_W with the new partners.
   The raw scans of K6_4 and K6_4minus were run by the review (EXPECTED.txt, part (a)).
+
+12. Fifth version: the checkers of Theorem sigmacat and Remark j4limit (further codegree-squared densities)
+----------------------------------------------------------------------------------------------------------------
+New data in certificates/sigma_catalogue/ (the three certificates of Theorem sigmacat, byte-identical to the files the
+independent review R7_SIG7 read, with new key lists; the dual point and the witness of Remark j4limit and the control
+files of their checkers, byte-identical to the files the reviews R7_J4S1 and R7_J4S2 read). The checkers are those of
+the three reviews. Their file names would have collided with an existing checker (rv2_lib.py) or been easy to confuse
+with existing ones (rv_lib.py, rv_lift.py next to rv1_lib.py, rv1_lift.py, rv2_lift.py and the rv_* programs of part
+(a)), so the two J_4 reviews' files were renamed with the new prefixes jw_ (witness) and jd_ (dual point), and their
+imports changed accordingly; the R7_SIG7 files keep their names (prefix s7_, no collision).
+
+file                sha256 as reviewed                                                 sha256 in this package
+s7_lib.py           ea10333a3ee6fbd76c101d3f663dce8df334c9795eb686d1f083af80681eb68c   cfaf59a3df5f4e4dba7df66687949e0c385eeda26dd9bcb2d92a575004614d7e
+s7_prep.py          599de5268871390eaadd346dc8bef1cbf77fd2c3bb3bd4022fab80912dffa627   9104080091ebd63246fca9f56c2d33ee7c8835846546063b5f00ec016ca1141b
+s7_prep128.py       b9e942f555a08e535d93bc520633abaee5f413f069bf1a9ad2a5770de43c9665   3308a973301f0d9dd17a656f13827a0105abc3595fc23cf6459e1e03d7615d2f
+s7_eval.c           34f81cce63870119bc437a6023c22b5de56137c13ab6a8fd2a3c3d2bf25749a7   a557ef4e4da2cd700a4760f24d5d3efdac0c64a4b24dc13bf3440a01a01bd0f7
+s7_eval128.c        336984244e75d5a11adae2d6ecf03970c018ad0ea750c64dbcaf887f2b1dd3a2   14e2d2b5e4a6151681d20a8806bcd614cd70bf418c7a9d449f17c5f23b1eed77
+s7_analyze.py       8725d2215290dff66073784d5c6efc37e9b58fe11a4436c77b318e313a293b66   6221bb51887971629665fb1e6acc571468ed742c324fbe2d80ea83d66c266d04
+s7_pycheck.py       ec2050aa99057480a1ffe7335395da1ae1cd9b5b18b905a3d04a9c758a4861d0   9434ed6239ac845032e4078428effa6aea7f99942789ed6ddb2e7bceefb65941
+s7_cmp.py           6d8483dcc5f939bf96a74e3a286fd5307c2b24ff7814fa948b82d0f0becf4d16   5721d78c46d5af5260c1ab07e7e8662142712410b0c220de75bf0c3b25df27f7
+s7_reduction.py     e3e7745d6d5617adcf6bc3f80ecc37d8042c9aeb1269860c06b907d263a866ee   6b96011cd7efeb838c5909e6051acc1bfce03b46e6d30e319cab4c77790264e2
+jw_lib.py           7e5874b50afa6a00e5b72d78f873b7dbd427946e7982c3a91f0093697552fd6f   3ca9f2ca706a65440ad0420fb3aa67ed6b3dcf704535ceddf20fea226273e6ab
+jw_verify.py        6067a7bb2c6b4ec67d957ec62027dacc4fc08f8b530840567a25beaf3e780bf0   79c5785dffbd22a9375bd87342af1b9f77a50d7eba08648ab1be663355432c62
+jw_neg.py           0362b47d5edd72862c8541545175552e8691a3c96dcc54743c3ce690537f5da9   aee5c293c0a501822c7d5117f400a71d0fbba275c56ec5f03ce0c3757f9958bf
+jw_lift.py          11c1be1777a649242c0c34918c9b413bf97a0b845f68bd3a00b8aee772950404   a1abd9fd28ab2b811473cc98c62be643583d58e1f0d0934fbf1c1ac8fa0d3361
+jd_lib.py           8d54b4ea910e3d0f89deb8696e48146a1808fd674e45db23734260b504513783   fdd8ab7e90eb0464a6c3a0d22feb3c9eae7c778b67382ea576bfa8e4328dd45b
+jd_verify_dual.py   e3c160be678981837a54b9b53ef7cc3e5207c8313f1810beafadd30a49102987   cc80142029d00dbce9728ff2a6b9b556567468e4be3803598d4be1d26e12403d
+jd_controls.py      294f84b4af5b34d444e246aa53d39d29e76263ac6a84ed9e769428e30e8e0245   a0e8eb24f998edb2adec55aaf1c0cafb69acba0b505a6db65515be96667bccef
+
+Originals: the s7_* files have the same names in the directory of the review R7_SIG7; jw_lib.py, jw_verify.py,
+jw_neg.py, jw_lift.py are rv_lib.py, rv_verify.py, rv_neg.py, rv_lift.py of the review R7_J4S1; jd_lib.py,
+jd_verify_dual.py, jd_controls.py are rv2_lib.py, rv2_verify_dual.py, rv2_controls.py of the review R7_J4S2. The
+digests "as reviewed" are those recorded by the reviews themselves (R7_SIG7's list of its outputs, R7_J4S1's and
+R7_J4S2's lists of their review files).
+
+Edits:
+* All files (first docstring line; s7_eval.c and s7_eval128.c first comment line): the internal review label was
+  replaced by "Independent checker" ("Independent exact evaluator", "Independent prep", "Independent pure-Python
+  definitional check"); s7_eval128.c: "(addendum; copy of s7_eval.c" became "(copy of s7_eval.c". jw_lib.py: the list
+  of producer files it does not import became "the producer code". jw_verify.py: "an S1 obstruction witness" became
+  "an obstruction witness (Remark j4limit)". jd_lib.py: "the S2 dual-point check ... Builds on ../R7_J4S1/rv_lib.py"
+  became "the dual-point check of Remark j4limit ... Builds on jw_lib.py". Usage lines and references to rv_lib,
+  rv2_lib, rv_verify.py, rv2_verify_dual.py in docstrings follow the new names.
+* Code, module names only: "import rv_lib as L" became "import jw_lib as L" (jw_verify.py, jw_neg.py, jw_lift.py,
+  jd_lib.py) and "import rv2_lib as R" became "import jd_lib as R" (jd_verify_dual.py, jd_controls.py); in jd_lib.py
+  sys.path.insert(0, os.path.join(HERE, "..", "R7_J4S1")) became sys.path.insert(0, HERE), since jw_lib.py is in the
+  same directory; the controls start the renamed verifiers (os.path.join(HERE, "jw_verify.py") in jw_neg.py,
+  os.path.join(HERE, "jd_verify_dual.py") in jd_controls.py).
+* Code, paths only. Generated files went to local/ and out/ next to the scripts; they now go to the working directory
+  (verify_all.sh runs these programs in work/sigcat/ and work/j4/): s7_prep.py and s7_analyze.py gained a line
+  OUT = os.getcwd() and use os.path.join(OUT, "local", ...) for the 6-vertex representatives (one place each);
+  jw_verify.py LOCAL = os.path.join(os.getcwd(), "local"); jw_neg.py and jd_controls.py OUT = os.path.join(os.getcwd(),
+  "out", "neg" / "ctrl"); jw_neg.py and jw_lift.py read local/phi_Fanoc.pkl (written by jw_verify.py) from the working
+  directory. The producer's result directories became the package directory of the data:
+  S1R = os.path.normpath(os.path.join(HERE, "..", "certificates", "sigma_catalogue", "J4_limit")) in jw_neg.py and the
+  same path as S2R in jd_controls.py (the files read there are byte-identical to the ones the reviews read).
+* Checked mechanically: s7_lib.py, s7_prep128.py, s7_pycheck.py, s7_cmp.py, s7_reduction.py and jw_lib.py have the
+  same abstract syntax tree without docstrings before and after; s7_eval.c and s7_eval128.c are identical after
+  removing /* */ comments, and compiled with -O3 -march=native -fopenmp they gave the review's binaries byte for byte;
+  for the other files a line diff shows only the changes listed above.
+* Not copied: s7_masks.py (it picks the spot-check graphs from a scan output; the graphs the review picked are in
+  sigcat_spot_values.txt), s7_constr.py and s7_constr_eval.py (the exact 7-vertex laws of the extremal constructions, a
+  consistency check of b with the lower bounds), s7_burnside_small.py and s7_run_A.sh (certificates that the paper does
+  not cite), rv_mc.py (a Monte Carlo test of the exact law phi against a direct simulation), rv_p310.py (needs the
+  producer's class list), the run scripts rv_run_all.sh and rv2_run_all.sh, and the review's compiled binaries, tables
+  and outputs (verify_all.sh rebuilds them).
+
+Two programs written by the producer are used as a consistency check of the new key lists (the key lists themselves
+are documentation: the review's programs rebuild the types and flags from the definitions). They are self-contained
+(Python and numpy integers; np.bitwise_count needs numpy 2.0 or newer) and import nothing from the search code, but
+they are not part of an independent review:
+
+sk_check_keys.py    062e18782e0a37215348b846d21c3a51759e473abc26d7a0189755101c851128   fe77d2d74213e920e8fd295d5a79a59878d72cabf76a144c41d7a9d7a33f0df3
+sk_neg_keys.py      f0a9d6b11bdd8305a0286a116a1dc318d248d3276c69720f6fb5c1a1b993aa57   66c3f220db3fe31fd11cf1cf9062899749acaf39bb86379e419c341d35266568
+(Originals: check_keys.py and neg_test.py of the producer's directory of the key lists, commit da3e33b0.)
+* sk_check_keys.py (docstring only; same abstract syntax tree without docstrings): "under package_keys/" became "given
+  on the command line"; the originals in the producer's source directories are compared only if present (they are not
+  in the package; the code skips them, unchanged).
+* sk_neg_keys.py (paths): the key list and certificate files are read from certificates/sigma_catalogue/K5lt/ (a line
+  CERT = ... added; three uses of the producer's folder became CERT) and the checker started is sk_check_keys.py.
+
+New data file: sigcat_spot_values.txt (sha256 c08692ad1e1efb9afbc31a9acba995da5c92504b54786ecd849ce7034a07ee54), the
+review's spot-check graphs of the three certificates with the exact values slack - b that its pure-Python evaluator
+computed (from its result files, unchanged; 17 + 17 + 16 graphs).
+
+13. Fifth version: verify_all.sh
+----------------------------------------------------------------------------------------------------------------
+* New parts (m) (Theorem sigmacat: sigcat_keys, sigcat_keys_neg, sigcat_reduction, sigcat_masks, sigcat_pycheck_X and
+  sigcat_pyvals_X for X = J4, K5lt, K5_4minus, sigcat_decimals) and (n) (Remark j4limit: j4_s1, j4_s1_controls,
+  j4_s1_lift, j4_s2, j4_window) in --fast; the new option --sigcat runs only these 16 steps (with the integrity steps).
+  sigcat_pyvals_X, sigcat_decimals and j4_window are inline checks written for the package (exact comparisons with
+  the review's values, the decimals of the paper, and weak duality b <= V between the J_4 certificate and the dual
+  point).
+* --raw accepts sigcat_J4, sigcat_K5lt, sigcat_K5_4minus (sigcat_build, sigcat_prep_X, sigcat_each_X, sigcat_cmp_X,
+  sigcat_raw_X, sigcat_analyze_X), the group name sigcat, and j4_controls (j4_s2_controls); "all" includes them.
+  The reviews' arguments are kept: s7_prep128.py for J4 (M = 2^30) and s7_prep.py otherwise, the raw and list modes
+  of s7_eval / s7_eval128 with --threads threads, s7_analyze.py on the raw scan; jw_verify.py --nullity --fullnull,
+  jd_verify_dual.py --crosscheck --relabel-check 12, jw_neg.py, jw_lift.py and jd_controls.py without arguments.
+  The driver deletes the cached 6-vertex representatives before each prep and work/j4/ before part (n), so that
+  every run recomputes them.
+* The new option --producer-j4 (part (o)) runs the producer's own checkers search/sigma_catalogue/verify_witness.py and
+  verify_dual3.py on the two files of Remark j4limit (not independent).
+* The npz check now requires 19 certificate files (the three new certificate jsons carry the sha256 of their .npz).
+* Test of the fifth version (2026-10-08, 2 logical CPUs of the same laptop, under a 1.5 GB memory cap):
+  verify_all.sh --sigcat, the 16 new steps all PASS (3.0 min, peak 128 MB); verify_all.sh --producer-j4 --raw
+  j4_controls, the steps j4_s2_controls, producer_j4_s1 and producer_j4_s2 all PASS (4.8 min, peak 0.21 GB); with the
+  final SHA256SUMS, verify_all.sh --sigcat --producer-j4: 20 steps, ALL CHECKS PASSED (3.5 min). The raw
+  scans of part (m) were not run in this test; they are the review's (EXPECTED.txt, part (m)). The rest of --fast is
+  unchanged and was not re-run.
