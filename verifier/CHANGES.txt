@@ -582,3 +582,9 @@ The subsequent structural pass groups the two main results before the supplement
 codegree-squared value and stability together, and keeps the lottery applications together before insertion codes.
 Search history and numerical observations are in a separate appendix. The preprint has 33 pages and 10 tables;
 theorem numbering has changed, while labels and mathematical statements are preserved.
+
+The final concise pass reduces that 33-page edition to 29 pages and nine tables. It removes auxiliary search
+history, uncertified experiments, superseded certificate details and operational metadata from the article.
+All formal statements, proofs and exact-bound lists remain; the three verifier-linked tables are unchanged.
+The author retains all earlier PDF editions and the removed excerpts in the manuscript repository.
+The final PDF passed independent editorial review and native/arXiv builds. No certificate or verifier changed.
