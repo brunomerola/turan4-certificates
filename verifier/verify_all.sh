@@ -627,6 +627,7 @@ scinfo() {
 SCNAMES="J4 K5lt K5_4minus K5eq K5_3minus C5 K6_3 K6_4minus K6_4 K7_4"
 SCMASKS=0
 sigcat_masks() {    # the spot-check graphs of verifier/sigcat_spot_values.txt as text and int64 files (once)
+  local n rc        # local: the callers' loop variable n must not change
   [ "$SCMASKS" = 1 ] && return
   SCMASKS=1
   # shellcheck disable=SC2086
@@ -639,9 +640,10 @@ for name in sys.argv[2:]:
     open("local/pc_%s.txt" % name, "w").write("".join("%d\n" % m for m in ms))
     np.array(ms, dtype=np.int64).tofile("local/pc_%s.bin" % name)
     print(name, len(ms), "masks written")' "$V/sigcat_spot_values.txt" $SCNAMES
+  rc=$?
   set --
   for n in $SCNAMES; do scinfo "$n"; set -- "$@" "$n $SNSP masks written"; done
-  check sigcat_masks $? "$@"
+  check sigcat_masks $rc "$@"
 }
 SCSPOT=" "
 sigcat_spot() {     # pure-Python exact values at the spot-check graphs, compared with the review's values (once)
@@ -909,11 +911,12 @@ for x in $RAWX; do
       scinfo "$n"
       rm -f "$W/sigcat/local/reps6_$SPROB.npy" "$W/sigcat/local/reps6_${SPROB}_aut.npy"   # own representatives, anew
       runin sigcat "sigcat_prep_$n" "$PY" "$V/$SPREP" "$SPROB" "$C/$SD/$SPRE" "local/$n"
+      rc=$?          # the exit status of the prep (not of the test below)
       if [ "$SPREP" = s7_prep128.py ]; then
-        check "sigcat_prep_$n" $? '"keys_match_cert": true, "flags_equal_json": true' '"max_diag_G_bits": 69' \
+        check "sigcat_prep_$n" $rc '"keys_match_cert": true, "flags_equal_json": true' '"max_diag_G_bits": 69' \
           '"z_bound_bits": 81, "S_bound_bits": 89' "\"reps6\": $SREPS" "\"blob_sha256\": \"$SBLOB\""
       else
-        check "sigcat_prep_$n" $? '"keys_match_cert": true' "$SPC" \
+        check "sigcat_prep_$n" $rc '"keys_match_cert": true' "$SPC" \
           "\"z_bound_apriori_mine\": \"$SZB\", \"z_bound_apriori_cert\": \"$SZB\"" "\"blob_sha256\": \"$SBLOB\""
       fi
       runin sigcat "sigcat_each_$n" "./$SEVAL" "local/$n.blob" list "local/pc_$n.bin" "$THREADS" \

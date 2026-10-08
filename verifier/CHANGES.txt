@@ -536,3 +536,20 @@ Edits:
   with the package root in place of the research directory.
 * Test of the seventh version (2026-10-08, 2 logical CPUs, under a 1.5 GB memory cap): verify_all.sh --lotup, 6 steps (integrity,
   npz_hashes and the 4 of part (p)), ALL CHECKS PASSED (1.7 min while other jobs were running, peak 84 MB).
+
+18. Seventh version, correction of verify_all.sh (found by the first run of all raw scans on a cloud machine)
+----------------------------------------------------------------------------------------------------------------
+Two wiring errors of the raw part of (m), introduced with item 13 and not exercised before (the raw scans had not
+been run with the driver):
+* sigcat_masks set the global variable n in its own loop, so in the --raw loop the first sigcat_* name was replaced by
+  the last one (K7_4): the first certificate (J4 with --raw sigcat or all) was never scanned, and K7_4 ran once with
+  the programs of the first one and failed. The function now declares n local. It also passed the exit status of
+  that loop instead of the one of its program to check; it now passes the program's.
+* For J4, K5lt and K5_4minus the step sigcat_prep_X passed to check the exit status of the test that chooses between
+  the two expected outputs instead of the exit status of the prep, so sigcat_prep_K5lt and sigcat_prep_K5_4minus
+  were reported as failed (exit status 1) although the prep had succeeded and printed every expected value. The exit
+  status is now saved right after the prep.
+No program, no expected value and no other step changed. Test (2026-10-08, local, under a 1.5 GB memory cap): with the
+raw scans and their analyses removed from a scratch copy of the driver, --raw sigcat_K5lt,sigcat_K5_4minus,sigcat_K7_4
+ran pycheck, pyvals, prep, each and cmp of the three certificates: all 15 PASS (1.2 min, peak 0.84 GB); the same test
+with the previous driver reproduced the failures of the cloud run (the first name replaced by K7_4).
