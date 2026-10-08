@@ -30,7 +30,8 @@ Q_k = A_k^T A_k / M^2 with M = 2^19 and integer A_k (64-bit Gram entries suffice
   records of the run.
 * `cosig3_s3_K5lt_f.keys.json`: the full key list (types, |Aut|, factor rows and every flag list, colex masks), the
   formula, the predicate and the sha256 of the three certificate files; written for the package, because the
-  certificate json does not list the flags (finding M1 of the independent review).
+  certificate json does not list the flags (finding M1 of the independent review R7_SIG7), and compared with an
+  independent reviewer's own types, flags and |Aut| (review R7_SIG8, addendum A2: all equal; M1 resolved).
 * `cosig3_s3_K5lt_f.cosig3.verify.json`: the producer's sampling check (308 graphs); a record, no role in the proof.
 
 The .cert.* and .verify.json files are byte-identical to the files reviewed (sha256 d7f20322..., 5c5a3d1b...,
@@ -38,7 +39,9 @@ The .cert.* and .verify.json files are byte-identical to the files reviewed (sha
 
 **Checked by** `verifier/verify_all.sh` (name K5lt; `verifier/EXPECTED.txt`, part (m)):
 
-* fast: `sigcat_keys` (the key list rebuilt from the definitions equals `keys.json` and the json's keys), the
+* fast: `sigcat_keys_indep3` (`s8_keys_cmp_stage1.py`, review R7_SIG8 A2: `keys.json` equals the reviewer's own
+  key list) and `sigcat_keys` (the producer's check: the key list rebuilt from the definitions equals `keys.json` and
+  the json's keys), the
   reductions `sigcat_reduction` (including the K_5^<-freeness test against an independent definitional test),
   `sigcat_pycheck_K5lt` and `sigcat_pyvals_K5lt` (pure-Python values at 17 graphs, equal to the independent review's;
   4 at b), `sigcat_decimals`;
@@ -52,5 +55,6 @@ The .cert.* and .verify.json files are byte-identical to the files reviewed (sha
 **Provenance.** Phase F (frozen cuts, suffix `_f`) certificate of the cloud run paperb-a4 (2026-10-06; results in
 commit bf6de3a7, branch research/turan4-n7 of the private working repository); key list from commit da3e33b0.
 Independent review R7_SIG7 (2026-10-06/07): PASS-with-notes (notes on archiving -- M1, the flag lists, addressed by
-`keys.json` -- and on decimals and interpretation; none affects validity). The weaker phase-A certificate is not
+`keys.json` and resolved by the independent comparison of R7_SIG8 addendum A2 (2026-10-08) -- and on decimals and
+interpretation; none affects validity). The weaker phase-A certificate is not
 included. The run stopped before convergence, so it neither shows nor rules out that seven vertices reach 1/3.

@@ -19,7 +19,7 @@ SHA-256 of its `.npz` in the field `cert_npz_sha256`.
 | `n7_dual_point/` | Theorem n7opt (seven-vertex optimum for t(5,4)) | 1336237682928914994292138923/(7*2^89) |
 | `n7_dual_points/` | Table n7limits: seven-vertex limits for t(6,4), t(7,4), t_2(5,4), t_2(6,4) and for t(5,4) without the (5,6) block | see `n7_dual_points/README.md` |
 | `sigma_K5_4/` | Theorem sigma: sigma(K_5^(4)) = 31/64 (sharp certificate, value 33/64 for kappa = 2d - gamma); also the margin mu_0 of Proposition margin (stability section) | 33/64 |
-| `sigma_catalogue/` | Theorem sigmacat: sigma(J_4), sigma(K_5^<), sigma(K_5^(4)-) (one subdirectory each); Remark j4limit: the dual point and the witness for J_4 (`J4_limit/`) | see `sigma_catalogue/README.md` |
+| `sigma_catalogue/` | Theorem sigmacat (Table sigmacat): sigma(J_4), sigma(K_5^<), sigma(K_5^=), sigma(K_5^{3-}), sigma(C_5), sigma(K_6^(3)), sigma(K_5^(4)-), sigma(K_6^(4)-), sigma(K_6^(4)), sigma(K_7^(4)) (one subdirectory each); Remark j4limit: the dual point and the witness for J_4 (`J4_limit/`) | see `sigma_catalogue/README.md` |
 
 Theorem, table and remark names are the LaTeX labels of the paper (`thm:main`, `thm:five`, `thm:catalogue`,
 `tab:catalogue`, `thm:n6`, `thm:n7opt`, `tab:n7limits`, `rem:n6sharp`, `thm:sigma`, `prop:margin`, `thm:sigmacat`,
@@ -64,6 +64,6 @@ key list (types and flags, same conventions as above) in `sharp_klp5.cert.json`;
 They have the matrix format of the 4-graph certificates (Q_k = A_k^T A_k / M^2, one int64 array `A<k>` per key in
 `<prefix>.<objective>.cert.npz`), but for 3-graphs (J_4, K_5^<; nine blocks) or for the 4-graph K_5^(4)- in complement
 form, and with the objectives 1 - gamma (`cosig3`, F/210) or kappa = 2d - gamma (`sigma4`, F/420) instead of the edge
-density. The json records the forbidden graph through `problem` (s3_J4, s3_K5lt, c4_K5m); the full key lists with the
-flag masks are in `<prefix>.keys.json`. The dual point and the witness of Remark j4limit are rational vectors on
+density. The json records the forbidden graph through `problem` (s3_J4, s3_K5lt, s3_K5eq, s3_K5m, s3_C5, s3_K6,
+c4_K5m, c4_K6m, c4_K6, c4_K7); the full key lists with the flag masks are in `<prefix>.keys.json`. The dual point and the witness of Remark j4limit are rational vectors on
 7-vertex 3-graphs (colex masks). See `sigma_catalogue/README.md`.

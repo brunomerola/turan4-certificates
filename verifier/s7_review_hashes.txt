@@ -1,0 +1,13 @@
+# verifier/s7_review_hashes.txt -- the sha256 of the three certificates J4, K5lt, K5_4minus of Theorem sigmacat (cert.json,
+# cert.npz, verify.json) as recorded by their independent review R7_SIG7 (lines copied unchanged from its list of
+# reviewed inputs, including its addendum A1; the paths are those of the producer's working tree). Read by
+# s8_keys_cmp_stage1.py, check (1).
+bf8ab26483237b032512ea06fbd526650ebc281e3a3428f7c7bed0c3a787bf4b  tools/flagalg/sigma_cat/cloud_a4/results_vm/sigma4_c4_K5m_f.sigma4.cert.json
+b0e8a528f1de71ad6089d4b2198bc22f2ad976da96c95ec4801eb738e2a492cd  tools/flagalg/sigma_cat/cloud_a4/results_vm/sigma4_c4_K5m_f.sigma4.cert.npz
+d7f20322b043e2c9612a53dc9cde731d0deac68d1184e00bf3ebf048c7522f0d  tools/flagalg/sigma_cat/cloud_a4/results_vm/cosig3_s3_K5lt_f.cosig3.cert.json
+5c5a3d1be06e81fe3944b3a6a07a2a4073abb44fff70367d6df381c08d25e700  tools/flagalg/sigma_cat/cloud_a4/results_vm/cosig3_s3_K5lt_f.cosig3.cert.npz
+5b8025c622647823b95f439f67c9994e56332f864e56857685d32b2ed4de5b64  tools/flagalg/sigma_cat/cloud_a4/results_vm/cosig3_s3_K5lt_f.cosig3.verify.json
+c205d6cea0bd463c4f4ce48477f13a883dbb8efe6da1cb3039379fc89d39fa2c  tools/flagalg/sigma_cat/cloud_a4/results_vm/sigma4_c4_K5m_f.sigma4.verify.json
+95277da6289f155802df5ce3fdcf3db3229ac16f2fedbc3fb7db295e51f71227  tools/flagalg/sigma_cat/j4_dual_scope/S3/results/cosig3_s3_J4_r30.cosig3.cert.json
+b5c4035cf5458d9bbdd8bc15e1304cbdb4d26e2fabb98baf141c7e4a29b14500  tools/flagalg/sigma_cat/j4_dual_scope/S3/results/cosig3_s3_J4_r30.cosig3.cert.npz
+8398e73144903bb970ad65243a1754b6bf5bce45ed162d31f1770998e89a3bde  tools/flagalg/sigma_cat/j4_dual_scope/S3/results/cosig3_s3_J4_r30.cosig3.verify.json

@@ -1,0 +1,14 @@
+{
+ "prefix": "/opt/ml/research/math-links/tools/flagalg/sigma_cat/results_vm/cosig3_s3_K6",
+ "objective": "cosig3",
+ "problem": "s3_K6",
+ "bound": "29749027005683/115448720916480",
+ "sampled": 368,
+ "group_argmins_checked": 168,
+ "random_checked": 200,
+ "all_slacks_ge_bound": true,
+ "equality_at_argmin": true,
+ "min_sampled_slack": "29749027005683/115448720916480",
+ "time_s": 34.397467851638794,
+ "PASS": true
+}

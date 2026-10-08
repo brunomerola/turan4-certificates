@@ -1,0 +1,14 @@
+{
+ "prefix": "/opt/ml/research/math-links/tools/flagalg/sigma_cat/results_vm/cosig3_s3_C5_f",
+ "objective": "cosig3",
+ "problem": "s3_C5",
+ "bound": "6422651703/8589934592",
+ "sampled": 276,
+ "group_argmins_checked": 76,
+ "random_checked": 200,
+ "all_slacks_ge_bound": true,
+ "equality_at_argmin": true,
+ "min_sampled_slack": "6422651703/8589934592",
+ "time_s": 12.961991310119629,
+ "PASS": true
+}

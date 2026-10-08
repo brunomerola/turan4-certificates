@@ -4,19 +4,21 @@
 #   verifier/verify_all.sh [--fast] [--sigcat] [--raw NAMES] [--producer-n6] [--producer-j4] [--threads N]
 #                          [--work DIR]
 #
-#   --fast          every check except the raw scans (the default when no option is given); about 85 min
-#   --sigcat        only the fast checks of parts (m) and (n) (Theorem sigmacat, Remark j4limit); about 3 min
+#   --fast          every check except the raw scans (the default when no option is given); about 90 min
+#   --sigcat        only the fast checks of parts (m) and (n) (Theorem sigmacat, Remark j4limit); about 6 min
 #   --raw NAMES     the long exhaustive scans, comma-separated: the raw scan of the 4-graph certificates K5_4, K6_4,
 #                   K7_4, K5_4minus, K6_4minus (Theorem main), cat_p5_lam3, cat_p6_lam3, cat_p6_lam4, cat_p6_lam5,
 #                   cat_p6_lam6, cat_p6_lam9, cat_p6_lam11, cat_p7_lam2, cat_p7_lam3, cat_p7_lam4 (Theorem
 #                   catalogue); sigma (Theorem sigma, about 15-20 CPU-min, split over --threads processes); stab_c10
 #                   (fact C10 of the stability section over all 604,426 labelled bases, about 20 min); sigcat_J4,
-#                   sigcat_K5lt, sigcat_K5_4minus (Theorem sigmacat: decoding, then the exact minimum over all
-#                   one-vertex extensions; 8 to 27 min each on 2 threads, up to 1.5 GB of memory); j4_controls (the
-#                   controls of the dual point of Remark j4limit, 4 to 11 min); or "main" (the first five),
-#                   "catalogue" (the ten cat_*), "sigcat" (the three sigcat_*), "all" (everything). cat_p5_lam3 and
-#                   cat_p6_lam11 take seconds, cat_p6_lam9 about 15 min, K5_4minus minutes; each of the other
-#                   certificate scans 1 to 5 hours on 2 threads (about 5 minutes on 28 threads)
+#                   sigcat_K5lt, sigcat_K5_4minus, sigcat_K5eq, sigcat_K5_3minus, sigcat_C5, sigcat_K6_3,
+#                   sigcat_K6_4minus, sigcat_K6_4, sigcat_K7_4 (Theorem sigmacat: decoding, then the exact minimum
+#                   over all one-vertex extensions; minutes to a few hours each on 2 threads, up to 1.5 GB of memory);
+#                   j4_controls (the controls of the dual point of Remark j4limit, 4 to 11 min); or "main" (the
+#                   first five), "catalogue" (the ten cat_*), "sigcat" (the ten sigcat_*), "all" (everything).
+#                   cat_p5_lam3 and cat_p6_lam11 take seconds, cat_p6_lam9 about 15 min, K5_4minus minutes; each
+#                   of the other 4-graph certificate scans 1 to 5 hours on 2 threads (about 5 minutes on 28
+#                   threads)
 #   --producer-n6   also run the FIRST implementation's checker search/flagalg/verify_cert.py on the three sharp
 #                   N = 6 certificates (not an independent check; the independent one is part (j) of --fast)
 #   --producer-j4   also run the producer's own checkers search/sigma_catalogue/verify_witness.py and verify_dual3.py
@@ -42,7 +44,7 @@ while [ $# -gt 0 ]; do
     --producer-j4) PRODJ4=1 ;;
     --threads) THREADS="${2:?--threads needs a number}"; shift ;;
     --work) WORK="${2:?--work needs a directory}"; shift ;;
-    -h|--help) sed -n '2,28p' "$0"; exit 0 ;;
+    -h|--help) sed -n '2,30p' "$0"; exit 0 ;;
     *) echo "unknown option: $1 (see --help)"; exit 2 ;;
   esac
   shift
@@ -52,21 +54,24 @@ if [ "$FAST" = 0 ] && [ "$SIGCAT" = 0 ] && [ -z "$RAW" ] && [ "$PRODN6" = 0 ] &&
 MAIN5="K5_4 K6_4 K7_4 K5_4minus K6_4minus"
 CAT10="cat_p5_lam3 cat_p6_lam3 cat_p6_lam4 cat_p6_lam5 cat_p6_lam6 cat_p6_lam9 cat_p6_lam11 cat_p7_lam2 cat_p7_lam3"
 CAT10="$CAT10 cat_p7_lam4"
-SIGCAT3="sigcat_J4 sigcat_K5lt sigcat_K5_4minus"
+SIGCAT10="sigcat_J4 sigcat_K5lt sigcat_K5_4minus sigcat_K5eq sigcat_K5_3minus sigcat_C5 sigcat_K6_3"
+SIGCAT10="$SIGCAT10 sigcat_K6_4minus sigcat_K6_4 sigcat_K7_4"
 RAWLIST=""
 for x in ${RAW//,/ }; do
   case "$x" in
-    all) RAWLIST="$RAWLIST $MAIN5 $CAT10 sigma stab_c10 $SIGCAT3 j4_controls" ;;
+    all) RAWLIST="$RAWLIST $MAIN5 $CAT10 sigma stab_c10 $SIGCAT10 j4_controls" ;;
     main) RAWLIST="$RAWLIST $MAIN5" ;;
     catalogue) RAWLIST="$RAWLIST $CAT10" ;;
-    sigcat) RAWLIST="$RAWLIST $SIGCAT3" ;;
+    sigcat) RAWLIST="$RAWLIST $SIGCAT10" ;;
     *) RAWLIST="$RAWLIST $x" ;;
   esac
 done
 RAWX=""; RAW4=""      # the special long checks (sigma, stab_c10, sigcat_*, j4_controls) and the 4-graph raw scans
 for x in $RAWLIST; do
   case "$x" in
-    sigma|stab_c10|sigcat_J4|sigcat_K5lt|sigcat_K5_4minus|j4_controls) RAWX="$RAWX $x" ;;
+    sigma|stab_c10|j4_controls) RAWX="$RAWX $x" ;;
+    sigcat_J4|sigcat_K5lt|sigcat_K5_4minus|sigcat_K5eq|sigcat_K5_3minus|sigcat_C5|sigcat_K6_3) RAWX="$RAWX $x" ;;
+    sigcat_K6_4minus|sigcat_K6_4|sigcat_K7_4) RAWX="$RAWX $x" ;;
     *) RAW4="$RAW4 $x" ;;
   esac
 done
@@ -199,7 +204,7 @@ for j in js:
     ok &= d["cert_npz_sha256"] == h
 print(len(js), "certificate files")
 print("ALL NPZ HASHES MATCH" if ok else "NPZ HASH MISMATCH")' "$C"
-check npz_hashes $? "19 certificate files" "ALL NPZ HASHES MATCH"
+check npz_hashes $? "26 certificate files" "ALL NPZ HASHES MATCH"
 NEED_EVAL=0
 { [ "$FAST" = 1 ] || [ -n "$RAW4" ]; } && NEED_EVAL=1
 if [ "$NEED_EVAL" = 1 ]; then
@@ -541,36 +546,81 @@ print("SIGMA KEY LIST OK" if same and nums and sha and shape else "SIGMA KEY LIS
     '!"equals_-(n-4)/5": false' '!"admissible_after": false'
 fi
 
-# --- (m) and (n): Theorem sigmacat and Remark j4limit (codegree-squared densities of J_4, K_5^<, K_5^(4)-) ---------
-# The three certificates of Theorem sigmacat: directory, file prefix (the checkers append .cert.json / .cert.npz),
-# problem name of the checkers, prep program and evaluator (the J_4 certificate has M = 2^30 and needs the __int128
-# Gram variant), the exact bound b, the stated sigma bound 1 - b and its 12-digit ceiling; from the logs of the
-# independent review: 6-vertex representatives, admissible and rejected one-vertex extensions, labelled extensions at
-# the minimum, objective groups, labelled admissible 7-vertex graphs, the a-priori |Z| bound and the sha256 of the
-# evaluation table written by the prep; the number of spot-check graphs and of those at b (sigcat_spot_values.txt).
+# --- (m) and (n): Theorem sigmacat and Remark j4limit (codegree-squared densities, Table sigmacat) ------------------
+# The ten certificates of Theorem sigmacat: directory, file prefix (the checkers append .cert.json / .cert.npz), key
+# list, problem name of the checkers, the review whose programs check it (s7 = R7_SIG7 for J4, K5lt, K5_4minus; s8 =
+# R7_SIG8 for the other seven), prep program and evaluator (the J_4 certificate has M = 2^30 and needs the __int128
+# Gram variant), the exact bound b, the stated sigma bound 1 - b, its 12-digit ceiling and the 7-digit ceiling of Table
+# sigmacat, keys and flags; from the logs of the independent reviews: 6-vertex representatives, admissible and rejected
+# one-vertex extensions, labelled extensions at the minimum, objective groups, labelled admissible 7-vertex graphs, the
+# a-priori |Z| bound and the sha256 of the evaluation table written by the prep; the number of spot-check graphs and
+# of those at b (sigcat_spot_values.txt).
 scinfo() {
-  SZB=""; SPC=""
+  SZB=""; SPC=""; SPROG=s7
   case "$1" in
     J4) SD=sigma_catalogue/J4; SPRE=cosig3_s3_J4_r30.cosig3; SKEYS=cosig3_s3_J4_r30.keys.json; SPROB=s3_J4
-        SPREP=s7_prep128.py; SEVAL=s7_eval128
+        SPREP=s7_prep128.py; SEVAL=s7_eval128; SRN=J4_r30
         SB=23220181141640969669/32281802128991715328; SSIG=9061620987350745659/32281802128991715328
-        SC12=0.280703690307; SREPS=1513; SADM=29092719; SREJ=20485265; SMULT=5; SGRP=106; SLAB=14704790947
+        SC12=0.280703690307; SC7=0.2807037; SKN=43; SFL=24402
+        SREPS=1513; SADM=29092719; SREJ=20485265; SMULT=5; SGRP=106; SLAB=14704790947
         SBLOB=718d7e8a3a3b937a519c3a04e14421032f34ec29ac99e9aa6d8bf9ab3b1e9ae2; SNSP=17; SNB=4 ;;
     K5lt) SD=sigma_catalogue/K5lt; SPRE=cosig3_s3_K5lt_f.cosig3; SKEYS=cosig3_s3_K5lt_f.keys.json; SPROB=s3_K5lt
-        SPREP=s7_prep.py; SEVAL=s7_eval
-        SB=2747492282707/4123168604160; SSIG=1375676321453/4123168604160; SC12=0.333645420191
-        SREPS=1728; SADM=40527893; SREJ=16095211; SMULT=7; SGRP=108; SLAB=20294982806
+        SPREP=s7_prep.py; SEVAL=s7_eval; SRN=K5lt_f
+        SB=2747492282707/4123168604160; SSIG=1375676321453/4123168604160; SC12=0.333645420191; SC7=0.3336455
+        SKN=45; SFL=28108; SREPS=1728; SADM=40527893; SREJ=16095211; SMULT=7; SGRP=108; SLAB=20294982806
         SZB=393705905561403120; SPC='"n_copies7": 630, "reps6": 1728, "labelled6": 868080'
         SBLOB=e73f987666b2a3582176116a94fbd6479ac9f3bc9a6a8cc4ccab2d32fa9b7ed1; SNSP=17; SNB=4 ;;
     K5_4minus) SD=sigma_catalogue/K5_4minus; SPRE=sigma4_c4_K5m_f.sigma4; SKEYS=sigma4_c4_K5m_f.keys.json
-        SPROB=c4_K5m; SPREP=s7_prep.py; SEVAL=s7_eval
-        SB=24504905122391/30786325577728; SSIG=6281420455337/30786325577728; SC12=0.204032807991
-        SREPS=62; SADM=10058620; SREJ=54953092; SMULT=7; SGRP=56; SLAB=1741143596
+        SPROB=c4_K5m; SPREP=s7_prep.py; SEVAL=s7_eval; SRN=K5m4_f
+        SB=24504905122391/30786325577728; SSIG=6281420455337/30786325577728; SC12=0.204032807991; SC7=0.2040329
+        SKN=10; SFL=2243; SREPS=62; SADM=10058620; SREJ=54953092; SMULT=7; SGRP=56; SLAB=1741143596
         SZB=346363323387273360; SPC='"n_copies7": 105, "reps6": 62, "labelled6": 12068'
         SBLOB=7562c6add933e70414550ef2b83cf2149f169a8f9db412811d8fd6f29158bb02; SNSP=16; SNB=3 ;;
+    K5eq) SD=sigma_catalogue/K5eq; SPRE=cosig3_s3_K5eq.cosig3; SKEYS=cosig3_s3_K5eq.keys.json; SPROB=s3_K5eq
+        SPROG=s8; SPREP=s8_prepvm.py; SEVAL=s8_eval; SRN=K5eq_A
+        SB=106600906627513/173173081374720; SSIG=66572174747207/173173081374720; SC12=0.384425652179; SC7=0.3844257
+        SKN=45; SFL=29557; SREPS=1819; SADM=45962018; SREJ=13642974; SMULT=12; SGRP=108; SLAB=23083083434
+        SZB=327925293541166160; SPC='"reps6": 1819, "labelled6": 918267'
+        SBLOB=f598f7334ee035318cb29a094276225ea68d9ef9a169c41578aab401247a47ef; SNSP=17; SNB=4 ;;
+    K5_3minus) SD=sigma_catalogue/K5_3minus; SPRE=cosig3_s3_K5m_f.cosig3; SKEYS=cosig3_s3_K5m_f.keys.json
+        SPROB=s3_K5m; SPROG=s8; SPREP=s8_prepvm.py; SEVAL=s8_eval; SRN=K5m_f
+        SB=1143076695549/1924145348608; SSIG=781068653059/1924145348608; SC12=0.405930172388; SC7=0.4059302
+        SKN=46; SFL=32089; SREPS=1970; SADM=57357848; SREJ=7195112; SMULT=2; SGRP=118; SLAB=28854605654
+        SZB=270167075410372560; SPC='"reps6": 1970, "labelled6": 990687'
+        SBLOB=1aa762b5b9f82d0da2e9e46f8d20a45bcd77b6e45addbfa3c98c80272cb71b8e; SNSP=16; SNB=3 ;;
+    C5) SD=sigma_catalogue/C5; SPRE=cosig3_s3_C5_f.cosig3; SKEYS=cosig3_s3_C5_f.keys.json; SPROB=s3_C5
+        SPROG=s8; SPREP=s8_prepvm.py; SEVAL=s8_eval; SRN=C5_f
+        SB=6422651703/8589934592; SSIG=2167282889/8589934592; SC12=0.252304935013; SC7=0.2523050
+        SKN=40; SFL=13879; SREPS=835; SADM=5635379; SREJ=21725901; SMULT=1; SGRP=76; SLAB=2342442087
+        SZB=226821172036026960; SPC='"reps6": 835, "labelled6": 371229'
+        SBLOB=b3ae8f3197b93fbd22958ec32548e98c0d8c225b663f06270ac48eb5e1e0126d; SNSP=14; SNB=1 ;;
+    K6_3) SD=sigma_catalogue/K6_3; SPRE=cosig3_s3_K6.cosig3; SKEYS=cosig3_s3_K6.keys.json; SPROB=s3_K6
+        SPROG=s8; SPREP=s8_prepvm.py; SEVAL=s8_eval; SRN=K63_A
+        SB=29749027005683/115448720916480; SSIG=85699693910797/115448720916480; SC12=0.742318262433; SC7=0.7423183
+        SKN=48; SFL=35753; SREPS=2135; SADM=69958475; SREJ=1205; SMULT=11; SGRP=168; SLAB=34359509614
+        SZB=310561986171245760; SPC='"reps6": 2135, "labelled6": 1048575'
+        SBLOB=c6b8cfa21e13022311ab17c0923415454855c83356abc5a92e44e09cd5fec1d4; SNSP=17; SNB=4 ;;
+    K6_4minus) SD=sigma_catalogue/K6_4minus; SPRE=sigma4_c4_K6m_f.sigma4; SKEYS=sigma4_c4_K6m_f.keys.json
+        SPROB=c4_K6m; SPROG=s8; SPREP=s8_prepvm.py; SEVAL=s8_eval; SRN=K6m4_f
+        SB=358317739722203/923589767331840; SSIG=565272027609637/923589767331840; SC12=0.612037993062; SC7=0.6120380
+        SKN=12; SFL=6194; SREPS=154; SADM=160859017; SREJ=621687; SMULT=36; SGRP=149; SLAB=34244802014
+        SZB=424828241254554480; SPC='"reps6": 154, "labelled6": 32752'
+        SBLOB=ea9fb9fb75abe7a605fb6d41f68f3e2795d262304522961efee4b7f653f3ea78; SNSP=16; SNB=3 ;;
+    K6_4) SD=sigma_catalogue/K6_4; SPRE=sigma4_c4_K6.sigma4; SKEYS=sigma4_c4_K6.keys.json; SPROB=c4_K6
+        SPROG=s8; SPREP=s8_prepvm.py; SEVAL=s8_eval; SRN=K64_A
+        SB=140873242475/549755813888; SSIG=408882571413/549755813888; SC12=0.743753064695; SC7=0.7437531
+        SKN=12; SFL=6205; SREPS=155; SADM=162481445; SREJ=47835; SMULT=1; SGRP=164; SLAB=34352419335
+        SZB=210085298235918000; SPC='"reps6": 155, "labelled6": 32767'
+        SBLOB=349db8ec8680925e50ab7932008d993ce31d27beeac960eb294a834225c543aa; SNSP=11; SNB=1 ;;
+    K7_4) SD=sigma_catalogue/K7_4; SPRE=sigma4_c4_K7.sigma4; SKEYS=sigma4_c4_K7.keys.json; SPROB=c4_K7
+        SPROG=s8; SPREP=s8_prepvm.py; SEVAL=s8_eval; SRN=K74_A
+        SB=9454851490593/76965813944320; SSIG=67510962453727/76965813944320; SC12=0.877155180904; SC7=0.8771552
+        SKN=12; SFL=6206; SREPS=156; SADM=163577855; SREJ=1; SMULT=2; SGRP=174; SLAB=34359738367
+        SZB=429451942557828960; SPC='"reps6": 156, "labelled6": 32768'
+        SBLOB=76bc4012d7185cd1f6757098f31427a9e98adf369640db1d99e9322f433247f5; SNSP=14; SNB=4 ;;
   esac
 }
-SCNAMES="J4 K5lt K5_4minus"
+SCNAMES="J4 K5lt K5_4minus K5eq K5_3minus C5 K6_3 K6_4minus K6_4 K7_4"
 SCMASKS=0
 sigcat_masks() {    # the spot-check graphs of verifier/sigcat_spot_values.txt as text and int64 files (once)
   [ "$SCMASKS" = 1 ] && return
@@ -585,7 +635,9 @@ for name in sys.argv[2:]:
     open("local/pc_%s.txt" % name, "w").write("".join("%d\n" % m for m in ms))
     np.array(ms, dtype=np.int64).tofile("local/pc_%s.bin" % name)
     print(name, len(ms), "masks written")' "$V/sigcat_spot_values.txt" $SCNAMES
-  check sigcat_masks $? "J4 17 masks written" "K5lt 17 masks written" "K5_4minus 16 masks written"
+  set --
+  for n in $SCNAMES; do scinfo "$n"; set -- "$@" "$n $SNSP masks written"; done
+  check sigcat_masks $? "$@"
 }
 SCSPOT=" "
 sigcat_spot() {     # pure-Python exact values at the spot-check graphs, compared with the review's values (once)
@@ -593,7 +645,7 @@ sigcat_spot() {     # pure-Python exact values at the spot-check graphs, compare
   case "$SCSPOT" in *" $n "*) return ;; esac
   SCSPOT="$SCSPOT$n "
   scinfo "$n"
-  runin sigcat "sigcat_pycheck_$n" "$PY" "$V/s7_pycheck.py" "$SPROB" "$C/$SD/$SPRE" "local/pc_$n.txt" \
+  runin sigcat "sigcat_pycheck_$n" "$PY" "$V/${SPROG}_pycheck.py" "$SPROB" "$C/$SD/$SPRE" "local/pc_$n.txt" \
     "local/pycheck_$n.json"
   check "sigcat_pycheck_$n" $?
   runin sigcat "sigcat_pyvals_$n" "$PY" -c '
@@ -617,7 +669,7 @@ print("SPOT VALUES OK" if same and ge else "SPOT VALUES DIFFER")' "$n" "$V/sigca
     "SPOT VALUES OK"
 }
 SCBUILT=0
-sigcat_build() {    # the two exact evaluators (int64 and __int128 Gram entries), once
+sigcat_build() {    # the exact evaluators (R7_SIG7: int64 and __int128 Gram entries; R7_SIG8: int64), once
   [ "$SCBUILT" = 1 ] && return
   SCBUILT=1
   mkdir -p "$W/sigcat/local"
@@ -626,17 +678,38 @@ sigcat_build() {    # the two exact evaluators (int64 and __int128 Gram entries)
   rc=$?
   # shellcheck disable=SC2086
   [ "$rc" = 0 ] && { ( cd "$W" && "$CC" $CFLAGS -o sigcat/s7_eval128 "$V/s7_eval128.c" ) >> "$W/logs/sigcat_build.log" 2>&1; rc=$?; }
+  # shellcheck disable=SC2086
+  [ "$rc" = 0 ] && { ( cd "$W" && "$CC" $CFLAGS -o sigcat/s8_eval "$V/s8_eval.c" ) >> "$W/logs/sigcat_build.log" 2>&1; rc=$?; }
   check sigcat_build $rc
 }
 
 if [ "$SIGCAT" = 1 ]; then
   # --- (m) Theorem sigmacat, fast part: key lists, reductions, exact values at the spot-check graphs, decimals -------
-  run sigcat_keys "$PY" "$V/sk_check_keys.py" "$C/sigma_catalogue/J4/cosig3_s3_J4_r30.keys.json" \
-    "$C/sigma_catalogue/K5lt/cosig3_s3_K5lt_f.keys.json" "$C/sigma_catalogue/K5_4minus/sigma4_c4_K5m_f.keys.json"
-  check sigcat_keys $? "ALL PASS: 3 key files checked" \
-    '"problem": "s3_J4", "objective": "cosig3", "keys": 43, "flags": 24402, "bound": "23220181141640969669/32281802128991715328", "sigma_upper": "9061620987350745659/32281802128991715328", "PASS": true' \
-    '"problem": "s3_K5lt", "objective": "cosig3", "keys": 45, "flags": 28108, "bound": "2747492282707/4123168604160", "sigma_upper": "1375676321453/4123168604160", "PASS": true' \
-    '"problem": "c4_K5m", "objective": "sigma4", "keys": 10, "flags": 2243, "bound": "24504905122391/30786325577728", "sigma_upper": "6281420455337/30786325577728", "PASS": true'
+  set --; SCK=()
+  for n in $SCNAMES; do
+    scinfo "$n"; SCK+=("$C/$SD/$SKEYS")
+    case "$SPRE" in *.cosig3) o=cosig3 ;; *) o=sigma4 ;; esac
+    set -- "$@" "\"problem\": \"$SPROB\", \"objective\": \"$o\", \"keys\": $SKN, \"flags\": $SFL, \"bound\": \"$SB\", \"sigma_upper\": \"$SSIG\", \"PASS\": true"
+  done
+  run sigcat_keys "$PY" "$V/sk_check_keys.py" "${SCK[@]}"
+  check sigcat_keys $? "ALL PASS: 10 key files checked" "$@"
+  # the independent comparison of all ten key lists with the reviewer's own types and flags (R7_SIG8, addenda A1 for
+  # the seven of that review and A2 for the three of R7_SIG7)
+  set --; S3=()
+  for n in $SCNAMES; do
+    scinfo "$n"
+    a=("$SRN {'hashes_equal': True, 'scalars_equal': True,"
+       "'keys_equal': True, 'keys_vs_cert_json': True, 'n_keys': $SKN, 'total_flags': $SFL, 'counts_equal': True,")
+    if [ "$SPROG" = s8 ]; then set -- "$@" "${a[@]}"; else S3+=("${a[@]}"); fi
+  done
+  runin sigcat sigcat_keys_indep7 "$PY" "$V/s8_keys_cmp.py" local/results_keys_cmp.json
+  check sigcat_keys_indep7 $? "$@" \
+    "controls (True = detected) {'flags_swapped': True, 'aut_changed': True, 'flag_replaced': True, 'rows_changed': True" \
+    "ALL_PASS True" "!'PASS': False"
+  runin sigcat sigcat_keys_indep3 "$PY" "$V/s8_keys_cmp_stage1.py" local/results_keys_cmp_stage1.json
+  check sigcat_keys_indep3 $? "${S3[@]}" \
+    "controls (True = detected) {'flags_swapped': True, 'aut_changed': True, 'flag_replaced': True, 'rows_changed': True" \
+    "'K5lt_spec_replaced_by_K5eq': True, 'lam_2_to_1': True}" "ALL_PASS True" "!'PASS': False"
   mkdir -p "$W/sigcat/local"; rm -rf "$W/sigcat/local/neg_keys"
   runin sigcat sigcat_keys_neg "$PY" "$V/sk_neg_keys.py" local/neg_keys
   check sigcat_keys_neg $? "swap: exit 1 (FAIL as required)" "aut: exit 1 (FAIL as required)" \
@@ -644,31 +717,36 @@ if [ "$SIGCAT" = 1 ]; then
   runin sigcat sigcat_reduction "$PY" "$V/s7_reduction.py" results_reduction.json
   check sigcat_reduction $? '"r3_identities_graphs": 60' '"r3_num7_graphs": 40' '"r4_identities_graphs": 24' \
     '"r4_K5m_predicate_graphs": 900' '"planted_K4m_free_with_C5": 240' '"ALL_OK": true'
+  runin sigcat sigcat8_predicates "$PY" "$V/s8_predicates.py" local/results_predicates8.json
+  check sigcat8_predicates $? '"admissible": 284,' '"copies7": 315' '"admissible": 295,' '"copies7": 210' \
+    '"admissible": 617,' '"admissible": 181,' '"copies7": 252' '"admissible": 169,' '"admissible": 323,' \
+    '"admissible": 630,' '"copies7": 1' '"ALL_OK": true'
   sigcat_masks
   for n in $SCNAMES; do sigcat_spot "$n"; done
-  # the exact bounds, 1 - b and the 12-digit ceilings of Theorem sigmacat (upper bounds, rounded up)
+  # the exact bounds, 1 - b, the 12-digit ceilings of the reviews and the 7-digit ceilings of Table sigmacat
+  # (upper bounds, rounded up)
+  set --
+  for n in $SCNAMES; do scinfo "$n"; set -- "$@" "$SD:$SPRE:$SKEYS:$SB:$SSIG:$SC12:$SC7"; done
   run sigcat_decimals "$PY" -c '
 import json, os, sys
 from decimal import Decimal, getcontext, ROUND_CEILING
 from fractions import Fraction
 getcontext().prec = 80
-def ceil12(x):
-    return str((Decimal(x.numerator) / Decimal(x.denominator)).quantize(Decimal("1e-12"), rounding=ROUND_CEILING))
+def ceil(x, q):
+    return str((Decimal(x.numerator) / Decimal(x.denominator)).quantize(Decimal(q), rounding=ROUND_CEILING))
 ok = True
 for row in sys.argv[2:]:
-    d, pre, keys, b, sig, c12 = row.split(":")
+    d, pre, keys, b, sig, c12, c7 = row.split(":")
     cj = json.load(open(os.path.join(sys.argv[1], d, pre + ".cert.json")))
     kj = json.load(open(os.path.join(sys.argv[1], d, keys)))
     B, S = Fraction(b), Fraction(sig)
     good = (Fraction(cj["bound"]) == B and Fraction(kj["bound"]) == B and Fraction(kj["sigma_upper"]) == S
-            and 1 - B == S and ceil12(1 - B) == c12)
+            and 1 - B == S and ceil(1 - B, "1e-12") == c12 and ceil(1 - B, "1e-7") == c7)
     ok &= good
-    print(d, "bound", B, "; sigma <= 1 - b =", 1 - B, "(paper:", sig + ") <", ceil12(1 - B), "(paper:", c12 + ") ;", good)
-print("SIGCAT DECIMALS OK" if ok else "SIGCAT DECIMALS DIFFER")' "$C/sigma_catalogue" \
-    J4:cosig3_s3_J4_r30.cosig3:cosig3_s3_J4_r30.keys.json:23220181141640969669/32281802128991715328:9061620987350745659/32281802128991715328:0.280703690307 \
-    K5lt:cosig3_s3_K5lt_f.cosig3:cosig3_s3_K5lt_f.keys.json:2747492282707/4123168604160:1375676321453/4123168604160:0.333645420191 \
-    K5_4minus:sigma4_c4_K5m_f.sigma4:sigma4_c4_K5m_f.keys.json:24504905122391/30786325577728:6281420455337/30786325577728:0.204032807991
-  check sigcat_decimals $? "SIGCAT DECIMALS OK"
+    print(d, "bound", B, "; sigma <= 1 - b =", 1 - B, "(paper:", sig + ") <", ceil(1 - B, "1e-12"), "(review:", c12 + "),",
+          ceil(1 - B, "1e-7"), "(Table sigmacat:", c7 + ") ;", good)
+print(len(sys.argv) - 2, "certificates;", "SIGCAT DECIMALS OK" if ok else "SIGCAT DECIMALS DIFFER")' "$C" "$@"
+  check sigcat_decimals $? "10 certificates; SIGCAT DECIMALS OK"
 
   # --- (n) Remark j4limit: the obstruction witness (S1) and the exact dual point (S2) for sigma(J_4) ---------------
   rm -rf "$W/j4"; mkdir -p "$W/j4/local" "$W/j4/out"      # fresh caches (local/*.pkl) for every run
@@ -751,6 +829,32 @@ for x in $RAWX; do
       runin stab stab_c10_full "$PY" "$V/r_lg10_full.py"
       check stab_c10_full $? '"R_by_part_sizes": {"1,8": 9, "2,7": 2304, "3,6": 86016, "4,5": 516096, "0,9": 1}' \
         '"survivors_total": 15636107, "labelled_giraud_on_10_vertices_by_formula": 15636107, "total_equals_G10": true, "R_with_count_mismatch": [], "n_mismatch": 0, "sample_2000_explicit_and_struct_ok": true, "C10_FULL_PASS": true' ;;
+    sigcat_K5eq|sigcat_K5_3minus|sigcat_C5|sigcat_K6_3|sigcat_K6_4minus|sigcat_K6_4|sigcat_K7_4)
+      # Theorem sigmacat, the seven certificates of R7_SIG8: streaming decoding (evaluation table in blobs/, the
+      # representatives in reps/, summary in prep/), spot values in C, exhaustive scan, comparison
+      n="${x#sigcat_}"
+      sigcat_build
+      sigcat_masks
+      sigcat_spot "$n"
+      scinfo "$n"
+      rm -f "$W/sigcat/local/reps6_$SPROB.npy" "$W/sigcat/local/reps6_${SPROB}_aut.npy"   # own representatives, anew
+      runin sigcat "sigcat_prep_$n" "$PY" "$V/s8_prepvm.py" "$SPROB" "$C/$SD/$SPRE" "$n" .
+      check "sigcat_prep_$n" $? "\"evaluator\": \"s8_eval\", \"keys\": $SKN, \"keys_match_cert\": true" \
+        "\"z_bound_apriori_mine\": \"$SZB\", \"z_bound_apriori_cert\": \"$SZB\"" "$SPC" "\"blob_sha256\": \"$SBLOB\""
+      runin sigcat "sigcat_each_$n" ./s8_eval "blobs/$n.blob" list "local/pc_$n.bin" "$THREADS" \
+        "local/list_pc_$n.json" "local/each_$n.txt"
+      check "sigcat_each_$n" $? "done list: admissible $SNSP rejected 0 bad 0"
+      runin sigcat "sigcat_cmp_$n" "$PY" "$V/s8_cmp.py" "local/pycheck_$n.json" "local/each_$n.txt" \
+        "$C/$SD/$SPRE.cert.json" "local/cmp_$n.json"
+      check "sigcat_cmp_$n" $? "{\"n\": $SNSP, \"all_equal_and_ge_b\": true, \"n_at_min\": $SNB}"
+      runin sigcat "sigcat_raw_$n" ./s8_eval "blobs/$n.blob" raw "reps/$SPROB.reps.bin" "$THREADS" "local/raw_$n.json"
+      check "sigcat_raw_$n" $? "done raw: admissible $SADM rejected $SREJ bad 0"
+      runin sigcat "sigcat_analyze_$n" "$PY" "$V/s8_analyze.py" "local/raw_$n.json" "$C/$SD/$SPRE.cert.json" \
+        "prep/$n.prep.json" "local/results_raw_$n.json"
+      check "sigcat_analyze_$n" $? '"bad": 0' "\"min_slack\": \"$SB\"" '"min_equals_claimed": true' \
+        "\"min_multiplicity\": $SMULT" "\"n_groups_mine\": $SGRP" '"group_keys_identical": true' \
+        '"group_maxZ_identical": true' '"raw_extensions_equal": true' "\"labelled_admissible_7vertex\": $SLAB" \
+        "\"reps6\": $SREPS" "\"sigma_upper_exact\": \"$SSIG\"" "\"sigma_upper_ceil12\": \"$SC12\"" '"PASS": true' ;;
     sigcat_J4|sigcat_K5lt|sigcat_K5_4minus)      # Theorem sigmacat: decode, spot values in C, exhaustive scan
       n="${x#sigcat_}"
       sigcat_build

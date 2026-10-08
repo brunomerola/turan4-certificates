@@ -1,0 +1,14 @@
+{
+ "prefix": "/opt/ml/research/math-links/tools/flagalg/sigma_cat/results_vm/sigma4_c4_K6",
+ "objective": "sigma4",
+ "problem": "c4_K6",
+ "bound": "140873242475/549755813888",
+ "sampled": 364,
+ "group_argmins_checked": 164,
+ "random_checked": 200,
+ "all_slacks_ge_bound": true,
+ "equality_at_argmin": true,
+ "min_sampled_slack": "140873242475/549755813888",
+ "time_s": 18.102312564849854,
+ "PASS": true
+}

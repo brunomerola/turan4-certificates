@@ -42,7 +42,8 @@ evaluates in 128-bit integers with asserted a-priori bounds (`s7_prep128.py`, `s
   `cert_npz_sha256` (checked by the step `npz_hashes`). The other fields (float values, times, the private path of the
   certificate it was re-rounded from) are records of the producer's run.
 * `cosig3_s3_J4_r30.keys.json`: the key list again, with the formula, the predicate and the sha256 of the three files
-  above, in the format shared by all certificates of `../` (see `../README.md`); written for the package.
+  above, in the format shared by all certificates of `../` (see `../README.md`); written for the package, and
+  compared with an independent reviewer's own types, flags and |Aut| (review R7_SIG8, addendum A2: all equal).
 * `cosig3_s3_J4_r30.cosig3.verify.json`: the producer's own sampling check (306 graphs, all >= b); a record, no role in
   the proof.
 
@@ -51,8 +52,10 @@ The .cert.* and .verify.json files are byte-identical to the files reviewed (sha
 
 **Checked by** `verifier/verify_all.sh` (name J4; see `verifier/EXPECTED.txt`, part (m)):
 
-* fast: `sigcat_keys` (`sk_check_keys.py`, the producer's self-contained key-list checker: the key list rebuilt from
-  the definitions equals `keys.json` and the json, shapes of the `A_k`, sha256 of the copies); `sigcat_reduction`
+* fast: `sigcat_keys_indep3` (`s8_keys_cmp_stage1.py`, the independent comparison of `keys.json` with the reviewer's
+  own types, flags and |Aut|, of the predicate, the format string and the hashes; review R7_SIG8, addendum A2) and
+  `sigcat_keys` (`sk_check_keys.py`, the producer's self-contained key-list checker: the key list rebuilt from the
+  definitions equals `keys.json` and the json, shapes of the `A_k`, sha256 of the copies); `sigcat_reduction`
   (`s7_reduction.py`: the identities behind the objective, the 7-vertex numerator F, exact averaging over 7-subsets, the
   J_4-freeness test against an independent definitional test); `sigcat_pycheck_J4` and `sigcat_pyvals_J4`
   (`s7_pycheck.py`, a pure-Python evaluation from the definition at 17 graphs, every value equal to the independent
@@ -70,6 +73,7 @@ The .cert.* and .verify.json files are byte-identical to the files reviewed (sha
 810174058051/2886218022912 (sigma(J_4) <= 0.280704386024); this certificate is the same floating-point dual rounded
 again at M = 2^30 (producer step recorded in commit ed36f398, branch research/turan4-n7 of the private working
 repository), which removes most of the rounding loss. The key list `keys.json` was written from the producer's flag
-model and checked against a rebuild from the definitions (commit da3e33b0). Independent review R7_SIG7, addendum A1
+model and checked against a rebuild from the definitions (commit da3e33b0), and independently in review R7_SIG8,
+addendum A2 (2026-10-08), which resolved finding M1 of R7_SIG7 for it. Independent review R7_SIG7, addendum A1
 (2026-10-07): PASS (own decoding, own 128-bit evaluator, raw scan and class-list scan, pure-Python spot checks,
 construction law). The M = 2^19 certificate is superseded and not included.

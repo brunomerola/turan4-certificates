@@ -33,7 +33,8 @@ mask 33554431, the complement of the ten 4-sets through a fixed pair); the next 
   exact `bound`, `argmin_graph`, `z_bound_apriori`, the producer's table `groups`, `raw_extensions_scanned` =
   10,058,620 and `cert_npz_sha256`; the other fields are records of the run.
 * `sigma4_c4_K5m_f.keys.json`: the full key list with every flag list, the formula, the predicate and the sha256 of
-  the three certificate files; written for the package (finding M1 of the independent review).
+  the three certificate files; written for the package (finding M1 of the independent review R7_SIG7), and compared
+  with an independent reviewer's own types, flags and |Aut| (review R7_SIG8, addendum A2: all equal; M1 resolved).
 * `sigma4_c4_K5m_f.sigma4.verify.json`: the producer's sampling check (256 graphs); a record, no role in the proof.
 
 The .cert.* and .verify.json files are byte-identical to the files reviewed (sha256 bf8ab264..., b0e8a528...,
@@ -41,10 +42,10 @@ c205d6ce...).
 
 **Checked by** `verifier/verify_all.sh` (name K5_4minus; `verifier/EXPECTED.txt`, part (m)):
 
-* fast: `sigcat_keys`, `sigcat_reduction` (including the identities of Lemma co2 on random 4-graphs and the
-  equivalence "K_5^(4)--free <=> every 5-set of the complement spans >= 2 edges"), `sigcat_pycheck_K5_4minus` and
-  `sigcat_pyvals_K5_4minus` (pure-Python values at 16 graphs, equal to the independent review's; 3 at b),
-  `sigcat_decimals`;
+* fast: `sigcat_keys_indep3` (review R7_SIG8 A2) and `sigcat_keys` (producer), `sigcat_reduction` (including the
+  identities of Lemma co2 on random 4-graphs and the equivalence "K_5^(4)--free <=> every 5-set of the complement
+  spans >= 2 edges"), `sigcat_pycheck_K5_4minus` and `sigcat_pyvals_K5_4minus` (pure-Python values at 16 graphs,
+  equal to the independent review's; 3 at b), `sigcat_decimals`;
 * `--raw sigcat_K5_4minus`: `s7_prep.py`, `s7_eval` at the 16 spot-check graphs (equal to the Python values), the
   exhaustive scan over all 65,011,712 one-vertex extensions of the checker's own 62 six-vertex representatives
   (10,058,620 admissible), and `s7_analyze.py`: minimum exactly b, attained 7 times, all 56 group maxima equal the
@@ -53,5 +54,6 @@ c205d6ce...).
 
 **Provenance.** Phase F certificate of the cloud run paperb-a4 (2026-10-06; commit bf6de3a7, branch
 research/turan4-n7 of the private working repository); key list from commit da3e33b0. Independent review R7_SIG7
-(2026-10-06/07): PASS-with-notes (archiving, decimals, interpretation; none affects validity). The phase-A certificate
-is not included.
+(2026-10-06/07): PASS-with-notes (archiving, decimals, interpretation; none affects validity; the archiving note M1
+was resolved by the independent comparison of the key list in R7_SIG8 addendum A2, 2026-10-08). The phase-A
+certificate is not included.

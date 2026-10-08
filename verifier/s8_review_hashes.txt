@@ -1,0 +1,24 @@
+# verifier/s8_review_hashes.txt -- the sha256 of the seven tier 2/3 certificates of Theorem sigmacat (cert.json, cert.npz,
+# verify.json) as recorded by their independent review R7_SIG8 (lines copied unchanged from its list of reviewed inputs;
+# the paths are those of the producer's working tree). Read by s8_keys_cmp.py, check (1).
+c541e7e2b65ebce244174298afeea8b8717cac38dad9ebb957a80a0a0b6d15fc  tools/flagalg/sigma_cat/cloud_a5/results_vm/cosig3_s3_K5eq.cosig3.cert.json
+2bca424cf896ab719becdee1afec687199642bdcbd8de5d19b6e41b8fa86cc09  tools/flagalg/sigma_cat/cloud_a5/results_vm/cosig3_s3_K5eq.cosig3.cert.npz
+f870a4a9744d871d38c201f6283a0aea4f63e4fe25efd17143cb489292e51af1  tools/flagalg/sigma_cat/cloud_a5/results_vm/cosig3_s3_C5_f.cosig3.cert.json
+6010ba2ddc77ab87daa03ea849816391407222aabca50252e9ea467128887aac  tools/flagalg/sigma_cat/cloud_a5/results_vm/cosig3_s3_C5_f.cosig3.cert.npz
+c7a46ec9df396caa069c34c23f686279146846eccee32c11cc3053d283fd5b5d  tools/flagalg/sigma_cat/cloud_a5/results_vm/sigma4_c4_K6m_f.sigma4.cert.json
+13cebb99cb53c0cd09e0980013a73a0e5da499e20e22c0c9dd39290f45fe3edc  tools/flagalg/sigma_cat/cloud_a5/results_vm/sigma4_c4_K6m_f.sigma4.cert.npz
+95ccc8bc7b3511fa57e4b3b2fbdd2d1f0d85b0b8ed95e393890b6028e68f3e99  tools/flagalg/sigma_cat/cloud_a5/results_vm/sigma4_c4_K6.sigma4.cert.json
+5df572029f8fdb8e086ce0b2697af74d225ede523cab2c7172f01aa8f475218c  tools/flagalg/sigma_cat/cloud_a5/results_vm/sigma4_c4_K6.sigma4.cert.npz
+202f847ebc7d94a1f56d31bbeb7aa3d258ef17a11fb32eb8edcd017ba28fea64  tools/flagalg/sigma_cat/cloud_a6/results_vm/cosig3_s3_K5m_f.cosig3.cert.json
+b77209672832f4a92399411b534e23afcceed1c4b6531c430b81c31248cf9e28  tools/flagalg/sigma_cat/cloud_a6/results_vm/cosig3_s3_K5m_f.cosig3.cert.npz
+94b0ddc07685536104646718b25779dc514bcb755ab047f6f541515e8797b476  tools/flagalg/sigma_cat/cloud_a6/results_vm/cosig3_s3_K6.cosig3.cert.json
+776d314da4bc113881c12e123f3b48fc9ce64b2d3296427f6e64523f8bdd13c7  tools/flagalg/sigma_cat/cloud_a6/results_vm/cosig3_s3_K6.cosig3.cert.npz
+f2fcf45515c9c5254885c2077086cf56e958b65d7cff50755118328cd54354ed  tools/flagalg/sigma_cat/cloud_a6/results_vm/sigma4_c4_K7.sigma4.cert.json
+e35c08ecb232dfb0b246945c7b826f75c2f75192bd5fb20e4ba525d3dfcb475d  tools/flagalg/sigma_cat/cloud_a6/results_vm/sigma4_c4_K7.sigma4.cert.npz
+783fbcebdb136161caa4cb93e641a681d2dddda56968dd2e1a716f45a334cadf  tools/flagalg/sigma_cat/cloud_a5/results_vm/cosig3_s3_C5_f.cosig3.verify.json
+f99cbd42a328fdd80554629679026083696caf43defc4fa5a63d08287951868a  tools/flagalg/sigma_cat/cloud_a5/results_vm/cosig3_s3_K5eq.cosig3.verify.json
+d356002940b095486692d3a6c15a2d91077155a7e3fed90a84dd5a8c1cdce454  tools/flagalg/sigma_cat/cloud_a5/results_vm/sigma4_c4_K6.sigma4.verify.json
+6c7f95511fe2d31923f70065a5dace0b8239ebb6064fa9d15164b38bd1c4d7df  tools/flagalg/sigma_cat/cloud_a5/results_vm/sigma4_c4_K6m_f.sigma4.verify.json
+55e3ddba60c8f98e1879fef47983d291c28ddf6ecaed74f946d7e18762f694d8  tools/flagalg/sigma_cat/cloud_a6/results_vm/cosig3_s3_K5m_f.cosig3.verify.json
+777c40cb24a064ba6957198e839534075369ab44bf8864ebc8fe51fc9c2c77ec  tools/flagalg/sigma_cat/cloud_a6/results_vm/cosig3_s3_K6.cosig3.verify.json
+dd4abbb7f41fec6f9eee7db980d93fc9cf67ec646ee1eaa24104820fe8148e0c  tools/flagalg/sigma_cat/cloud_a6/results_vm/sigma4_c4_K7.sigma4.verify.json

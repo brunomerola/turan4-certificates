@@ -18,7 +18,9 @@ claimed values of rv2_dual.py and rv2_decimals.py that refer to these certificat
 updated, and nothing else. Items 12 and 13 describe the fifth version (Theorem sigmacat and Remark j4limit): the
 checkers of the two J_4 reviews were renamed (prefixes jw_ and jd_) and the module names in their imports changed
 accordingly; apart from that the code changes are paths of generated and input files. Two producer programs (prefix
-sk_, not independent) check the new key lists.
+sk_, not independent) check the new key lists. Items 14 and 15 describe the sixth version (the seven further
+certificates of Theorem sigmacat, with the checkers of their review R7_SIG8, prefix s8_, and that review's independent
+checks of all ten key lists); again the only code changes are paths.
 
 1. Comment and docstring edits only (code identical)
 ----------------------------------------------------------------------------------------------------------------
@@ -399,3 +401,86 @@ computed (from its result files, unchanged; 17 + 17 + 16 graphs).
   final SHA256SUMS, verify_all.sh --sigcat --producer-j4: 20 steps, ALL CHECKS PASSED (3.5 min). The raw
   scans of part (m) were not run in this test; they are the review's (EXPECTED.txt, part (m)). The rest of --fast is
   unchanged and was not re-run.
+
+14. Sixth version: the seven further certificates of Theorem sigmacat (Table sigmacat) and the key-list checks
+----------------------------------------------------------------------------------------------------------------
+New data in certificates/sigma_catalogue/: the certificates of K_5^=, K_5^{3-}, C_5, K_6^(3), K_6^(4)-, K_6^(4),
+K_7^(4) (directories K5eq, K5_3minus, C5, K6_3, K6_4minus, K6_4, K7_4), byte-identical to the files the independent
+review R7_SIG8 read, each with its key list (keys.json, compared with the reviewer's own in its addendum A1). The
+checkers are those of R7_SIG8 (prefix s8_, no collision). Its programs are those of R7_SIG7 with the module names
+s8_* and the seven new families added to s8_lib.py, plus a streaming decoder (s8_prepvm.py), a predicate test
+(s8_predicates.py), a .npy reader in the evaluator (used for the class lists, not by the package) and the two
+key-list comparisons of its addenda A1 (the seven certificates) and A2 (the three of R7_SIG7, which resolved R7_SIG7's
+finding M1).
+
+file                   sha256 as reviewed                                                 sha256 in this package
+s8_lib.py              e099d1429de9b001ab1016f7bcad0089793924e1ee008f1b778eb19214b7467c   eccaa11896cc60f4feb7e27f28deddd2f0a5e08d553f718354d35317aa951e3b
+s8_prep.py             df80074ef1f9fe212a6353d95644c7121e5602a3c08cf53f31cd9ac378189c82   39b5556e0d18588bcb0ab9a081611e4346cef3af6e0639f77ca25e3774b35c74
+s8_prep128.py          c55cb23588d4d4c1df692211b43b4c82f1408097467a4e06ae18f6fece64e12c   36063d6d3a3dd6599b0b4ecedccc243f806c38af4369348a22f605fe2ec98e66
+s8_prepvm.py           325e96ac775a7fd38624a35c5bc2d8a1bd001dbefa0a3de9e0382dcabb014e8b   c0cd89bf4c906f3ae0bbca5a78c9e8395186789ce4033192c933c7fe66ab15c7
+s8_eval.c              d19d5ccbdec9ae8beb7f4ad123dca0f063f302be7db3bfb54df950a32c0daef2   e872809fcee9c2401b376b789a98b9dc1a4831a8351ff2dff0e8d47a4727d762
+s8_analyze.py          d5b98c188bdc3f89d0aaed126a847d32d20bdcefdfda92ad261dbe3ec0fae46e   8a19f14f0903990222ac60e7c6fcf026ed73356da3f6c1657edf188dcec72051
+s8_pycheck.py          91be2fd555ee36c08d510ff7f61f8a5881683ea560bcf3c87522e4354eaa7726   54ec49aeb10a7e079cc3da6f3425d2f221806621b0b6c5f9a8ddb037e5855ea1
+s8_cmp.py              bb84f49893b5082e82e98ade2ac00e364d4defc624d736bdd1aa2e18757a977b   82e1f090d25e823607bd396c3fe5f9e391db9997dd8b9cb022732647c17a2e27
+s8_predicates.py       4e02faf4bc5e39eae62c7b9d0b8a5031458c151bf303fb6cae5bd12463a48822   21020ad0871f489eb48e058243d9ea76b918c40d0b4fd92722b2f295d4965da7
+s8_keys_cmp.py         dbbcf11511ff56cb3d49877cb84cf6355d68c2685106b1d7177c0f527fbd0a18   585a6cddc63ea76030c78fa1147573fbdd99a93927efda07233d0058f8765049
+s8_keys_cmp_stage1.py  c7b08e004d22e07bbd69f7082c436e31f9e7f1a81fe53e6d9d6584016b0dd48c   598f7f6f01df3622ef18756ffffa3d5ce0a46fcebfc0872c1d590566fbd88003
+
+All originals have the same names in the directory of the review R7_SIG8; the digests "as reviewed" are those of its
+list of outputs (research commits 5a5cda5e, 5576a60a for A1 and 75078e6e for A2). s8_eval.c is the newest version
+of its evaluator: the one that ran the raw scans differs only in the .npy reader of class lists (uint64 lists
+accepted after checking that every value is < 2^63; review note I1); the raw scans read raw int64 representatives and
+are not affected.
+
+Edits:
+* All files (first docstring line; s8_eval.c first comment line): the internal review label was replaced by
+  "Independent checker" ("Independent exact evaluator", "Independent prep", "Independent streaming prep",
+  "Independent pure-Python definitional check"); s8_lib.py: the comment over the new families no longer names the
+  review. For s8_lib.py, s8_prep128.py, s8_prepvm.py, s8_pycheck.py, s8_cmp.py and s8_predicates.py the abstract syntax
+  tree without docstrings is unchanged; s8_eval.c is unchanged without /* */ comments, and compiled with -O3
+  -march=native -fopenmp it gave the review's binary byte for byte.
+* s8_prep.py and s8_analyze.py (code, paths only): as s7_prep.py and s7_analyze.py in item 12, a line OUT =
+  os.getcwd() and the 6-vertex representatives in OUT/local (one place each). s8_prepvm.py writes into the directory
+  given as its fourth argument (verify_all.sh passes ".", inside work/sigcat/).
+* s8_keys_cmp.py (code, paths only): it read the key lists and certificate copies from the producer's folder of key
+  lists and the originals from the producer's result folders; both are now the package directory,
+  PKG = os.path.normpath(os.path.join(HERE, "..", "certificates", "sigma_catalogue")) with a mapping DIRS from the
+  review's names (C5_f, ...) to the directory names (C5, ...), so its "copy" and "original" are the same file here;
+  its reference hashes, read from the review's list of inputs, are read from s8_review_hashes.txt, which contains the
+  21 lines of that list for the certificate files of the seven, unchanged. The docstring follows.
+* s8_keys_cmp_stage1.py (code, paths only): the same for the three certificates of R7_SIG7 -- it imports PKG instead of
+  the producer's folders from s8_keys_cmp.py, maps the review's names J4_r30, K5lt_f, K5m4_f to J4, K5lt, K5_4minus,
+  and reads its reference hashes (R7_SIG7's list of reviewed inputs) from s7_review_hashes.txt, the 9 lines of that
+  list for the certificate files of the three, unchanged. The docstring follows.
+* Not copied: s8_eval128.c (none of the seven needs 128-bit Gram entries; the J_4 certificate keeps R7_SIG7's
+  s7_eval128.c), s8_reduction.py (s7_reduction.py with the module names changed; the package runs s7_reduction.py),
+  s8_masks.py and s8_masks0.py (the spot-check graphs are in sigcat_spot_values.txt), s8_constr*.py and
+  s8_closedforms.py (the exact laws and closed forms of the constructions behind the lower bounds of Table sigmacat;
+  consistency checks, not needed for the upper bounds), and the review's run directory for the cloud machine (its
+  run script, job list, evaluation tables and outputs; verify_all.sh rebuilds the tables with s8_prepvm.py and runs the
+  same scans).
+New data files: s8_review_hashes.txt (dca8a7da689cae1bce30fffadb85dfe732e870f18e2c3d52de1fc66e8cbdf9b1) and
+s7_review_hashes.txt (73aed92517b0466b48ca33591ffa144fb6a425105c9ce53feba5250571c8da9e), described above; and
+sigcat_spot_values.txt (now ae921a23bafac086a32194559ebe39c2f7d9f2fb56f8883409924802b264ceff) gained the 105
+spot-check graphs of the seven certificates with the exact values slack - b of R7_SIG8's pure-Python evaluator (its
+second spot-check set; from its result files, unchanged).
+
+15. Sixth version: verify_all.sh
+----------------------------------------------------------------------------------------------------------------
+* Part (m) covers the ten certificates (function scinfo: the seven new rows, with SPROG = s8 selecting the R7_SIG8
+  programs; expected values from R7_SIG8's logs and results). New steps: sigcat_keys_indep7 (s8_keys_cmp.py) and
+  sigcat_keys_indep3 (s8_keys_cmp_stage1.py), the independent key-list checks of all ten; sigcat8_predicates
+  (s8_predicates.py); sigcat_pycheck_X and sigcat_pyvals_X for the seven. sigcat_keys now checks the ten key lists;
+  sigcat_masks writes the masks of all ten; sigcat_decimals checks the ten bounds and also the 7-digit values of Table
+  sigmacat.
+* --raw accepts sigcat_K5eq, sigcat_K5_3minus, sigcat_C5, sigcat_K6_3, sigcat_K6_4minus, sigcat_K6_4, sigcat_K7_4;
+  "sigcat" and "all" include them. For these, sigcat_prep_X runs s8_prepvm.py (evaluation table in work/sigcat/blobs/),
+  sigcat_each_X / sigcat_raw_X run s8_eval (built by sigcat_build), sigcat_cmp_X and sigcat_analyze_X run s8_cmp.py and
+  s8_analyze.py; the arguments are those of the review (its run script on the cloud machine: raw mode on the
+  representatives written by s8_prepvm.py, the number of threads from --threads).
+* The npz check now requires 26 certificate files.
+* Test of the sixth version (2026-10-08, 2 logical CPUs, under a 1.5 GB memory cap): verify_all.sh --sigcat, 35 steps (integrity, npz_hashes, the 28 of part
+  (m), the 5 of part (n)), ALL CHECKS PASSED (8.3 min while other jobs were running, peak 128 MB).
+  The decoding, the list-mode evaluation and the C-Python comparison of the raw part were run by hand for K5_4minus,
+  C5 and K7_4 with the commands of verify_all.sh: evaluation tables and representatives byte-identical to the
+  reviews', all expected strings present. The raw scans themselves were not run (they are the reviews').

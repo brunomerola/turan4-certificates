@@ -15,16 +15,17 @@ of the stability results (and, for (j), from the definitions), never from the pr
 version the certificates of Theorem main (b), (d), (e) (K6_4, K5_4minus, K6_4minus) were replaced by larger ones;
 their expected values in (a) come from their independent review R7_B2 (its own runs of the same checkers), and the
 values of (i) that refer to them (b, ceil12(1 - b), V - b) from the same review. Parts (m), (n) and (o) were added in
-the fifth version; their expected values come from the independent reviews of these files (R7_SIG7 with its addendum
-A1, R7_J4S1, R7_J4S2) and from the definitions, except those of sigcat_keys and sigcat_keys_neg (a producer program
-checking the key lists; its log) and of the optional part (o) (the producer's own checkers; their logs).
+the fifth version, and the sixth added seven certificates to part (m); their expected values come from the independent
+reviews of these files (R7_SIG7 with its addendum A1, R7_SIG8 with its addenda A1 and A2, R7_J4S1, R7_J4S2) and from
+the definitions, except those of sigcat_keys and sigcat_keys_neg (a producer program checking the key lists; its log)
+and of the optional part (o) (the producer's own checkers; their logs).
 
 0. Integrity and build                                                                     a few seconds
 ------------------------------------------------------------------------------------------------------------------
 integrity     sha256sum -c SHA256SUMS: every file OK ("!FAILED")
-npz_hashes    "19 certificate files", "ALL NPZ HASHES MATCH" (each .npz equals the cert_npz_sha256 field of its
+npz_hashes    "26 certificate files", "ALL NPZ HASHES MATCH" (each .npz equals the cert_npz_sha256 field of its
               .json; certificates/ is searched recursively: the five of (a), the ten of (h), the sigma key list and the
-              three of (m))
+              ten of (m))
 build         gcc -O3 -march=native -fopenmp -Wall -o work/rv_eval verifier/rv_eval.c, exit status 0
 
 (a) The five 4-graph certificates (Theorem main)
@@ -389,17 +390,34 @@ stab_c10_full    r_lg10_full.py (C10 over all 604,426 labelled bases): "R_by_par
 Times (same test): stab_cf 128 s (peak 585 MB), stab_lg8 < 1 s, stab_lg9 20 s, stab_lg10 113 s, stab_margin 3 s,
 stab_formF 51 s, stab_cor 19 s; --raw stab_c10: stab_c10_full 1367 s.
 
-(m) Theorem sigmacat: sigma(J_4), sigma(K_5^<), sigma(K_5^(4)-), certificates/sigma_catalogue/          fast: 15 s
+(m) Theorem sigmacat (Table sigmacat): the ten certificates, certificates/sigma_catalogue/            fast: about 1.5 min
 ------------------------------------------------------------------------------------------------------------------
-Expected values from the independent review of the three certificates (R7_SIG7 and, for J4, its addendum A1: its logs
-and result files) and from the definitions; for sigcat_keys and sigcat_keys_neg from the log of the producer's
-key-list check. Run in work/sigcat/. Names X = J4, K5lt, K5_4minus (directories certificates/sigma_catalogue/X/).
+Expected values from the independent reviews of the certificates (R7_SIG7 with its addendum A1 for J4, K5lt,
+K5_4minus; R7_SIG8 for the other seven; R7_SIG8 addenda A1 and A2 for the key lists of all ten: their logs and result
+files) and from the definitions; for sigcat_keys and sigcat_keys_neg from the log of the producer's key-list check.
+Run in work/sigcat/. Names X = J4, K5lt, K5_4minus, K5eq, K5_3minus, C5, K6_3, K6_4minus, K6_4, K7_4 (directories
+certificates/sigma_catalogue/X/); the programs are those of R7_SIG7 (s7_*) for the first three and of R7_SIG8 (s8_*)
+for the other seven.
 sigcat_keys       sk_check_keys.py (the producer's self-contained checker of the key lists; not a review program):
-                  "ALL PASS: 3 key files checked" and, per key list, one line containing
-                  '"problem": "s3_J4", "objective": "cosig3", "keys": 43, "flags": 24402, "bound": "B", "sigma_upper": "S",
-                   "PASS": true'   (s3_K5lt: cosig3, 45 keys, 28108 flags; c4_K5m: sigma4, 10 keys, 2243 flags): every key
-                  list rebuilt from the definitions (canonical types and flags, |Aut|) equals keys.json and the keys of the
-                  certificate json, each A_k has the stated shape, the copies have the recorded sha256
+                  "ALL PASS: 10 key files checked" and, per key list, one line containing
+                  '"problem": "P", "objective": "O", "keys": K, "flags": F, "bound": "B", "sigma_upper": "S", "PASS": true'
+                  with the values of the tables below: every key list rebuilt from the definitions (canonical types and
+                  flags, |Aut|) equals keys.json and the keys of the certificate json, each A_k has the stated shape,
+                  the copies have the recorded sha256
+sigcat_keys_indep7  s8_keys_cmp.py (independent, R7_SIG8 addendum A1) for the seven certificates of R7_SIG8: per
+                  certificate (review name C5_f, K5eq_A, K5m_f, K63_A, K6m4_f, K64_A, K74_A) "NAME {'hashes_equal':
+                  True, 'scalars_equal': True," and "'keys_equal': True, 'keys_vs_cert_json': True, 'n_keys': K,
+                  'total_flags': F, 'counts_equal': True,"; "controls (True = detected) {'flags_swapped': True,
+                  'aut_changed': True, 'flag_replaced': True, 'rows_changed': True", "ALL_PASS True", no "'PASS': False".
+                  (1) the sha256 of the certificate files equal the review's recorded values (verifier/s8_review_hashes.txt)
+                  and keys.json; (2) keys.json scalars equal the certificate json, sigma_upper = 1 - bound; (3) the
+                  predicate of keys.json gives the reviewer's copy sets (3-graphs) or admissibility (4-graphs, all 2^15
+                  six-vertex and 240,002 seven-vertex masks); (4) every key, in matrix order, equals the reviewer's own
+                  (s, m, type index, type, |Aut|, n_flags, the full flag list, factor rows); (5) the format string and its
+                  objective formula; (6) four corrupted copies are detected
+sigcat_keys_indep3  s8_keys_cmp_stage1.py (independent, R7_SIG8 addendum A2): the same for J4_r30, K5lt_f, K5m4_f, with
+                  the reference hashes of R7_SIG7 (verifier/s7_review_hashes.txt); controls as above plus
+                  "'K5lt_spec_replaced_by_K5eq': True, 'lam_2_to_1': True}"
 sigcat_keys_neg   sk_neg_keys.py: four corrupted copies of the K5lt key list are rejected: "swap: exit 1 (FAIL as
                   required)", "aut: ...", "forb: ...", "rows: ..." (two flags swapped, an |Aut| changed, the forbidden
                   graph changed, a row count changed), "NEGATIVE CONTROLS OK"
@@ -407,64 +425,100 @@ sigcat_reduction  s7_reduction.py (all assertions hold): '"r3_identities_graphs"
                   '"r4_identities_graphs": 24', '"r4_K5m_predicate_graphs": 900', '"planted_K4m_free_with_C5": 240',
                   '"ALL_OK": true' (co2 = sum c(c-1) + 3e and the x != y form, 210 f = 210 - sum_Q C(k_Q,2), exact
                   averaging over 7-subsets for n = 8, 9; Lemma co2 and 420 kappa = 24e - P for 4-graphs; the copy-list
-                  predicates of J_4, K_5^< and K_5^(4)- (complement form) against independent definitional tests)
-sigcat_masks      the spot-check graphs of verifier/sigcat_spot_values.txt: "J4 17 masks written", "K5lt 17 masks
-                  written", "K5_4minus 16 masks written"
-sigcat_pycheck_X  s7_pycheck.py, pure Python from the definition (own types and flags, every injective root tuple and
-                  every ordered pair of disjoint flag sets, Q entries from the npz rows in Python integers): exit status 0
+                  predicates of J_4, K_5^< and K_5^(4)- (complement form) against independent definitional tests; R7_SIG8
+                  re-ran the same program, s8_reduction.py, with the same result)
+sigcat8_predicates  s8_predicates.py (all assertions hold): the copy-list predicates of the seven new families against
+                  independent definitional tests on random graphs with planted copies (3-graphs, n = 5, 6, 7) and on
+                  random 4-graphs (n = 6, 7): '"admissible": A,' for A = 284, 295, 617, 181 (K_5^=, K_5^{3-}, K_6^(3),
+                  C_5) and 169, 323, 630 (K_6^(4)-, K_6^(4), K_7^(4)), '"copies7": C' for C = 315, 210, 252, 1, and
+                  '"ALL_OK": true'
+sigcat_masks      the spot-check graphs of verifier/sigcat_spot_values.txt: "X N masks written" for every X
+sigcat_pycheck_X  s7_pycheck.py or s8_pycheck.py, pure Python from the definition (own types and flags, every injective
+                  root tuple and every ordered pair of disjoint flag sets, Q entries from the npz rows in Python
+                  integers): exit status 0
 sigcat_pyvals_X   "X N graphs; slack - b equal to the review value at every graph: True ; all >= b: True ; at b: K",
-                  "SPOT VALUES OK" (J4: N = 17, K = 4; K5lt: 17, 4; K5_4minus: 16, 3); the exact values are listed in
-                  verifier/sigcat_spot_values.txt (the review's pure-Python results)
-sigcat_decimals   "SIGCAT DECIMALS OK": the bound of each certificate json and key list is b below, 1 - b = S and
-                  ceil12(1 - b) = C (Theorem sigmacat)
+                  "SPOT VALUES OK" with N, K from the table below; the exact values are listed in
+                  verifier/sigcat_spot_values.txt (the reviews' pure-Python results)
+sigcat_decimals   "10 certificates; SIGCAT DECIMALS OK": the bound of each certificate json and key list is b below,
+                  1 - b = S, ceil12(1 - b) = C and ceil7(1 - b) = T (the value of Table sigmacat)
 
-name       problem  objective  M     keys  flags   reps  admissible ext.  rejected    labelled admissible  at min  groups
-J4         s3_J4    cosig3     2^30  43    24,402  1513  29,092,719       20,485,265  14,704,790,947       5       106
-K5lt       s3_K5lt  cosig3     2^19  45    28,108  1728  40,527,893       16,095,211  20,294,982,806       7       108
-K5_4minus  c4_K5m   sigma4     2^21  10     2,243    62  10,058,620       54,953,092   1,741,143,596       7        56
+name       problem  obj.    M     keys  flags   reps  candidates   admissible ext.  rejected    labelled admissible  at min groups spot N/K
+J4         s3_J4    cosig3  2^30  43    24,402  1513   49,577,984   29,092,719      20,485,265  14,704,790,947        5    106   17/4
+K5lt       s3_K5lt  cosig3  2^19  45    28,108  1728   56,623,104   40,527,893      16,095,211  20,294,982,806        7    108   17/4
+K5_4minus  c4_K5m   sigma4  2^21  10     2,243    62   65,011,712   10,058,620      54,953,092   1,741,143,596        7     56   16/3
+K5eq       s3_K5eq  cosig3  2^19  45    29,557  1819   59,604,992   45,962,018      13,642,974  23,083,083,434       12    108   17/4
+K5_3minus  s3_K5m   cosig3  2^19  46    32,089  1970   64,552,960   57,357,848       7,195,112  28,854,605,654        2    118   16/3
+C5         s3_C5    cosig3  2^18  40    13,879   835   27,361,280    5,635,379      21,725,901   2,342,442,087        1     76   14/1
+K6_3       s3_K6    cosig3  2^19  48    35,753  2135   69,959,680   69,958,475           1,205  34,359,509,614       11    168   17/4
+K6_4minus  c4_K6m   sigma4  2^21  12     6,194   154  161,480,704  160,859,017         621,687  34,244,802,014       36    149   16/3
+K6_4       c4_K6    sigma4  2^20  12     6,205   155  162,529,280  162,481,445          47,835  34,352,419,335        1    164   11/1
+K7_4       c4_K7    sigma4  2^20  12     6,206   156  163,577,856  163,577,855               1  34,359,738,367        2    174   14/4
 
-name       exact bound b                              S = 1 - b                                  C = ceil12(S)
-J4         23220181141640969669/32281802128991715328  9061620987350745659/32281802128991715328   0.280703690307
-K5lt       2747492282707/4123168604160                1375676321453/4123168604160                0.333645420191
-K5_4minus  24504905122391/30786325577728              6281420455337/30786325577728               0.204032807991
-(32281802128991715328 = 7 * 2^62, 4123168604160 = 15 * 2^38, 30786325577728 = 7 * 2^42; "at min" = labelled
-extensions at the minimum, all in one isomorphism class; "groups" = values of the objective numerator F.)
+name       exact bound b                              S = 1 - b                                  C = ceil12(S)   T (Table)
+J4         23220181141640969669/32281802128991715328  9061620987350745659/32281802128991715328   0.280703690307  0.2807037
+K5lt       2747492282707/4123168604160                1375676321453/4123168604160                0.333645420191  0.3336455
+K5_4minus  24504905122391/30786325577728              6281420455337/30786325577728               0.204032807991  0.2040329
+K5eq       106600906627513/173173081374720            66572174747207/173173081374720             0.384425652179  0.3844257
+K5_3minus  1143076695549/1924145348608                781068653059/1924145348608                 0.405930172388  0.4059302
+C5         6422651703/8589934592                      2167282889/8589934592                      0.252304935013  0.2523050
+K6_3       29749027005683/115448720916480             85699693910797/115448720916480             0.742318262433  0.7423183
+K6_4minus  358317739722203/923589767331840            565272027609637/923589767331840            0.612037993062  0.6120380
+K6_4       140873242475/549755813888                  408882571413/549755813888                  0.743753064695  0.7437531
+K7_4       9454851490593/76965813944320               67510962453727/76965813944320              0.877155180904  0.8771552
+(Denominators in certificates/sigma_catalogue/README.md. "at min" = labelled extensions at the minimum, all in one
+isomorphism class; "groups" = values of the objective numerator F; "spot N/K" = spot-check graphs and those at b.)
 
-Raw part (--raw sigcat_X, or --raw sigcat for all three):
-sigcat_build       gcc $CFLAGS -o work/sigcat/s7_eval verifier/s7_eval.c and -o work/sigcat/s7_eval128
-                   verifier/s7_eval128.c, exit status 0 (with -O3 -march=native -fopenmp these gave the review's binaries
-                   byte for byte on the test machine)
-sigcat_prep_X      s7_prep128.py (J4; 128-bit Gram entries in three 64-bit limbs) or s7_prep.py: own types and flags
-                   equal to the json's key list (asserted), exact Gram matrices with spot checks in Python integers, own
-                   6-vertex representatives (computed anew; orbit-stabiliser check). J4: '"keys_match_cert": true,
-                   "flags_equal_json": true', '"max_diag_G_bits": 69', '"z_bound_bits": 81, "S_bound_bits": 89',
+Raw part (--raw sigcat_X, or --raw sigcat for all ten):
+sigcat_build       gcc $CFLAGS -o work/sigcat/s7_eval verifier/s7_eval.c, -o work/sigcat/s7_eval128 verifier/s7_eval128.c
+                   and -o work/sigcat/s8_eval verifier/s8_eval.c, exit status 0 (with -O3 -march=native -fopenmp these
+                   gave the reviews' binaries byte for byte on the test machine)
+sigcat_prep_X      J4, K5lt, K5_4minus: s7_prep128.py (J4; 128-bit Gram entries in three 64-bit limbs) or s7_prep.py: own
+                   types and flags equal to the json's key list (asserted), exact Gram matrices with spot checks in Python
+                   integers, own 6-vertex representatives (computed anew; orbit-stabiliser check). J4: '"keys_match_cert":
+                   true, "flags_equal_json": true', '"max_diag_G_bits": 69', '"z_bound_bits": 81, "S_bound_bits": 89',
                    '"reps6": 1513'; K5lt: '"n_copies7": 630, "reps6": 1728, "labelled6": 868080'; K5_4minus:
                    '"n_copies7": 105, "reps6": 62, "labelled6": 12068'; K5lt and K5_4minus: '"keys_match_cert": true' and
-                   z_bound_apriori_mine = z_bound_apriori_cert = 393705905561403120 / 346363323387273360; all:
-                   '"blob_sha256": "H"', the review's (deterministic) table digest: J4
-                   718d7e8a3a3b937a519c3a04e14421032f34ec29ac99e9aa6d8bf9ab3b1e9ae2, K5lt
-                   e73f987666b2a3582176116a94fbd6479ac9f3bc9a6a8cc4ccab2d32fa9b7ed1, K5_4minus
-                   7562c6add933e70414550ef2b83cf2149f169a8f9db412811d8fd6f29158bb02
-sigcat_each_X      s7_eval (s7_eval128 for J4), list mode, at the spot-check graphs: "done list: admissible N rejected 0 bad 0"
-sigcat_cmp_X       s7_cmp.py: '{"n": N, "all_equal_and_ge_b": true, "n_at_min": K}' (C and Python give the same exact
-                   numerator S at every spot-check graph)
+                   z_bound_apriori_mine = z_bound_apriori_cert = 393705905561403120 / 346363323387273360.
+                   The other seven: s8_prepvm.py PROBLEM CERT X . (the same decoding, streaming: the evaluation table
+                   goes to work/sigcat/blobs/X.blob, the representatives to reps/, the summary to prep/X.prep.json):
+                   '"evaluator": "s8_eval", "keys": K, "keys_match_cert": true', z_bound_apriori_mine =
+                   z_bound_apriori_cert, '"reps6": r, "labelled6": l' with l = 918267, 990687, 371229, 1048575, 32752,
+                   32767, 32768 for K5eq, K5_3minus, C5, K6_3, K6_4minus, K6_4, K7_4.
+                   All ten: '"blob_sha256": "H"', the review's (deterministic) digest of the evaluation table (the
+                   values are in verify_all.sh, function scinfo)
+sigcat_each_X      the evaluator (s7_eval, s7_eval128 for J4, s8_eval), list mode, at the spot-check graphs: "done list:
+                   admissible N rejected 0 bad 0"
+sigcat_cmp_X       s7_cmp.py / s8_cmp.py: '{"n": N, "all_equal_and_ge_b": true, "n_at_min": K}' (C and Python give the same
+                   exact numerator S at every spot-check graph)
 sigcat_raw_X       raw mode over all one-vertex extensions R + L of the own representatives R (all 2^15 links L for
-                   3-graphs, 2^20 for 4-graphs; 49,577,984 / 56,623,104 / 65,011,712 candidates; completeness by
-                   heredity): "done raw: admissible A rejected R bad 0" with A, R from the table
-sigcat_analyze_X   s7_analyze.py: '"bad": 0', '"min_slack": "B"', '"min_equals_claimed": true', '"min_multiplicity": m',
-                   '"n_groups_mine": G', '"group_keys_identical": true', '"group_maxZ_identical": true' (the maximum of Z
-                   for every value of F equals the producer's table in the json), '"raw_extensions_equal": true',
-                   '"labelled_admissible_7vertex": L', '"reps6": r', '"sigma_upper_exact": "S"', '"sigma_upper_ceil12":
-                   "C"', '"PASS": true'
-Times of the fast part (test of the fifth version, --sigcat): sigcat_keys 1 s, sigcat_keys_neg 1 s, sigcat_reduction
-4 s, each sigcat_pycheck_X 1 to 2 s, the rest < 1 s (12 s in all; peak memory below 0.1 GB).
-The raw part was NOT run in the test of this package (it was run by the review, with the same programs; the package
-copies differ from the reviewed ones only in comments and in the directory of generated files, verifier/CHANGES.txt
-item 12). Times in the review, 2 threads (one of them shared during the J4 scan): raw scans J4 1,598 s, K5lt 1,175 s,
-K5_4minus 487 s; prep J4 5 s (with the representatives cached; computing them takes about a minute, as for K5lt), K5lt
-75 s, K5_4minus 2 s. Peak memory: prep J4 1.47 GB, K5lt 0.84 GB, K5_4minus 0.09 GB; scans 0.78, 0.19 and 0.01 GB.
-Not repeated here: the review's second scan over the producer's class lists (not included), and its exact 7-vertex
-laws of the extremal constructions (b <= E slack <= f(construction); consistency only).
+                   3-graphs, 2^20 for 4-graphs; the candidates of the table; completeness by heredity): "done raw:
+                   admissible A rejected R bad 0" with A, R from the table
+sigcat_analyze_X   s7_analyze.py / s8_analyze.py: '"bad": 0', '"min_slack": "B"', '"min_equals_claimed": true',
+                   '"min_multiplicity": m', '"n_groups_mine": G', '"group_keys_identical": true', '"group_maxZ_identical":
+                   true' (the maximum of Z for every value of F equals the producer's table in the json),
+                   '"raw_extensions_equal": true', '"labelled_admissible_7vertex": L', '"reps6": r', '"sigma_upper_exact":
+                   "S"', '"sigma_upper_ceil12": "C"', '"PASS": true'
+Times of the fast part (test of the sixth version, --sigcat, 2 logical CPUs, while other jobs ran): sigcat_keys 5 s,
+sigcat_keys_indep7 11 s, sigcat_keys_indep3 12 s, sigcat_keys_neg 4 s, sigcat_reduction 8 s, sigcat8_predicates 2 s,
+each sigcat_pycheck_X 3 to 5 s, the rest <= 1 s (86 s in all; peak memory below 0.13 GB). In the test of the fifth
+version (three certificates only) the fast part took 12 s.
+The raw scans were NOT run in the test of this package (they were run by the reviews, with the same programs; the
+package copies differ from the reviewed ones only in comments and in the directories of generated and input files,
+verifier/CHANGES.txt items 12 and 14). The test of the sixth version ran the decoding, the list-mode evaluation at the
+spot-check graphs and s7_cmp.py / s8_cmp.py for K5_4minus, C5 and K7_4 by hand, with the commands of verify_all.sh:
+the evaluation tables and representatives were byte-identical to the reviews' (the digests above), and all expected
+strings of sigcat_prep_X, sigcat_each_X and sigcat_cmp_X were found (decoding 2.5 s, 49 s and 6.5 s, below 0.09 GB).
+Times in the reviews. J4, K5lt, K5_4minus, 2 threads (one of them shared during the J4 scan): raw scans 1,598 s,
+1,175 s, 487 s; prep J4 5 s (with the representatives cached; computing them takes about a minute, as for K5lt), K5lt
+75 s, K5_4minus 2 s; peak memory: prep J4 1.47 GB, K5lt 0.84 GB, K5_4minus 0.09 GB; scans 0.78, 0.19 and 0.01 GB.
+The seven of R7_SIG8, 15 threads of a 16-CPU cloud machine (n2-highcpu-16): raw scans K5eq 156 s, K5_3minus 194 s,
+C5 20 s, K6_3 238 s, K6_4minus 797 s, K6_4 807 s, K7_4 814 s (peak memory 214, 247, 68, 284, 54, 54, 54 MB); decoding
+on the reviewer's laptop (one CPU) 47 s, 52 s, 9 s, 83 s, 3 s, 2 s, 2 s (below 0.12 GB), writing evaluation tables of
+216, 246, 67, 288, 51, 51, 51 MB. On 2 threads the seven scans should take about 25, 30, 3, 35 minutes and 2.2, 2.3,
+2.3 hours (estimate from the review's measured rates, about 17,000 3-graphs and 10,000 4-graphs per second and thread;
+not measured).
+Not repeated here: the reviews' second scans over the producer's class lists (not included; none exists for K6_4minus),
+and their exact 7-vertex laws of the extremal constructions (b <= E slack <= f(construction); consistency only).
 
 (n) Remark j4limit: the dual point and the obstruction witness for sigma(J_4), certificates/sigma_catalogue/J4_limit/
     about 3 min
@@ -512,7 +566,8 @@ j4_s2_controls  jd_controls.py: 13 controls, among them "CONTROL OK  producer ct
                 dual_W1.json; negative: a rounded LP point, mass on a dead flag, on K_7^(3), on a J_4-containing law, a
                 wrong sum, a wrong value, half the mass on one graph)
 Times (test of the fifth version, --sigcat, 2 logical CPUs): j4_s1 11 s, j4_s1_controls 77 s, j4_s1_lift 6 s, j4_s2
-74 s, j4_window < 1 s (2.8 min in all); peak memory 128 MB (j4_s2). --raw j4_controls: j4_s2_controls 243 s in the test
+74 s, j4_window < 1 s (2.8 min in all); peak memory 128 MB (j4_s2). In the test of the sixth version, with other jobs
+running: 28 s, 187 s, 16 s, 179 s (6.8 min). --raw j4_controls: j4_s2_controls 243 s in the test
 of this package (one CPU), 11 min 8 s in the review (peak memory 101 MB).
 
 (o) Optional (--producer-j4): the producer's own checkers of the two files of (n)                        46 s
@@ -534,4 +589,7 @@ to (f) alone took 26 min on one core. In the test of the fourth version, --fast 
 69 min wall clock (127 steps: the 124 of --fast, 62 min, and the three raw steps of K5_4minus, 7.7 min) on two
 logical CPUs of the same laptop while other jobs were running, under a 3 GB memory cap (peak 585 MB). The fifth version
 adds the 16 steps of parts (m) and (n) to --fast (140 steps; in its test, --sigcat ran them in 3.0 min on two logical
-CPUs under a 1.5 GB memory cap, peak 128 MB); the other 124 steps of --fast were not re-run in that test.
+CPUs under a 1.5 GB memory cap, peak 128 MB); the other 124 steps of --fast were not re-run in that test. The sixth
+version adds 17 steps to part (m) (157 steps in --fast); in its test --sigcat ran the 35 steps (integrity, npz_hashes,
+the 28 of part (m), the 5 of part (n)) in 8.3 min on two logical CPUs of the same laptop while other jobs were running
+(load about 6), under a 1.5 GB memory cap, peak 128 MB: ALL CHECKS PASSED.
