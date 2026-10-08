@@ -1,0 +1,28 @@
+{
+  "title": "Turán densities of complete 4-graphs: certificates, checkers and preprint",
+  "upload_type": "dataset",
+  "version": "1.0.1",
+  "publication_date": "2026-10-08",
+  "creators": [
+    {
+      "name": "Mérola Corrêa, Bruno"
+    }
+  ],
+  "license": "cc-by-4.0",
+  "keywords": [
+    "Turán density",
+    "hypergraphs",
+    "flag algebras",
+    "codegree-squared density",
+    "lottery numbers",
+    "exact certificates"
+  ],
+  "description": "<p>Data package and preprint of the paper <em>Turán densities of complete 4-graphs via flag algebras on seven vertices</em> (Bruno Mérola Corrêa, 2026; the preprint is <code>paper/turan4.pdf</code>).</p><p>It contains the exact rational certificates behind every computer-assisted bound of the paper (among them π(K<sub>5</sub><sup>(4)</sup>) &lt; 0.69160 and σ(K<sub>5</sub><sup>(4)</sup>) = 31/64), independent programs that re-check them from the certificate files alone, a single driver <code>verifier/verify_all.sh</code> that runs every check, and the search code that found the certificates. Every check was run end to end on clean cloud machines. Code: MIT (LICENSE-CODE); data and documentation: CC BY 4.0 (LICENSE-DATA).</p>",
+  "related_identifiers": [
+    {
+      "identifier": "https://github.com/brunomerola/turan4-certificates",
+      "relation": "isSupplementTo",
+      "scheme": "url"
+    }
+  ]
+}

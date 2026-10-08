@@ -5,7 +5,7 @@ Data package for the paper
 > Bruno Mérola Corrêa, *Turán densities of complete 4-graphs via flag algebras on seven vertices*,
 > preprint, 2026 (arXiv identifier to be added after submission).
 
-It contains the exact rational certificates behind the paper's computer-assisted bounds, independent programs that
+The preprint itself is `paper/turan4.pdf` (version of 8 October 2026). The package contains the exact rational certificates behind the paper's computer-assisted bounds, independent programs that
 re-check them from the certificate files alone, a single driver that runs every check, and, for transparency, the
 code that found the certificates.
 
@@ -193,7 +193,7 @@ Please cite the paper:
       note   = {Preprint; arXiv identifier to be added}
     }
 
-and, for the data, this package: https://github.com/brunomerola/turan4-certificates (release v1.0.0; see also
+and, for the data, this package: https://github.com/brunomerola/turan4-certificates (releases v1.0.0 and later; see also
 `CITATION.cff`).
 
 ## Provenance fields

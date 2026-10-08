@@ -2,7 +2,7 @@ cff-version: 1.2.0
 message: "If you use these certificates or checkers, please cite the paper and this data package."
 title: "Turán densities of complete 4-graphs: certificates and checkers"
 type: dataset
-version: 1.0.0
+version: 1.0.1
 date-released: 2026-10-08
 authors:
   - family-names: "Mérola Corrêa"
