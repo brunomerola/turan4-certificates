@@ -5,9 +5,9 @@ Data package for the paper
 > Bruno Mérola Corrêa, *Turán densities of complete 4-graphs via flag algebras on seven vertices*,
 > preprint, 2026 (arXiv identifier to be added after submission).
 
-The preprint itself is `paper/turan4.pdf` (version of 8 October 2026). The package contains the exact rational certificates behind the paper's computer-assisted bounds, independent programs that
-re-check them from the certificate files alone, a single driver that runs every check, and, for transparency, the
-code that found the certificates.
+The preprint is `paper/turan4.pdf` (8 October 2026, editorial revision). The package contains the exact rational
+certificates, independent programs that re-check them from the certificate files alone, a driver that runs every
+check, and the search code. Verification does not require the search code.
 
 ## Results and files
 
@@ -37,6 +37,8 @@ t = t_1, and pi(K_p^(r)) = 1 - t(p,r) (complement form; see `certificates/README
 catalogue, F_{p,lambda} is the family of p-vertex 4-graphs with at least C(p,4) - lambda + 1 edges and
 pi(F_{p,lambda}) = 1 - t_lambda(p,4). Theorem and table names are the labels of the paper's LaTeX source. Each
 subdirectory of `certificates/` has a README that states what its files prove and which checker reads them.
+The results table retains the certificate precision; most decimals in the paper's theorem statements are rounded
+to six decimal places.
 
 ## How to verify
 
@@ -93,14 +95,10 @@ everything to `work/` (option `--work`), prints one PASS/FAIL line per step, kee
 | (p) | Proposition lotup (`--lotup`, also in `--fast`): the two type-pattern certificates (`rv3b_certs.py` with `rv3b_core.py`: conditions (i) and (ii) exactly, brute force on a blow-up, value, negative controls), the composition of (c) (`rv3b_derived.py`), the numerical companion of (a) on the Giraud host (`rv3b_giraud.py`), and 69 exact checks of the numbers of the section (`r7p6_check.py`) | 1 to 2 min |
 
 Times were measured on one core of an AMD Ryzen 7 5800H laptop unless stated otherwise; memory stays below
-600 MB, except for `--raw sigcat_J4` (1.5 GB) and `--raw sigcat_K5lt` (0.85 GB). The whole `--fast` run (124 steps)
-took 81 minutes with `--threads 2` on that laptop while other heavy jobs were running (62 minutes in the test of the
-fourth version, which replaced the certificates of Theorem main (b), (d), (e)), and `--raw sigma,stab_c10` 37 minutes.
-The fifth version added parts (m) and (n) to `--fast` (16 steps, 3 minutes with `--sigcat` in its test, peak memory
-128 MB), the raw scans of part (m) (run by the independent review, not in the test of this package) and the optional
-part (o); the sixth version the seven further certificates of Theorem sigmacat (part (m) now 28 steps, 33 with part
-(n); `--sigcat` 8.3 minutes in its test while other jobs were running; 157 steps in `--fast`); the seventh version
-part (p), Proposition lotup (4 steps, 1.7 minutes in its test; 161 steps in `--fast`).
+600 MB, except for `--raw sigcat_J4` (1.5 GB) and `--raw sigcat_K5lt` (0.85 GB). The current `--fast` mode has 161
+steps. The table gives timings per part; historical whole-run timings and the history of the package's development
+versions are in `verifier/CHANGES.txt`, item 19. All fast checks and raw scans were run on clean cloud machines
+before the initial public releases; Bruno also ran `--fast` (161/161 checks passed).
 
 ## Trust model
 
@@ -151,11 +149,12 @@ part (p), Proposition lotup (4 steps, 1.7 minutes in its test; 161 steps in `--f
   `certificates/catalogue/`). The raw scan of the t(6,4) certificate (Theorem main (b)) was run by its independent
   review with the review's own build and inputs on a temporary cloud machine, not on the review's own machine (see
   `certificates/K6_4/`). The raw scans of Theorem sigmacat were run by their independent reviews with the programs of
-  part (m) -- for J4, K5lt and K5_4minus on the reviewer's own machine, for the other seven on a temporary cloud
-  machine (16 CPUs) -- not in the test of this package, which ran the decoding and the C spot values for three of
-  them (K5_4minus, C5, K7_4) and reproduced the reviews' evaluation tables byte for byte; the reviews' second scans
-  over the producer's class lists are not repeated (the class lists are not included). Statements that the paper labels as floating-point
-  observations are not checked here.
+  part (m): J4, K5lt and K5_4minus on the reviewer's own machine, the other seven on a temporary cloud machine
+  (16 CPUs). The initial packaging test covered decoding and C spot values for K5_4minus, C5 and K7_4, reproducing
+  the reviews' evaluation tables byte for byte. The later cloud validation ran all raw scans through the package
+  driver (see `verifier/CHANGES.txt`, item 18, for two driver fixes found during that validation). The reviews'
+  second scans over the producer's class lists are not repeated here because those lists are not included.
+  Statements that the paper labels as floating-point observations are not checked here.
 
 ## Contents
 

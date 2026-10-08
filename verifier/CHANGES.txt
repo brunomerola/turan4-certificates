@@ -553,3 +553,27 @@ No program, no expected value and no other step changed. Test (2026-10-08, local
 raw scans and their analyses removed from a scratch copy of the driver, --raw sigcat_K5lt,sigcat_K5_4minus,sigcat_K7_4
 ran pycheck, pyvals, prep, each and cmp of the three certificates: all 15 PASS (1.2 min, peak 0.84 GB); the same test
 with the previous driver reproduced the failures of the cloud run (the first name replaced by K7_4).
+
+19. Development-version timings (moved from README, 2026-10-08)
+----------------------------------------------------------------------------------------------------------------
+These development versions predate the public release numbering. The measurements below are historical, not a
+timing of the current 161-step --fast run. Times were measured on an AMD Ryzen 7 5800H laptop.
+
+The whole --fast run (124 steps) took 81 minutes with --threads 2 while other heavy jobs were running (62 minutes
+in the test of the fourth version, which replaced the certificates of Theorem main (b), (d), (e)), and
+--raw sigma,stab_c10 took 37 minutes.
+The fifth version added parts (m) and (n) to --fast (16 steps, 3 minutes with --sigcat in its test, peak memory
+128 MB), the raw scans of part (m) (run by the independent review, not in the initial test of this package) and the
+optional part (o). The sixth version added the seven further certificates of Theorem sigmacat (part (m) now
+28 steps, 33 with part (n); --sigcat 8.3 minutes in its test while other jobs were running; 157 steps in --fast).
+The seventh version added part (p), Proposition lotup (4 steps, 1.7 minutes in its test; 161 steps in --fast).
+The subsequent pre-release validation ran all fast checks and raw scans on clean cloud machines, including the
+sigcat raw scans after the driver fixes in item 18.
+
+20. Editorial revision for v1.0.2 (2026-10-08)
+----------------------------------------------------------------------------------------------------------------
+README now describes the current checks and separates them from historical timings (item 19). Its trust-model
+history distinguishes initial spot checks from the later full cloud validation. The paper shortens decimal
+displays with safe directed rounding and simplifies the exposition. The three verifier-linked tables, exact
+fractions, certificates, checker programs, driver commands and expected strings are unchanged. The README results
+table retains its additional decimal precision. No computational result is added or changed.
