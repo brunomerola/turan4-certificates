@@ -595,3 +595,11 @@ The preprint now includes pages 21--63 for Balogh--Clemen--Lidicky's Surveys in 
 The manuscript BibTeX also records its DOI, 10.1017/9781009093927.003. The de Caen--Kreher--Wiseman title now
 uses T(n,2r+1,2r), following coauthor Kreher's publication list; the original 1988 title page was not inspected.
 All mathematical text, citation numbers, certificates, verifiers and expected outputs remain unchanged.
+
+22. Documentation simplification for v1.0.4 (2026-10-08)
+----------------------------------------------------------------------------------------------------------------
+README now introduces the two main results, verification commands and scope, and links to reference documentation.
+The full results index is in RESULTS.md; commands, per-check timings and the trust model are in VERIFICATION.md.
+Certificate provenance-field notes moved to certificates/README.md. Decimal summaries now use six places with
+directed rounding, retaining twelve for fine comparisons of method limits and J_4. Exact fractions and the
+certificate reference tables are preserved. The paper PDF, certificates, programs and expected outputs are unchanged.

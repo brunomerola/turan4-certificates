@@ -68,3 +68,10 @@ form, and with the objectives 1 - gamma (`cosig3`, F/210) or kappa = 2d - gamma 
 density. The json records the forbidden graph through `problem` (s3_J4, s3_K5lt, s3_K5eq, s3_K5m, s3_C5, s3_K6,
 c4_K5m, c4_K6m, c4_K6, c4_K7); the full key lists with the flag masks are in `<prefix>.keys.json`. The dual point and the witness of Remark j4limit are rational vectors on
 7-vertex 3-graphs (colex masks). See `sigma_catalogue/README.md`.
+
+## Provenance fields
+
+Some certificate files (`*.cert.json`, `*.verify.json` under `certificates/sigma_catalogue/`) keep the `source` and
+path fields written by the program that produced them, which name directories of the author's private research
+repository. They are kept unchanged because these files are byte-identical to the files the independent reviews
+checked (their SHA-256 digests are recorded in the reviews and in the key lists); the paths play no role in any check.
