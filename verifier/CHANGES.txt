@@ -588,3 +588,10 @@ history, uncertified experiments, superseded certificate details and operational
 All formal statements, proofs and exact-bound lists remain; the three verifier-linked tables are unchanged.
 The author retains all earlier PDF editions and the removed excerpts in the manuscript repository.
 The final PDF passed independent editorial review and native/arXiv builds. No certificate or verifier changed.
+
+21. Bibliographic corrections for v1.0.3 (2026-10-08)
+----------------------------------------------------------------------------------------------------------------
+The preprint now includes pages 21--63 for Balogh--Clemen--Lidicky's Surveys in Combinatorics 2022 chapter.
+The manuscript BibTeX also records its DOI, 10.1017/9781009093927.003. The de Caen--Kreher--Wiseman title now
+uses T(n,2r+1,2r), following coauthor Kreher's publication list; the original 1988 title page was not inspected.
+All mathematical text, citation numbers, certificates, verifiers and expected outputs remain unchanged.
